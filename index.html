@@ -130,6 +130,10 @@
 /* Signed out there is no rail, so nothing should be held clear of one. */
 body.as-noshell{padding-left:0}
 body.as-noshell .hqtop{margin-left:0;width:100%}
+/* .hq.rail sets display:flex, which beats the browser's own rule for [hidden],
+   so the rail has to be told explicitly to go away when it is hidden. */
+.hq.rail[hidden]{display:none}
+body.as-noshell .railscrim{display:none}
 </style>
 </head>
 <body>
