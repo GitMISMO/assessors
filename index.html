@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MISMO Assessor Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="portal.css">
+<style>
+/* ── The assessor portal's own layer ────────────────────────────────────────
+   Everything above this comes from portal.css, which is the Service Orders
+   stylesheet copied across unchanged. Only what is genuinely new to this page
+   is declared here, prefixed as- so it can never collide with the chassis. */
+
+/* Tags are rectangles here, not pills. */
+.chip, .as-tag{border-radius:3px}
+
+.as-tag{display:inline-flex;align-items:center;gap:5px;font-family:var(--display);
+  font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;
+  padding:2px 8px;border-radius:3px;background:var(--surface-3);color:var(--ink-2);
+  white-space:nowrap}
+.as-tag.wait{background:var(--sky-wash,#e4f2fb);color:var(--navy-mid,#14486e)}
+.as-tag.good{background:rgba(15,123,92,.12);color:var(--good)}
+.as-tag.warn{background:rgba(162,112,26,.14);color:var(--warn)}
+
+/* A row of engagements: shut by default, opens on a click anywhere on the row. */
+.as-rows{border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface)}
+.as-row{border-bottom:1px solid var(--rule,var(--border))}
+.as-row:last-child{border-bottom:0}
+.as-head{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;
+  border:0;padding:13px 16px;font:inherit;font-family:var(--display);color:var(--ink);
+  cursor:pointer}
+.as-head:hover{background:var(--surface-2)}
+.as-head:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+.as-head .as-caret{width:14px;height:14px;flex:0 0 auto;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--ink-3);
+  transition:transform .15s ease}
+.as-row.open .as-head .as-caret{transform:rotate(90deg)}
+.as-head .as-org{font-size:14px;font-weight:600;letter-spacing:-.008em;
+  flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as-head .as-prog{font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  white-space:nowrap;flex:0 0 auto}
+.as-head .as-age{font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums;
+  color:var(--ink-3);white-space:nowrap;flex:0 0 auto}
+@media(max-width:760px){
+  .as-head{flex-wrap:wrap}
+  .as-head .as-org{flex:1 0 100%}
+}
+
+.as-body{display:none;padding:4px 16px 20px 42px;border-top:1px solid var(--rule,var(--border));
+  background:var(--surface-2)}
+.as-row.open .as-body{display:block}
+
+.as-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
+  gap:12px 20px;margin:16px 0 4px}
+.as-k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;color:var(--ink-3);margin-bottom:2px}
+.as-v{font-family:var(--display);font-size:13.5px;font-weight:500;color:var(--ink);
+  font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.as-v.none{color:var(--ink-3);font-weight:400;font-style:normal}
+
+.as-sect{margin-top:26px}
+.as-sect > h4{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink-2);margin:0 0 9px;
+  padding-bottom:5px;border-bottom:1px solid var(--rule,var(--border))}
+
+.as-qa{margin:0;padding:0;list-style:none}
+.as-qa li{padding:9px 0;border-bottom:1px solid var(--rule,var(--border))}
+.as-qa li:last-child{border-bottom:0}
+.as-qa .q{font-family:var(--display);font-size:12px;font-weight:600;color:var(--ink-2);
+  margin-bottom:3px}
+.as-qa .a{font-family:var(--display);font-size:13px;color:var(--ink);line-height:1.5;
+  overflow-wrap:anywhere;white-space:pre-wrap}
+
+.as-hist{font-family:var(--display);font-size:13px;color:var(--ink)}
+.as-hist div{padding:7px 0;border-bottom:1px solid var(--rule,var(--border))}
+.as-hist div:last-child{border-bottom:0}
+.as-hist b{font-weight:600}
+.as-hist span{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:8px;
+  font-variant-numeric:tabular-nums}
+
+/* Recording a finding */
+.as-find label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-3);margin:0 0 4px}
+.as-find .as-f{margin-bottom:12px}
+.as-find select, .as-find textarea, .as-find input[type="text"]{
+  width:100%;background:var(--surface);border:1px solid var(--border-strong);border-radius:5px;
+  color:var(--ink);font:inherit;font-family:var(--display);font-size:13px;padding:8px 10px}
+.as-find textarea{min-height:92px;resize:vertical;line-height:1.5}
+.as-find select:focus, .as-find textarea:focus, .as-find input:focus{
+  outline:2px solid var(--sky);outline-offset:-1px}
+.as-go{background:var(--navy,#0d314c);color:#fff;border:0;border-radius:5px;
+  padding:9px 18px;font:inherit;font-family:var(--display);font-size:13px;font-weight:600;
+  cursor:pointer;white-space:nowrap;min-width:max-content}
+.as-go:hover:not(:disabled){background:var(--navy-mid,#14486e)}
+.as-go:disabled{opacity:.45;cursor:not-allowed}
+.as-go:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.as-say{font-family:var(--display);font-size:12.5px;margin-left:12px}
+.as-say.ok{color:var(--good)}
+.as-say.bad{color:var(--bad)}
+
+.as-logged{margin-bottom:16px}
+.as-logged .as-one{border:1px solid var(--border);border-radius:6px;background:var(--surface);
+  padding:10px 12px;margin-bottom:8px}
+.as-logged .as-one p{margin:6px 0 0;font-family:var(--display);font-size:13px;color:var(--ink);
+  line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.as-logged .as-when{font-family:var(--mono);font-size:10px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+
+.as-empty{border:1px dashed var(--border-strong);border-radius:9px;padding:34px 24px;
+  text-align:center;color:var(--ink-3);font-family:var(--display);font-size:13.5px;
+  background:var(--surface-2)}
+.as-lede{font-family:var(--display);font-size:13.5px;color:var(--ink-2);line-height:1.6;
+  margin:0 0 20px;max-width:none}
+.as-h2{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:-.012em;
+  color:var(--ink);margin:0 0 4px}
+.as-asof{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-3);
+  margin:0 0 20px;font-variant-numeric:tabular-nums}
+.as-pane{display:none}
+.as-pane.on{display:block}
+.as-wrap{padding:26px 30px 90px}
+.as-bad{border:1px solid var(--bad);border-radius:8px;background:rgba(179,55,44,.08);
+  color:var(--bad);font-family:var(--display);font-size:13px;padding:12px 14px;margin-bottom:18px}
+.as-sign-out{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;
+  border-radius:5px;padding:5px 10px;font:inherit;font-family:var(--display);font-size:11.5px;
+  cursor:pointer;white-space:nowrap;min-width:max-content}
+.as-sign-out:hover{background:rgba(255,255,255,.18)}
+
+/* Signed out there is no rail, so nothing should be held clear of one. */
+body.as-noshell{padding-left:0}
+body.as-noshell .hqtop{margin-left:0;width:100%}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mismo-logo" viewBox="0 0 708 108"><g transform="translate(0.000000,108.000000) scale(0.100000,-0.100000)" fill="var(--logo-body, #0f314c)"><path d="M5917 1065 c-169 -46 -279 -153 -335 -323 -21 -65 -25 -96 -25 -197
+0 -101 4 -132 25 -197 57 -172 168 -280 335 -323 84 -22 723 -22 808 0 222 58
+355 253 355 520 0 270 -132 459 -361 520 -74 20 -730 20 -802 0z m692 -320
+c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
+-297 0 -307 2 -346 83 -30 61 -31 198 -2 262 41 93 68 100 368 97 219 -2 243
+-4 274 -22z M0 545 l0 -515 225 0 225 0 2 296 3 296 116 -294 116 -293 197 0 198
+0 119 295 118 295 1 -297 0 -298 225 0 225 0 0 515 0 515 -337 -2 -338 -3
+-104 -264 c-80 -204 -107 -260 -113 -245 -5 10 -52 129 -106 264 l-98 245
+-337 3 -337 2 0 -515z M1892 1044 l-22 -15 0 -483 c0 -455 1 -484 18 -499 16 -15 48 -17
+246 -17 128 0 235 4 246 10 32 17 34 57 4 95 -33 44 -64 143 -64 206 l0 49
+203 0 c191 0 205 -1 222 -20 10 -11 34 -24 54 -30 49 -13 586 -13 612 0 22 12
+26 62 7 78 -8 6 -174 15 -413 21 -502 15 -549 23 -628 110 -43 48 -57 93 -57
+187 0 82 19 156 55 208 30 44 32 77 7 99 -27 25 -456 25 -490 1z M3716 1044 c-23 -22 -20 -31 19 -77 43 -49 78 -155 73 -218 l-3 -44
+-204 -3 c-194 -2 -205 -1 -218 17 -24 35 -78 41 -355 41 -255 0 -269 -1 -288
+-20 -27 -27 -26 -58 3 -70 12 -5 202 -14 422 -19 421 -12 476 -18 555 -62 92
+-51 132 -159 111 -299 -12 -77 -34 -129 -77 -179 -23 -28 -25 -36 -16 -57 l12
+-24 215 0 215 0 2 306 3 306 120 -303 120 -304 197 -3 196 -2 118 296 119 297
+3 -296 2 -297 225 0 225 0 0 515 0 515 -338 0 -337 0 -104 -265 c-58 -146
+-106 -263 -108 -261 -2 2 -50 120 -107 262 l-104 259 -340 3 c-300 2 -342 0
+-356 -14z"/></g><g transform="translate(0.000000,108.000000) scale(0.100000,-0.100000)" fill="var(--logo-s, #50a4db)"><path d="M2485 1046 c-44 -20 -111 -94 -136 -151 -27 -60 -37 -198 -20 -263
+13 -48 68 -115 114 -138 64 -34 162 -43 562 -55 239 -6 405 -15 413 -21 19
+-16 15 -66 -7 -78 -26 -13 -563 -13 -612 0 -20 6 -44 19 -54 30 -17 19 -31 20
+-222 20 l-203 0 0 -49 c0 -81 34 -172 86 -230 78 -87 31 -81 672 -81 l568 0
+46 29 c79 50 122 121 139 231 21 140 -19 248 -111 299 -79 44 -134 50 -555 62
+-220 5 -410 14 -422 19 -29 12 -30 43 -3 70 19 19 33 20 288 20 277 0 331 -6
+355 -41 13 -18 24 -19 218 -17 l204 3 3 44 c4 60 -31 168 -70 215 -17 21 -52
+52 -77 67 l-45 29 -550 0 c-440 -1 -557 -3 -581 -14z"/></g></symbol>
+<symbol id="mismo-hat" viewBox="0 0 100 100">
+  <path d="M17,73 C9,44 20,17 42,9 C59,3 72,10 80,22 C85,30 86,38 81,41
+           C76,44 70,40 65,32 C60,46 57,60 57,73 Z" fill="#c0392f"/>
+  <path d="M17,73 C9,44 20,17 42,9 C48,7 53,6 58,7 C41,19 30,45 30,73 Z"
+        fill="#0f314c" opacity=".17"/>
+  <rect x="10" y="65" width="56" height="20" rx="10" fill="#ffffff"/>
+  <rect x="10" y="75" width="56" height="10" rx="5" fill="#0f314c" opacity=".07"/>
+  <circle cx="86" cy="45" r="11.5" fill="#ffffff"/>
+</symbol>
+<symbol id="ico-search" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7.2" cy="7.2" r="4.6"/><path d="m11 11 3 3"/></g></symbol>
+<symbol id="ico-moon" viewBox="0 0 16 16"><path d="M13.6 9.5A6 6 0 0 1 6.5 2.4a6 6 0 1 0 7.1 7.1Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+<symbol id="ico-sun" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.4v1.6M8 13v1.6M1.4 8h1.6M13 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M12.6 3.4l-1.1 1.1M4.5 11.5l-1.1 1.1"/></g></symbol>
+<symbol id="ico-grid" viewBox="0 0 16 16"><g fill="currentColor"><rect x="1.6" y="1.6" width="5.6" height="5.6" rx="1.4"/><rect x="8.8" y="1.6" width="5.6" height="5.6" rx="1.4"/><rect x="1.6" y="8.8" width="5.6" height="5.6" rx="1.4"/><rect x="8.8" y="8.8" width="5.6" height="5.6" rx="1.4"/></g></symbol>
+<symbol id="ico-cal" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"><rect x="1.9" y="3.2" width="12.2" height="11" rx="2"/><path d="M1.9 6.6h12.2M5.2 1.8v2.6M10.8 1.8v2.6"/></g></symbol>
+<symbol id="ico-chev" viewBox="0 0 16 16"><path d="M6 3.4 10.6 8 6 12.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ico-sys" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"><rect x="1.9" y="2.4" width="12.2" height="11.2" rx="2"/><path d="M1.9 6.1h12.2M6.6 6.1v7.5M9.6 9h3.1M9.6 11.3h3.1"/></g></symbol>
+<symbol id="ico-menu" viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h12"/><path d="M2 8h12"/><path d="M2 12h12"/></g></symbol>
+</defs></svg>
+
+<header class="hqtop">
+  <span class="logoplate"><svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg><svg class="santa" viewBox="0 0 100 100" aria-hidden="true"><use href="#mismo-hat"/></svg></span>
+  <span class="mastrule"></span>
+  <span class="hqname">Assessor Portal</span>
+  <span class="hqtop-r"><span class="eyebrow-m">Programs &amp; Operations</span>
+    <button class="as-sign-out" id="as-out" type="button" hidden>Sign Out</button></span>
+</header>
+
+<aside class="hq rail" id="rail" hidden>
+  <div class="rail-top">
+    <span class="rail-lbl">Sections</span>
+    <button class="railhide" id="rail-hide" type="button" aria-label="Narrow the menu" title="Narrow the menu (backslash)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+  </div>
+
+  <div class="railfind">
+    <button class="railfind-b" id="rail-qb" type="button" aria-label="Search" title="Search" tabindex="-1">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+    </button>
+    <svg class="fi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+    <input type="search" id="rail-q" autocomplete="off" spellcheck="false"
+           placeholder="Search" aria-label="Search companies and engagements">
+    <button class="railq-x" id="rail-qx" type="button" aria-label="Clear the search" hidden>&times;</button>
+    <div class="railhits" id="rail-hits" hidden></div>
+  </div>
+
+  <nav aria-label="Assessor Portal">
+    <button type="button" data-hq="open" aria-current="page" title="Engagements">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
+      <span>Engagements</span></button>
+    <button type="button" data-hq="found" title="Findings Recorded">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+      <span>Findings Recorded</span></button>
+    <button type="button" data-hq="about" title="About This Portal">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+      <span>About This Portal</span></button>
+  </nav>
+
+  <div class="railsum" id="as-pickwrap" hidden>
+    <label for="as-pick">Firm</label>
+    <select id="as-pick" class="hq-pick" aria-label="Firm"></select>
+  </div>
+
+  <div class="mast-right">
+    <button class="theme-btn" id="theme-btn" type="button">
+      <svg class="ti ti-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6.4 6.4 0 009 9 9 9 0 11-9-9z"/></svg>
+      <svg class="ti ti-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.4v2.3M12 19.3v2.3M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.4 12h2.3M19.3 12h2.3M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+      <span id="theme-lab">Dark Mode</span>
+    </button>
+  </div>
+</aside>
+<div class="railscrim" id="rail-scrim"></div>
+
+<main id="as-main"></main>
+
+<script src="relay.js"></script>
+<script>
+/* ── The assessor portal ──────────────────────────────────────────────────────
+ *
+ * A firm signs in and sees its own engagements: the companies it is assessing,
+ * the questionnaire answers to assess them against, what MISMO pays it, and the
+ * same company's earlier certifications so a renewal can be judged against what
+ * was found last time.
+ *
+ * It sees nothing else. Not another firm's work, not what the company was
+ * charged, not MISMO's revenue — because none of that is in the file it is
+ * given. The cutting happens on the server, in cms-data's build-engagements.js,
+ * before anything is published. This page could not show those figures if it
+ * tried.
+ *
+ * Reads   engagements/<firm>.json   from the firm's own repository
+ * Writes  findings/<row>.json       to the same place
+ *
+ * Both paths are enforced by the relay against the firm's key, so a page bug
+ * cannot reach past them either.
+ */
+(function () {
+  "use strict";
+
+  var R = window.MISMO_RELAY;
+
+  /* The three firms with a portal. A person sees a firm only if their account
+     holds that firm's key — the list here just says which keys mean "assessor".
+     The firm's proper name comes out of its own file, never typed in here. */
+  var FIRMS = [
+    { key: "as-falcon",    slug: "falcon" },
+    { key: "as-actualize", slug: "actualize" },
+    { key: "as-vianteye",  slug: "vianteye" }
+  ];
+
+  var OUTCOMES = [
+    { v: "",                     t: "Choose an outcome" },
+    { v: "pass",                 t: "Meets the standard" },
+    { v: "fail",                 t: "Does not meet the standard" },
+    { v: "recommend_remediation",t: "Remediation recommended" },
+    { v: "waiting_on_artifact",  t: "Waiting on an artifact" },
+    { v: "note",                 t: "Observation, no outcome" }
+  ];
+
+  var mine = [];        /* the firms this account can see */
+  var current = null;   /* the one being shown */
+  var book = null;      /* its engagements file */
+  var findings = {};    /* row -> the findings file for that engagement */
+  var openRows = {};    /* which rows the person has opened */
+
+  /* ---- small helpers ------------------------------------------------------ */
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function el(id) { return document.getElementById(id); }
+  function money(n) {
+    if (n == null || n === "" || isNaN(Number(n))) return null;
+    return "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
+  function day(iso) {
+    if (!iso) return null;
+    var d = new Date(iso);
+    if (isNaN(d)) return String(iso).slice(0, 10);
+    return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  }
+  function outcomeText(v) {
+    for (var i = 0; i < OUTCOMES.length; i++) if (OUTCOMES[i].v === v) return OUTCOMES[i].t;
+    return v || "";
+  }
+
+  /* ---- the sign-in card --------------------------------------------------- */
+  function gate(note) {
+    document.getElementById("rail").hidden = true;
+    document.body.classList.add("as-noshell");
+    el("as-out").hidden = true;
+    el("as-main").innerHTML =
+      '<div class="signwrap"><div class="signcard">' +
+        '<div class="signmark">' +
+          '<svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg>' +
+        '</div>' +
+        '<h2>Assessor Portal</h2>' +
+        '<p class="signsub">The certifications your firm is assessing for MISMO, what each ' +
+        'applicant has told us, and somewhere to record what you find.</p>' +
+        '<div id="si-note" class="signnote">' +
+          (note ? '<div class="note warn">' + esc(note) + "</div>" : "") +
+        '</div>' +
+        '<div class="signfields">' +
+          '<div class="f"><label for="si-email">Email</label>' +
+            '<input type="email" id="si-email" autocomplete="username" spellcheck="false" ' +
+            'autocapitalize="off" placeholder="you@yourcompany.com"></div>' +
+          '<div class="f"><label for="si-pass">Password</label>' +
+            '<input type="password" id="si-pass" autocomplete="current-password" ' +
+            'placeholder="the password you were sent"></div>' +
+        '</div>' +
+        '<button class="signgo" type="button" id="si-go">Sign In</button>' +
+        '<div class="signerr" id="si-err"></div>' +
+        '<p class="signfine">Your session lasts four hours and ends when you close this tab.<br>' +
+        'No password? Email <a href="mailto:jcritchley@mismo.org">Jonna Critchley</a>.</p>' +
+      "</div></div>";
+
+    var go = el("si-go"), err = el("si-err");
+    function fail(m) { err.textContent = m; go.disabled = false; go.textContent = "Sign In"; }
+    function submit() {
+      var email = (el("si-email").value || "").trim();
+      var pass = el("si-pass").value || "";
+      err.textContent = "";
+      if (!email || !pass) { fail("Enter your email and password."); return; }
+      go.disabled = true;
+      go.textContent = "Signing in…";
+      Promise.resolve(R.loginAny(email, pass)).then(function () {
+        start();
+      })["catch"](function (e) {
+        fail((e && e.message) ? e.message : "That email and password did not match.");
+      });
+    }
+    go.addEventListener("click", submit);
+    ["si-email", "si-pass"].forEach(function (id) {
+      el(id).addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    });
+  }
+
+  /* ---- loading ------------------------------------------------------------ */
+  function whoCanISee() {
+    var s = R.session() || {};
+    var access = s.access || {};
+    return FIRMS.filter(function (f) { return !!access[f.key]; });
+  }
+
+  function loadFirm(firm) {
+    current = firm;
+    book = null;
+    findings = {};
+    paint();
+    return R.read(firm.key, "engagements/" + firm.slug + ".json")
+      .then(function (r) {
+        book = r.data;
+        paint();
+        return loadFindings();
+      })["catch"](function (e) {
+        book = { error: (e && e.message) ? e.message : String(e) };
+        paint();
+      });
+  }
+
+  function loadFindings() {
+    if (!book || !book.engagements) return Promise.resolve();
+    return Promise.all(book.engagements.map(function (e) {
+      return R.readOr(current.key, "findings/" + e.row + ".json", null)
+        .then(function (r) {
+          var d = r && r.data ? r.data : r;
+          if (d && d.entries) findings[e.row] = d;
+        })["catch"](function () { /* no findings yet is not an error */ });
+    })).then(paint);
+  }
+
+  /* ---- the engagement list ------------------------------------------------ */
+  function detail(e) {
+    var bits = [];
+    function add(k, v) {
+      bits.push('<div><div class="as-k">' + esc(k) + "</div>" +
+        '<div class="as-v' + (v == null ? " none" : "") + '">' +
+        esc(v == null ? "Not recorded" : v) + "</div></div>");
+    }
+    add("Program", e.program);
+    add("Product", e.product);
+    add("Kind", e.kind === "renewal"
+      ? ("Renewal" + (e.renewalNumber ? " " + e.renewalNumber : ""))
+      : (e.kind === "initial" ? "First certification" : e.kind));
+    add("Where It Stands", e.stateLabel || e.state);
+    add("Waiting On", e.waiting);
+    add("Days in This State", e.age == null ? null : e.age);
+    add("Your Fee", money(e.assessorFee));
+    add("Demonstration", day(e.demoOn));
+
+    var cs = e.certificationScript || {};
+    add("Certification Script", cs.sent ? ("Sent " + (day(cs.sentOn) || "")) : "Not sent yet");
+
+    var p = e.prelim || {};
+    var scored = (p.scored || 0);
+    add("Preliminary Scoring", scored
+      ? (scored + " scored, " + (p.fails || 0) + " not met, " + (p.waitingOnArtifact || 0) + " awaiting an artifact")
+      : null);
+
+    var out = '<div class="as-grid">' + bits.join("") + "</div>";
+
+    if (Array.isArray(e.answers) && e.answers.length) {
+      out += '<div class="as-sect"><h4>What the Applicant Told Us</h4><ul class="as-qa">';
+      e.answers.forEach(function (a) {
+        var q = (a && (a.q || a.question || a.label)) || "";
+        var v = (a && (a.a || a.answer || a.value));
+        out += "<li>" + (q ? '<div class="q">' + esc(q) + "</div>" : "") +
+          '<div class="a">' + esc(v == null || v === "" ? "—" : v) + "</div></li>";
+      });
+      out += "</ul></div>";
+    }
+
+    if (Array.isArray(e.history) && e.history.length) {
+      out += '<div class="as-sect"><h4>Earlier Certifications</h4><div class="as-hist">';
+      e.history.forEach(function (h) {
+        out += "<div><b>" + esc(h.program || "") +
+          (h.product ? " — " + esc(h.product) : "") + "</b>" +
+          "<span>first certified " + esc(day(h.originalCertifiedOn) || "not recorded") +
+          (h.completedRenewals != null ? " · " + h.completedRenewals + " renewal" +
+            (h.completedRenewals === 1 ? "" : "s") : "") +
+          (h.status ? " · " + esc(h.status) : "") + "</span></div>";
+      });
+      out += "</div></div>";
+    }
+
+    out += findingsBlock(e);
+    return out;
+  }
+
+  function findingsBlock(e) {
+    var doc = findings[e.row];
+    var out = '<div class="as-sect as-find"><h4>Findings</h4>';
+
+    if (doc && doc.entries && doc.entries.length) {
+      out += '<div class="as-logged">';
+      doc.entries.slice().reverse().forEach(function (f) {
+        out += '<div class="as-one"><span class="as-tag ' +
+          (f.outcome === "pass" ? "good" : (f.outcome === "fail" ? "warn" : "")) + '">' +
+          esc(outcomeText(f.outcome)) + '</span> ' +
+          '<span class="as-when">' + esc(day(f.at) || "") +
+          (f.by ? " · " + esc(f.by) : "") + "</span>" +
+          "<p>" + esc(f.text || "") + "</p></div>";
+      });
+      out += "</div>";
+    }
+
+    out += '<div class="as-f"><label for="fo-' + e.row + '">Outcome</label>' +
+      '<select id="fo-' + e.row + '">' +
+      OUTCOMES.map(function (o) {
+        return '<option value="' + esc(o.v) + '">' + esc(o.t) + "</option>";
+      }).join("") + "</select></div>" +
+      '<div class="as-f"><label for="ft-' + e.row + '">What You Found</label>' +
+      '<textarea id="ft-' + e.row + '" placeholder="What you looked at, and what it showed."></textarea></div>' +
+      '<button class="as-go" type="button" data-rec="' + e.row + '">Record This Finding</button>' +
+      '<span class="as-say" id="fs-' + e.row + '"></span>' +
+      "</div>";
+    return out;
+  }
+
+  function record(row) {
+    var e = (book.engagements || []).filter(function (x) { return String(x.row) === String(row); })[0];
+    if (!e) return;
+    var sel = el("fo-" + row), ta = el("ft-" + row), say = el("fs-" + row);
+    var outcome = sel.value, text = (ta.value || "").trim();
+    say.className = "as-say";
+    if (!outcome) { say.className = "as-say bad"; say.textContent = "Choose an outcome first."; return; }
+    if (!text) { say.className = "as-say bad"; say.textContent = "Write what you found."; return; }
+
+    var btn = document.querySelector('[data-rec="' + row + '"]');
+    btn.disabled = true;
+    say.textContent = "Saving…";
+
+    var s = R.session() || {};
+    var entry = {
+      at: new Date().toISOString(),
+      by: s.name || s.email || "",
+      outcome: outcome,
+      text: text
+    };
+    var fresh = {
+      kind: "assessor-findings", version: 1,
+      row: e.row, org: e.org, program: e.program, firm: book.firm,
+      entries: []
+    };
+
+    Promise.resolve(
+      R.update(current.key, "findings/" + row + ".json", function (doc) {
+        var d = doc && doc.entries ? doc : fresh;
+        d.entries = (d.entries || []).concat([entry]);
+        return d;
+      }, "Finding on " + (e.org || "") + " " + (e.program || ""), fresh, 3)
+    ).then(function () {
+      findings[row] = findings[row] && findings[row].entries
+        ? { entries: findings[row].entries.concat([entry]) }
+        : { entries: [entry] };
+      openRows[row] = true;
+      paint();
+      var s2 = el("fs-" + row);
+      if (s2) { s2.className = "as-say ok"; s2.textContent = "Recorded."; }
+    })["catch"](function (err) {
+      btn.disabled = false;
+      say.className = "as-say bad";
+      say.textContent = (err && err.message) ? err.message : "That did not save.";
+    });
+  }
+
+  /* ---- painting ----------------------------------------------------------- */
+  function paneOpen() {
+    if (!book) return '<div class="as-empty">Loading your engagements…</div>';
+    if (book.error) {
+      return '<div class="as-bad">Your engagements could not be loaded. ' + esc(book.error) + "</div>";
+    }
+    var list = book.engagements || [];
+    if (!list.length) {
+      return '<div class="as-empty">Nothing is assigned to your firm at the moment. ' +
+        "When MISMO assigns a certification to you it appears here the same day.</div>";
+    }
+    var rows = list.map(function (e) {
+      var waiting = e.waiting ? '<span class="as-tag wait">' + esc(e.waiting) + " to act</span>" : "";
+      return '<div class="as-row' + (openRows[e.row] ? " open" : "") + '" data-row="' + esc(e.row) + '">' +
+        '<button class="as-head" type="button" data-open="' + esc(e.row) + '" aria-expanded="' +
+          (openRows[e.row] ? "true" : "false") + '">' +
+          '<svg class="as-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>' +
+          '<span class="as-org">' + esc(e.org || "") + "</span>" +
+          '<span class="as-prog">' + esc(e.program || "") +
+            (e.product ? " · " + esc(e.product) : "") + "</span>" +
+          '<span class="as-tag">' + esc(e.stateLabel || e.state || "") + "</span>" +
+          waiting +
+          '<span class="as-age">' + (e.age == null ? "" : esc(e.age) + "d") + "</span>" +
+        "</button>" +
+        '<div class="as-body">' + (openRows[e.row] ? detail(e) : "") + "</div>" +
+      "</div>";
+    }).join("");
+
+    return '<h2 class="as-h2">Engagements</h2>' +
+      '<p class="as-asof">' + esc(book.firm || "") + " · " + list.length +
+        " open · as of " + esc(day(book.asOf) || day(book.writtenAt) || "") + "</p>" +
+      '<p class="as-lede">Everything your firm is assessing for MISMO right now. Open a row for the ' +
+      "applicant's own answers, what MISMO pays you for it, and the same company's earlier " +
+      "certifications.</p>" +
+      '<div class="as-rows">' + rows + "</div>";
+  }
+
+  function paneFound() {
+    var all = [];
+    Object.keys(findings).forEach(function (row) {
+      var d = findings[row];
+      var e = ((book && book.engagements) || []).filter(function (x) {
+        return String(x.row) === String(row);
+      })[0] || {};
+      (d.entries || []).forEach(function (f) {
+        all.push({ org: e.org, program: e.program, f: f });
+      });
+    });
+    if (!all.length) {
+      return '<h2 class="as-h2">Findings Recorded</h2>' +
+        '<div class="as-empty">Nothing recorded yet. Findings you record against an engagement ' +
+        "appear here as well.</div>";
+    }
+    all.sort(function (a, b) { return String(b.f.at).localeCompare(String(a.f.at)); });
+    return '<h2 class="as-h2">Findings Recorded</h2>' +
+      '<p class="as-lede">Everything your firm has recorded, newest first.</p>' +
+      '<div class="as-logged">' + all.map(function (x) {
+        return '<div class="as-one"><span class="as-tag ' +
+          (x.f.outcome === "pass" ? "good" : (x.f.outcome === "fail" ? "warn" : "")) + '">' +
+          esc(outcomeText(x.f.outcome)) + "</span> " +
+          '<span class="as-when">' + esc(x.org || "") +
+          (x.program ? " · " + esc(x.program) : "") + " · " +
+          esc(day(x.f.at) || "") + "</span><p>" + esc(x.f.text || "") + "</p></div>";
+      }).join("") + "</div>";
+  }
+
+  function paneAbout() {
+    return '<h2 class="as-h2">About This Portal</h2>' +
+      '<p class="as-lede">This page shows your firm its own assessment work for MISMO, and nothing ' +
+      "else.</p>" +
+      '<div class="as-sect"><h4>What You Can See</h4><p class="as-lede">The certifications assigned ' +
+      "to your firm: the company, the program, where the certification stands, what the applicant " +
+      "told MISMO in its questionnaire, what MISMO pays your firm for the engagement, and that " +
+      "company's earlier certifications in the same program so a renewal can be judged against what " +
+      "was found last time.</p></div>" +
+      '<div class="as-sect"><h4>What You Cannot See</h4><p class="as-lede">Another firm’s ' +
+      "engagements, what any company was charged, MISMO’s revenue, invoice numbers, whether an " +
+      "invoice is paid, or MISMO’s own notes. None of it is in the file your firm is given, so " +
+      "this page could not show it even if it tried — and the relay refuses a request for " +
+      "anything outside your firm’s own folder.</p></div>" +
+      '<div class="as-sect"><h4>Recording a Finding</h4><p class="as-lede">Open an engagement and use ' +
+      "the Findings box at the foot of it. What you record is saved to your firm’s own record and " +
+      "is visible to MISMO. It is kept, never overwritten — record a correction as a new finding " +
+      "rather than editing an old one.</p></div>" +
+      '<div class="as-sect"><h4>Something Wrong?</h4><p class="as-lede">If an engagement is missing, ' +
+      "or one is here that should not be, email " +
+      '<a href="mailto:jcritchley@mismo.org">Jonna Critchley</a>. The list is rebuilt from MISMO’s ' +
+      "certification system every morning.</p></div>";
+  }
+
+  var pane = "open";
+  function paint() {
+    var main = el("as-main");
+    main.innerHTML = '<div class="as-wrap">' +
+      '<div class="as-pane' + (pane === "open" ? " on" : "") + '" id="p-open">' +
+        (pane === "open" ? paneOpen() : "") + "</div>" +
+      '<div class="as-pane' + (pane === "found" ? " on" : "") + '" id="p-found">' +
+        (pane === "found" ? paneFound() : "") + "</div>" +
+      '<div class="as-pane' + (pane === "about" ? " on" : "") + '" id="p-about">' +
+        (pane === "about" ? paneAbout() : "") + "</div>" +
+      "</div>";
+  }
+
+  /* one delegated listener, so repainting never loses the wiring */
+  document.addEventListener("click", function (ev) {
+    var head = ev.target.closest ? ev.target.closest("[data-open]") : null;
+    if (head) {
+      var row = head.getAttribute("data-open");
+      openRows[row] = !openRows[row];
+      paint();
+      return;
+    }
+    var rec = ev.target.closest ? ev.target.closest("[data-rec]") : null;
+    if (rec) { record(rec.getAttribute("data-rec")); }
+  });
+
+  /* ---- starting up -------------------------------------------------------- */
+  function start() {
+    mine = whoCanISee();
+    if (!mine.length) {
+      document.getElementById("rail").hidden = true;
+      document.body.classList.add("as-noshell");
+      el("as-out").hidden = false;
+      el("as-main").innerHTML = '<div class="as-wrap"><div class="as-empty">' +
+        "This account is signed in, but it does not hold an assessor key, so there is nothing " +
+        "for it to show here.<br><br>If you assess certifications for MISMO and expected to see " +
+        'your engagements, email <a href="mailto:jcritchley@mismo.org">Jonna Critchley</a>.' +
+        "</div></div>";
+      return;
+    }
+
+    document.getElementById("rail").hidden = false;
+    document.body.classList.remove("as-noshell");
+    el("as-out").hidden = false;
+
+    var pw = el("as-pickwrap");
+    if (mine.length > 1) {
+      pw.hidden = false;
+      el("as-pick").innerHTML = mine.map(function (f) {
+        return '<option value="' + esc(f.key) + '">' + esc(f.slug) + "</option>";
+      }).join("");
+      el("as-pick").addEventListener("change", function () {
+        var k = this.value;
+        var f = mine.filter(function (x) { return x.key === k; })[0];
+        if (f) { openRows = {}; loadFirm(f); }
+      });
+    } else {
+      pw.hidden = true;
+    }
+
+    document.querySelectorAll('.hq nav button[data-hq]').forEach(function (b) {
+      b.addEventListener("click", function () {
+        document.querySelectorAll('.hq nav button[data-hq]').forEach(function (o) {
+          o.removeAttribute("aria-current");
+        });
+        b.setAttribute("aria-current", "page");
+        pane = b.getAttribute("data-hq");
+        paint();
+      });
+    });
+
+    el("as-out").addEventListener("click", function () {
+      try { R.signOut(); } catch (e) {}
+      location.reload();
+    });
+
+    loadFirm(mine[0]).then(function () {
+      /* once the file is in, label the picker with each firm's real name */
+      if (mine.length > 1 && book && book.firm) {
+        var opt = el("as-pick").querySelector('option[value="' + current.key + '"]');
+        if (opt) opt.textContent = book.firm;
+      }
+    });
+  }
+
+  /* what the rail's search reads, and how it opens what it finds */
+  window.__assessorBook = function () { return book; };
+  window.__assessorOpen = function (row) {
+    openRows[row] = true;
+    paint();
+    var node = document.querySelector('.as-row[data-row="' + row + '"]');
+    if (node) try { node.scrollIntoView({ block: "center", behavior: "smooth" }); } catch (e) {}
+  };
+
+  /* December, every year, with no upkeep */
+  if (new Date().getMonth() === 11) {
+    document.documentElement.setAttribute("data-season", "december");
+  }
+
+  Promise.resolve(R.boot()).then(function () {
+    if (R.signedIn()) start(); else gate("");
+  })["catch"](function () { gate(""); });
+})();
+</script>
+
+<script>
+/* The rail: collapse, remember, search. Copied from the MISMO rail pattern;
+   only gather() is this page's own. */
+(function(){
+  "use strict";
+  const KEY='hq.rail.off';
+
+  function set(off, remember){
+    document.body.classList.toggle('railmini', !!off);
+    const h=document.getElementById('rail-hide');
+    if(h){ h.setAttribute('aria-expanded', off?'false':'true');
+      h.setAttribute('aria-label', off?'Open the menu':'Narrow the menu');
+      h.title = (off?'Open the menu':'Narrow the menu')+' (backslash)'; }
+    if(off) close();
+    if(remember!==false){ try{ localStorage.setItem(KEY, off?'1':'0'); }catch(e){} }
+    setTimeout(()=>{ window.dispatchEvent(new Event('resize')); }, 230);
+  }
+  function toggle(){ set(!document.body.classList.contains('railmini')); }
+
+  function start(){
+    let off=null;
+    try{ const v=localStorage.getItem(KEY); if(v!==null) off=(v==='1'); }catch(e){}
+    if(off===null) off = window.matchMedia('(max-width:900px)').matches;
+    set(off, false);
+    const h=document.getElementById('rail-hide'); if(h) h.addEventListener('click',toggle);
+    const sc=document.getElementById('rail-scrim'); if(sc) sc.addEventListener('click',()=>set(true));
+    const qb=document.getElementById('rail-qb');
+    if(qb) qb.addEventListener('click',()=>{ set(false);
+      setTimeout(()=>{ const q=document.getElementById('rail-q'); if(q) q.focus(); },230); });
+    document.querySelectorAll('.hq nav button[data-hq]').forEach(b=>{
+      b.addEventListener('click',()=>{
+        if(window.matchMedia('(max-width:900px)').matches) set(true);
+      });
+    });
+    wireFind();
+  }
+
+  document.addEventListener('keydown',e=>{
+    const t=e.target;
+    const typing = t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
+    if(e.key==='\\' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey){ e.preventDefault(); toggle(); }
+    if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){
+      e.preventDefault(); set(false);
+      setTimeout(()=>{ const q=document.getElementById('rail-q');
+        if(q){ q.focus(); q.select(); } }, 230);
+    }
+  });
+
+  const HITS=()=>document.getElementById('rail-hits');
+  let picked=-1, rows=[];
+  function norm(x){ return String(x||'').replace(/\s+/g,' ').trim().toLowerCase(); }
+
+  function gather(q){
+    const t=norm(q); if(t.length<2) return [];
+    const out=[];
+    const score=(name)=>{ const n=norm(name);
+      return n===t ? 3 : n.indexOf(t)===0 ? 2 : n.indexOf(t)>=0 ? 1 : 0; };
+    const push=(group,name,where,go)=>{
+      if(out.length<60) out.push({group,name,where,go,s:score(name)});
+    };
+
+    try{
+      const B = window.__assessorBook ? window.__assessorBook() : null;
+      ((B && B.engagements) || []).forEach(e=>{
+        const hay = norm(e.org) + ' ' + norm(e.program) + ' ' + norm(e.product);
+        if(hay.indexOf(t) < 0) return;
+        push('Engagements', e.org,
+          (e.program||'') + (e.product ? ' · ' + e.product : ''),
+          ()=>{ go('open'); try{ window.__assessorOpen(e.row); }catch(err){} });
+      });
+    }catch(e){}
+
+    const best={};
+    out.forEach(h=>{ best[h.group]=Math.max(best[h.group]||0, h.s); });
+    const ORDER=['Engagements'];
+    out.sort((a,b)=>
+      (best[b.group]-best[a.group])
+      || (ORDER.indexOf(a.group)-ORDER.indexOf(b.group))
+      || (b.s-a.s)
+      || String(a.name).localeCompare(String(b.name)));
+    return out;
+  }
+  function go(tab){
+    const b=document.querySelector('.hq nav button[data-hq="'+tab+'"]');
+    if(b && !b.hasAttribute('aria-current')) b.click();
+  }
+
+  function draw(list){
+    const box=HITS(); if(!box) return;
+    box.textContent=''; rows=[]; picked=-1;
+    if(!list.length){
+      const n=document.createElement('div'); n.className='rh-none';
+      n.textContent='Nothing matches.'; box.appendChild(n); box.hidden=false; return;
+    }
+    let g=null;
+    list.slice(0,24).forEach(h=>{
+      if(h.group!==g){ g=h.group;
+        const hd=document.createElement('div'); hd.className='rh-g'; hd.textContent=g; box.appendChild(hd); }
+      const b=document.createElement('button'); b.type='button'; b.className='rh';
+      const nm=document.createElement('b'); nm.textContent=h.name; b.appendChild(nm);
+      if(h.where){ const w=document.createElement('i'); w.textContent=h.where; b.appendChild(w); }
+      b.addEventListener('click',()=>{ close(); h.go(); });
+      rows.push(b); box.appendChild(b);
+    });
+    box.hidden=false;
+  }
+  function close(){ const b=HITS(); if(b){ b.hidden=true; b.textContent=''; } rows=[]; picked=-1; }
+  function mark(){ rows.forEach((r,i)=>r.classList.toggle('on', i===picked));
+    if(rows[picked]) try{ rows[picked].scrollIntoView({block:'nearest'}); }catch(e){} }
+
+  function wireFind(){
+    const q=document.getElementById('rail-q'), x=document.getElementById('rail-qx');
+    if(!q) return;
+    let tmr=null;
+    const run=()=>{ const v=q.value;
+      if(x) x.hidden = !v;
+      if(norm(v).length<2){ close(); return; }
+      draw(gather(v)); };
+    q.addEventListener('input',()=>{ clearTimeout(tmr); tmr=setTimeout(run,150); });
+    q.addEventListener('focus',()=>{ if(norm(q.value).length>=2) run(); });
+    q.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){ close(); q.blur(); return; }
+      if(!rows.length) return;
+      if(e.key==='ArrowDown'){ e.preventDefault(); picked=(picked+1)%rows.length; mark(); }
+      else if(e.key==='ArrowUp'){ e.preventDefault(); picked=(picked-1+rows.length)%rows.length; mark(); }
+      else if(e.key==='Enter'){ e.preventDefault(); (rows[picked]||rows[0]).click(); }
+    });
+    if(x) x.addEventListener('click',()=>{ q.value=''; x.hidden=true; close(); q.focus(); });
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('.railfind')) close();
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
+  window.__rail={ show:()=>set(false), hide:()=>set(true), toggle,
+    mini:()=>document.body.classList.contains('railmini') };
+})();
+</script>
+
+<script>
+/* The theme toggle, sharing mismo.portal.theme with every other MISMO page. */
+(function theme(){
+  var btn = document.getElementById("theme-btn");
+  if(!btn) return;
+  function cur(){
+    var t = document.documentElement.getAttribute("data-theme");
+    if(t) return t;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function paint(){
+    const dark = cur() === "dark";
+    const lab = document.getElementById("theme-lab");
+    if(lab) lab.textContent = dark ? "Light Mode" : "Dark Mode";
+    else btn.textContent = dark ? "Light Mode" : "Dark Mode";
+    btn.title = "Switch to " + (dark ? "light" : "dark") + " mode";
+  }
+  btn.addEventListener("click", function(){
+    document.documentElement.setAttribute("data-theme", cur() === "dark" ? "light" : "dark");
+    paint();
+    try{ localStorage.setItem("mismo.portal.theme", cur()); }catch(e){}
+    window.dispatchEvent(new Event("resize"));
+  });
+  try{
+    var saved = localStorage.getItem("mismo.portal.theme");
+    if(saved) document.documentElement.setAttribute("data-theme", saved);
+  }catch(e){}
+  paint();
+})();
+</script>
+</body>
+</html>
