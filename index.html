@@ -72,6 +72,11 @@
   margin-bottom:3px}
 .as-qa .a{font-family:var(--display);font-size:13px;color:var(--ink);line-height:1.5;
   overflow-wrap:anywhere;white-space:pre-wrap}
+.as-qa .a.none{color:var(--ink-3);font-style:italic}
+.as-qa li.as-qs{font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-3);
+  padding:14px 0 4px;border-bottom:0}
+.as-qa li.as-qs:first-child{padding-top:2px}
 
 .as-hist{font-family:var(--display);font-size:13px;color:var(--ink)}
 .as-hist div{padding:7px 0;border-bottom:1px solid var(--rule,var(--border))}
@@ -433,12 +438,27 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var out = '<div class="as-grid">' + bits.join("") + "</div>";
 
     if (Array.isArray(e.answers) && e.answers.length) {
+      /* The questionnaire comes through with capitalised keys - Section, Question,
+         Answer - so read those, and group the list by section the way the applicant
+         filled it in. A question left blank is shown as unanswered rather than hidden:
+         what an applicant did not say can matter as much as what it did. */
       out += '<div class="as-sect"><h4>What the Applicant Told Us</h4><ul class="as-qa">';
+      var sec = null;
       e.answers.forEach(function (a) {
-        var q = (a && (a.q || a.question || a.label)) || "";
-        var v = (a && (a.a || a.answer || a.value));
-        out += "<li>" + (q ? '<div class="q">' + esc(q) + "</div>" : "") +
-          '<div class="a">' + esc(v == null || v === "" ? "—" : v) + "</div></li>";
+        if (!a) return;
+        var s = a.Section || a.section || "";
+        var q = a.Question || a.question || a.q || a.label || "";
+        var v = (a.Answer !== undefined) ? a.Answer
+              : (a.answer !== undefined) ? a.answer
+              : a.a;
+        if (s && s !== sec) {
+          sec = s;
+          out += '<li class="as-qs">' + esc(s) + '</li>';
+        }
+        var blank = (v == null || String(v).trim() === "");
+        out += '<li>' + (q ? '<div class="q">' + esc(q) + '</div>' : '') +
+          '<div class="a' + (blank ? ' none' : '') + '">' +
+          esc(blank ? 'No answer given' : v) + '</div></li>';
       });
       out += "</ul></div>";
     }
