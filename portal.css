@@ -1,0 +1,1788 @@
+:root{
+ --navy:#0d314c; --sky:#74bfeb; --navy-deep:#06202f; --navy-mid:#14486e;
+ --sky-soft:#a9d8f3; --sky-wash:#e4f2fb;
+ --ground:#f1f6fa; --surface:#ffffff; --surface-2:#f6fafd; --surface-3:#e9f1f8;
+ --border:#d5e2ed; --border-strong:#adc4d6; --rule:#e5eef5; --line:#e5eef5; --sunk:#f6fafd;
+ --ink:#0d314c; --ink-2:#456179; --ink-3:#7794aa;
+ --good:#0f7b5c; --bad:#b3372c; --warn:#a2701a;
+ --accent-soft:#e4f2fb;
+ --display:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+ --ui:var(--display); --mono:var(--display);   /* one typeface everywhere */
+ --hq-h:64px; --rail-w:240px; --rail-mini:62px;
+ color-scheme:light;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+ --ground:#061722; --surface:#0d2837; --surface-2:#123143; --surface-3:#173c52;
+ --border:#1f4a63; --border-strong:#2f6688; --rule:#173547; --line:#173547; --sunk:#123143;
+ --ink:#e9f4fb; --ink-2:#a6c5d9; --ink-3:#7a9db4;
+ --good:#4fc79b; --bad:#f08579; --warn:#e0a83c; --accent-soft:#173c52;
+ color-scheme:dark; } }
+:root[data-theme="dark"]{
+ --ground:#061722; --surface:#0d2837; --surface-2:#123143; --surface-3:#173c52;
+ --border:#1f4a63; --border-strong:#2f6688; --rule:#173547; --line:#173547; --sunk:#123143;
+ --ink:#e9f4fb; --ink-2:#a6c5d9; --ink-3:#7a9db4;
+ --good:#4fc79b; --bad:#f08579; --warn:#e0a83c; --accent-soft:#173c52;
+ color-scheme:dark; }
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--display);font-size:14px;line-height:1.55;
+ padding-left:var(--rail-w);transition:padding-left .2s cubic-bezier(.4,0,.2,1);-webkit-text-size-adjust:100%}
+h1,h2,h3,h4{letter-spacing:-.012em;margin:0}
+/* Figures are IBM Plex Sans with TABULAR figures, never Mono. Columns still
+   line up; the typewriter look on money goes. Uppercase labels keep Mono -
+   that is a label treatment, not a number. */
+.num{font-family:inherit;font-variant-numeric:tabular-nums}
+
+.wrap{padding:26px 30px 90px;max-width:none}
+@media(max-width:640px){ .wrap{padding:18px 16px 70px} }
+.lede{color:var(--ink-2);font-size:13.5px;margin:0 0 20px}
+
+/* ── cards in a grid ─────────────────────────────────────────── */
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:28px}
+@media(max-width:1180px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:760px){ .grid{grid-template-columns:1fr} }
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 16px;
+ text-align:left;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:7px;
+ box-shadow:0 1px 2px rgba(6,32,47,.05)}
+.card:hover{border-color:var(--border-strong);box-shadow:0 4px 14px rgba(6,32,47,.10)}
+.card:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.card h3{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.card .cnt{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;font-weight:600;color:var(--ink-3);
+ background:var(--surface-3);border-radius:20px;padding:2px 8px;margin-left:auto;flex:0 0 auto}
+.card p{margin:0;color:var(--ink-2);font-size:12.5px}
+.card .figs{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:2px}
+.card .fig{display:flex;flex-direction:column}
+.card .fig b{font-family:inherit;font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--ink)}
+.card .fig i{font-style:normal;font-family:var(--mono);font-size:9px;letter-spacing:.09em;
+ text-transform:uppercase;color:var(--ink-3);font-weight:600}
+
+/* ── the right panel ─────────────────────────────────────────── */
+.scrim{position:fixed;inset:0;background:rgba(6,32,47,.44);z-index:120;border:0;padding:0;display:none}
+.scrim.on{display:block}
+.panel{position:fixed;top:0;right:0;bottom:0;width:min(680px,calc(100vw - 56px));z-index:121;
+ background:var(--ground);border-left:1px solid var(--border-strong);
+ box-shadow:-10px 0 34px rgba(6,32,47,.28);display:none;flex-direction:column}
+.panel.on{display:flex}
+@media(max-width:820px){ .panel{width:100vw;max-width:none} }
+.panel-h{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--surface);
+ border-bottom:1px solid var(--border);flex:0 0 auto}
+.panel-h h2{font-size:16px;font-weight:600}
+.panel-x{margin-left:auto;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;
+ color:var(--ink-2);width:30px;height:30px;font-size:17px;line-height:1;cursor:pointer;flex:0 0 auto}
+.panel-x:hover{background:var(--surface-3);color:var(--ink)}
+.panel-b{overflow:auto;padding:18px 20px 60px;flex:1 1 auto}
+
+/* ── rows that open on a click ───────────────────────────────── */
+.rows{border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface)}
+/* ── a row, in BOTH views ──────────────────────────────────────────────
+   These are the contracting companies' rows. They were built to a different
+   shape from the .hqrow rows on Jonna's screens — figures set in monospace,
+   the chevron on the left, a different focus colour, no wrapping — so the two
+   halves of the same tool did not read as the same tool.
+
+   They are aligned to .hqrow here, in CSS only. The behaviour is untouched:
+   these still open in place, and nothing that logs or signs time has moved. */
+.row{border-bottom:1px solid var(--rule,var(--border))}
+.row:last-child{border-bottom:0}
+.row-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;width:100%;text-align:left;
+ background:none;border:0;padding:10px 14px;font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer}
+.row-h:hover{background:var(--surface-2)}
+.row-h:focus-visible{outline:2px solid var(--navy-mid);outline-offset:-2px}
+/* Open is a quieter state than it was — the same wash as hover rather than a
+   colour of its own, so an opened row still reads as a row. */
+.row.open .row-h{background:var(--surface-2)}
+.row-h .rt{font-weight:600;flex:1 1 260px;min-width:0;overflow-wrap:anywhere}
+/* ⚠ NOT monospace. Figures are IBM Plex Sans with tabular figures, so columns
+   still line up without the typewriter look. The .hqrow figures were already
+   set this way; these were the ones still out of step. */
+.row-h .rs{font-family:inherit;font-size:12.5px;font-variant-numeric:tabular-nums;
+ color:var(--ink-2);white-space:nowrap;flex:0 0 auto;margin-left:auto}
+/* The marker goes to the far right, where the .hqrow arrow is, rather than
+   sitting to the left of the title. */
+.row-h .chev{order:9;width:15px;height:15px;flex:0 0 auto;stroke:var(--ink-3);fill:none;stroke-width:2;
+ stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+.row.open .chev{transform:rotate(90deg)}
+.row-b{display:none;padding:4px 16px 18px;border-top:1px solid var(--rule,var(--border))}
+/* ⚠ CHILD, not descendant. Rows nest now — a company opens into its
+   weeks — and a descendant selector meant opening the company also
+   displayed every week body inside it, so the drill-down arrived already
+   unfolded. Each row shows its OWN body and nobody else's. */
+.row.open > .row-b{display:block}
+
+/* ── fields, separate not blobs ──────────────────────────────── */
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px 20px;margin:14px 0 4px}
+/* The revise form. Separate fields, never one box — each binding term is its own
+   input, so revising is editing a figure rather than retyping a document. The
+   inputs inherit .f input; only the grid and the prose boxes are new. The prose
+   terms span the full width because a three-line Services box in a 190px column
+   is unreadable. */
+/* The download button sits above its letter, with the one-line note beside it,
+   so the button is found before the two pages of text rather than after. */
+.printrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 6px}
+.printrow .fineprint{margin:0}
+/* An executed agreement reads as settled rather than as a job half done. */
+.execbox.done{border-left:3px solid var(--good);padding-left:12px}
+.refile{margin-top:10px}
+.refile summary{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+ color:var(--ink-3);cursor:pointer;padding:4px 0}
+.refile summary:hover{color:var(--ink)}
+.refile[open] summary{margin-bottom:4px}
+.revgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px 20px;margin:12px 0 4px}
+.revgrid .f.wide{grid-column:1/-1}
+.revgrid textarea{font:inherit;font-size:13.5px;font-family:var(--display);line-height:1.5;
+ color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:6px;
+ padding:5px 8px;width:100%;min-width:0;box-sizing:border-box;resize:vertical}
+.revgrid textarea:hover{border-color:var(--border-strong)}
+.revgrid textarea:focus{outline:2px solid var(--sky);outline-offset:-1px;background:var(--surface-2)}
+.f{display:flex;flex-direction:column;gap:2px;min-width:0}
+.f label{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;
+ color:var(--ink-3);font-weight:600}
+.f .v{font-size:13.5px;color:var(--ink);overflow-wrap:anywhere}
+.f .v.num{font-family:inherit;font-variant-numeric:tabular-nums}
+.blk{margin-top:16px}
+.blk h4{font-size:11.5px;font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;
+ color:var(--ink-3);font-weight:700;margin-bottom:5px}
+.blk ul{margin:0;padding-left:19px}
+.blk li{margin-bottom:4px}
+.blk p{margin:0 0 7px;white-space:pre-wrap}
+
+/* the order as it will read */
+.doc{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:20px 24px;margin-top:16px}
+.doc .dt{font-weight:700;font-size:14px;margin-bottom:12px}
+.doc .sec{margin-top:15px}
+.doc .sn{font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--navy-mid);margin-bottom:4px}
+:root[data-theme="dark"] .doc .sn{color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .doc .sn{color:var(--sky)} }
+.doc p{margin:0 0 6px;white-space:pre-wrap}
+.doc .sig{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:24px;
+ border-top:1px solid var(--rule);padding-top:14px}
+@media(max-width:620px){ .doc .sig{grid-template-columns:1fr} }
+.doc .sig div b{display:block;font-size:11.5px;font-family:var(--mono);letter-spacing:.08em;
+ text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.doc .sig div span{display:block;font-size:13px}
+
+/* tables */
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 11px;text-align:left;border-bottom:1px solid var(--rule)}
+th{background:var(--surface-3);font-size:10.5px;font-family:var(--mono);letter-spacing:.08em;
+ text-transform:uppercase;color:var(--ink-2);font-weight:700;border-bottom:2px solid var(--navy-mid)}
+td.n{text-align:right;font-family:inherit;font-variant-numeric:tabular-nums}
+th.n{text-align:right}
+tr:last-child td{border-bottom:0}
+tfoot td{font-weight:700;background:var(--surface-2);border-top:2px solid var(--border-strong)}
+.tbl{border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface)}
+
+/* chips + callouts */
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--display);font-size:10.5px;
+ letter-spacing:.05em;text-transform:uppercase;font-weight:600;padding:2px 8px;border-radius:20px;
+ background:var(--surface-3);color:var(--ink-2);white-space:nowrap}
+.chip.warn{background:rgba(162,112,26,.14);color:var(--warn)}
+.chip.good{background:rgba(15,123,92,.13);color:var(--good)}
+.note{border-left:3px solid var(--warn);background:rgba(162,112,26,.08);padding:10px 14px;
+ border-radius:0 7px 7px 0;margin:14px 0;font-size:13px}
+.note b{color:var(--warn)}
+.ok{border-left-color:var(--good);background:rgba(15,123,92,.08)}
+.ok b{color:var(--good)}
+
+/* ── editing ─────────────────────────────────────────────────── */
+.f input, .f select{font:inherit;font-size:13.5px;font-family:var(--display);color:var(--ink);
+ background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 8px;width:100%;min-width:0}
+.f input.num{font-family:inherit;font-variant-numeric:tabular-nums}
+.f input:hover,.f select:hover{border-color:var(--border-strong)}
+.f input:focus,.f select:focus{outline:2px solid var(--sky);outline-offset:-1px;background:var(--surface-2)}
+.f.edited label{color:var(--warn)}
+.f.edited input,.f.edited select{border-color:var(--warn);background:rgba(162,112,26,.07)}
+.row.edited .row-h .rt::after{content:"Edited";font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+ font-weight:600;color:var(--warn);background:rgba(162,112,26,.14);border-radius:20px;padding:2px 7px;margin-left:8px}
+.editnote{font-size:12.5px;color:var(--ink-3);margin:2px 0 10px}
+
+/* the floating changes button */
+.chgbtn{position:fixed;right:22px;bottom:22px;z-index:130;background:var(--navy);color:#fff;
+ border:1px solid var(--navy-mid);border-radius:24px;padding:11px 19px;font:inherit;font-family:var(--display);
+ font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(6,32,47,.32);display:none;align-items:center;gap:9px}
+.chgbtn.on{display:flex}
+.chgbtn:hover{background:var(--navy-mid)}
+.chgbtn .n{font-family:var(--mono);background:var(--sky);color:var(--navy-deep);border-radius:20px;padding:1px 8px;font-size:11.5px}
+:root[data-theme="dark"] .chgbtn{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+:root[data-theme="dark"] .chgbtn .n{background:var(--navy-deep);color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .chgbtn{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+  :root:not([data-theme="light"]) .chgbtn .n{background:var(--navy-deep);color:var(--sky)} }
+.copybtn{background:var(--surface-3);border:1px solid var(--border-strong);border-radius:6px;color:var(--ink);
+ font:inherit;font-size:12.5px;font-weight:600;padding:7px 14px;cursor:pointer;margin-bottom:14px}
+.copybtn:hover{background:var(--sky-wash)}
+:root[data-theme="dark"] .copybtn:hover{background:var(--surface-2)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .copybtn:hover{background:var(--surface-2)} }
+
+/* the signing box, as the contractor will see it */
+.signbox{border:2px dashed var(--border-strong);border-radius:9px;padding:16px 18px;margin-top:20px;background:var(--surface-2)}
+.signbox h4{font-size:11.5px;font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;
+ color:var(--ink-3);font-weight:700;margin-bottom:9px}
+.signbox .stamp{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin-top:11px;
+ border-top:1px solid var(--rule);padding-top:9px}
+.signbox .ack{display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px}
+.signbox .ack input[type=checkbox]{width:17px;height:17px;accent-color:var(--navy-mid)}
+.fakebtn{background:var(--navy);color:#fff;border:0;border-radius:7px;padding:9px 18px;font:inherit;
+ font-family:var(--display);font-size:13px;font-weight:600;margin-top:13px;opacity:.55;cursor:not-allowed}
+:root[data-theme="dark"] .fakebtn{background:var(--sky);color:var(--navy-deep)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .fakebtn{background:var(--sky);color:var(--navy-deep)} }
+
+/* clickable overview figures */
+.fig.click{cursor:pointer;border-radius:6px;padding:3px 7px;margin:-3px -7px}
+.fig.click:hover{background:var(--sky-wash)}
+:root[data-theme="dark"] .fig.click:hover{background:var(--surface-3)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .fig.click:hover{background:var(--surface-3)} }
+.fig.click b{text-decoration:underline;text-decoration-color:var(--border-strong);text-underline-offset:3px}
+
+/* ── stat tiles ──────────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:0 0 26px}
+@media(max-width:980px){ .stats{grid-template-columns:repeat(3,1fr)} }
+@media(max-width:640px){ .stats{grid-template-columns:1fr 1fr} }
+.stat{display:block;width:100%;text-align:left;background:var(--surface);
+ border:1px solid var(--border);border-radius:8px;padding:15px 16px;
+ font-family:inherit;color:inherit;cursor:pointer;transition:border-color .12s, background .12s}
+.stat:hover{border-color:var(--border-strong);background:var(--surface-2)}
+.stat:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.stat .lab{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;
+ color:var(--ink-3);line-height:1.35;font-weight:600;font-family:var(--mono)}
+.stat .val{display:block;font-family:inherit;font-variant-numeric:tabular-nums;
+ font-size:26px;font-weight:600;margin-top:6px;letter-spacing:-.02em;line-height:1.1}
+.stat .sub{display:block;font-size:11.5px;color:var(--ink-3);margin-top:3px}
+.stat.warn{border-left:3px solid var(--warn)} .stat.warn .val{color:var(--warn)}
+.stat.good{border-left:3px solid var(--good)} .stat.good .val{color:var(--good)}
+
+/* clickable table rows */
+tr.clk{cursor:pointer}
+tr.clk:hover td{background:var(--sky-wash)}
+:root[data-theme="dark"] tr.clk:hover td{background:var(--surface-3)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) tr.clk:hover td{background:var(--surface-3)} }
+tr.clk td:first-child::after{content:"›";color:var(--ink-3);font-size:15px;margin-left:8px}
+
+/* who may change what */
+.lockbar{display:flex;align-items:center;gap:9px;background:var(--surface-3);border:1px solid var(--border);
+ border-radius:7px;padding:8px 12px;margin:2px 0 12px;font-size:12.5px;color:var(--ink-2)}
+.lockbar svg{width:15px;height:15px;flex:0 0 auto;stroke:var(--ink-3);fill:none;stroke-width:1.8}
+.lockbar b{color:var(--ink)}
+
+/* print / save as PDF */
+.printbtn{background:var(--surface-3);border:1px solid var(--border-strong);border-radius:6px;color:var(--ink);
+ font:inherit;font-family:var(--display);font-size:12.5px;font-weight:600;padding:6px 13px;cursor:pointer;
+ display:inline-flex;align-items:center;gap:7px;margin:14px 0 0}
+.printbtn:hover{background:var(--sky-wash)}
+:root[data-theme="dark"] .printbtn:hover{background:var(--surface-2)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .printbtn:hover{background:var(--surface-2)} }
+.printbtn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#printhost{display:none}
+
+@media print{
+  body.printing{padding:0 !important;background:#fff !important}
+  body.printing > *{display:none !important}
+  body.printing > #printhost{display:block !important}
+  #printhost .doc{border:0;padding:0;margin:0;background:#fff;color:#000;
+    font-family:var(--display);font-size:10.5pt;line-height:1.5}
+  #printhost .doc .sn{color:#000}
+  #printhost .signbox,#printhost .printbtn,#printhost .note{display:none !important}
+  @page{margin:1in 1.1in}
+}
+
+/* ── the contracting company's own view, previewed ───────────── */
+.cvframe{border:1px solid var(--border-strong);border-radius:12px;overflow:hidden;background:var(--surface);
+ box-shadow:0 6px 24px rgba(6,32,47,.10);margin-bottom:26px}
+.cvbar{background:var(--navy);color:#fff;display:flex;align-items:center;gap:14px;padding:11px 18px}
+.cvbar .nm{font-weight:600;font-size:14px;color:var(--sky)}
+.cvbar .who{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+ text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:600}
+.cvurl{background:var(--surface-3);border-bottom:1px solid var(--border);padding:7px 18px;
+ font-family:var(--mono);font-size:11.5px;color:var(--ink-3);overflow-wrap:anywhere}
+.cvbody{padding:18px}
+.cvsec{margin-bottom:24px}
+.cvsec:last-child{margin-bottom:0}
+.cvsec h3{font-size:13.5px;font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:9px}
+.cvsec .cvsub{font-size:12.5px;color:var(--ink-3);margin-bottom:10px}
+.meter{height:6px;border-radius:4px;background:var(--surface-3);overflow:hidden;min-width:70px;flex:1 1 auto}
+.meter i{display:block;height:100%;background:var(--sky)}
+.meter i.hot{background:var(--warn)}
+.meter i.over{background:var(--bad)}
+.cvnote{font-size:12.5px;color:var(--ink-2);background:var(--surface-3);border-radius:7px;padding:9px 13px;margin-top:10px}
+
+/* ── figures in the sans face, still aligned ─────────────────── */
+.num, .f .v.num, .f input.num, td.n, th.n, .stat .val, .card .fig b, .row-h .rs,
+table .n, .doc .num{ font-family:var(--display) !important; font-variant-numeric:tabular-nums;
+  letter-spacing:-.004em }
+.stat .val{ font-weight:650 }
+
+/* ── services and deliverables, one field per line ───────────── */
+.sdlist{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+.sdrow{display:flex;gap:8px;align-items:flex-start}
+.sdrow input{flex:1 1 auto;min-width:0;font:inherit;font-size:13.5px;font-family:var(--display);
+ color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 9px}
+.sdrow input:hover{border-color:var(--border-strong)}
+.sdrow input:focus{outline:2px solid var(--sky);outline-offset:-1px;background:var(--surface-2)}
+.sdrow.edited input{border-color:var(--warn);background:rgba(162,112,26,.07)}
+.sdx{flex:0 0 auto;width:28px;height:30px;border:1px solid var(--border);border-radius:6px;
+ background:var(--surface-2);color:var(--ink-3);cursor:pointer;font-size:15px;line-height:1;padding:0}
+.sdx:hover{background:var(--surface-3);color:var(--bad)}
+.sdadd{align-self:flex-start;background:var(--surface-3);border:1px solid var(--border);border-radius:6px;
+ color:var(--ink-2);font:inherit;font-family:var(--display);font-size:12.5px;font-weight:600;padding:5px 12px;cursor:pointer;margin-top:2px}
+.sdadd:hover{background:var(--sky-wash);color:var(--ink)}
+.srcline{font-size:11.5px;color:var(--ink-3);margin-top:5px}
+.srcline b{color:var(--ink-2)}
+
+/* ── the review queue in the company view ────────────────────── */
+.q td:first-child{width:34px}
+.q input[type=checkbox]{width:17px;height:17px;accent-color:var(--navy-mid);cursor:pointer}
+.qask{background:none;border:1px solid var(--border);border-radius:6px;color:var(--ink-2);
+ font:inherit;font-family:var(--display);font-size:11.5px;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.qask:hover{background:var(--surface-3);color:var(--ink)}
+.qask.on{background:rgba(162,112,26,.14);border-color:var(--warn);color:var(--warn);font-weight:600}
+.qbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.qcount{font-size:12.5px;color:var(--ink-2)}
+.qcount b{color:var(--ink)}
+.qbox{margin-top:8px}
+.qbox input{width:100%;font:inherit;font-size:12.5px;font-family:var(--display);color:var(--ink);
+ background:var(--surface);border:1px solid var(--warn);border-radius:6px;padding:6px 9px}
+
+/* ── their shell: the same masthead and rail, their own sections ── */
+.cvsplit{display:flex;min-height:420px}
+.cvrail{flex:0 0 182px;background:var(--navy);color:#fff;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+.cvrail .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+ font-weight:700;color:rgba(255,255,255,.5);padding:4px 9px 7px}
+.cvrail a{display:flex;align-items:center;gap:9px;border-radius:6px;color:rgba(255,255,255,.78);
+ padding:7px 9px;font-size:12.5px;font-weight:500;text-decoration:none;cursor:default}
+.cvrail a.on{color:#fff;font-weight:600;background:var(--navy-mid);box-shadow:inset 3px 0 0 var(--sky)}
+.cvrail a svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.7;
+ stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.cvrail a.on svg{stroke:var(--sky);opacity:1}
+.cvrail .foot{margin-top:auto;border-top:1px solid rgba(80,164,219,.2);padding-top:7px}
+.cvsplit > .cvbody{flex:1 1 auto;min-width:0}
+@media(max-width:820px){ .cvsplit{flex-direction:column} .cvrail{flex:0 0 auto;flex-direction:row;flex-wrap:wrap;gap:4px}
+  .cvrail .lbl,.cvrail .foot{display:none} }
+.cvopen{cursor:pointer}
+.cvopen:hover td{background:var(--sky-wash)}
+:root[data-theme="dark"] .cvopen:hover td{background:var(--surface-3)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .cvopen:hover td{background:var(--surface-3)} }
+
+/* ── pick the company from inside the preview, where the eye is ── */
+.cvpick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.cvpick .cvlab{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+ font-weight:700;color:var(--ink-3);margin-right:2px}
+.cvpick button{background:var(--surface);border:1px solid var(--border);border-radius:20px;
+ color:var(--ink-2);font:inherit;font-family:var(--display);font-size:12.5px;font-weight:600;
+ padding:6px 14px;cursor:pointer}
+.cvpick button:hover{border-color:var(--border-strong);color:var(--ink)}
+.cvpick button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+:root[data-theme="dark"] .cvpick button.on{background:var(--sky);border-color:var(--sky);color:var(--navy-deep)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .cvpick button.on{background:var(--sky);border-color:var(--sky);color:var(--navy-deep)} }
+.cvpick button:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+
+/* ── the company record ──────────────────────────────────────── */
+/* rows share the header's grid so every column starts in the same place */
+.crow{display:grid;gap:8px;align-items:center;margin-bottom:7px}
+.crow input,.crow select{min-width:0;width:100%;font:inherit;font-size:13.5px;font-family:var(--display);
+ color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 9px}
+.crow input.num{font-variant-numeric:tabular-nums}
+.crow input:hover,.crow select:hover{border-color:var(--border-strong)}
+.crow input:focus,.crow select:focus{outline:2px solid var(--sky);outline-offset:-1px;background:var(--surface-2)}
+.crow .cx{width:28px;justify-self:start;height:30px;border:1px solid var(--border);border-radius:6px;
+ background:var(--surface-2);color:var(--ink-3);cursor:pointer;font-size:15px;line-height:1;padding:0}
+.crow .cx:hover{background:var(--surface-3);color:var(--bad)}
+.crow .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-3);
+ background:var(--surface-3);border-radius:4px;padding:4px 8px;white-space:nowrap;
+ text-align:center;justify-self:stretch;overflow:hidden;text-overflow:ellipsis}
+.chead{display:grid;gap:8px;margin-bottom:5px;padding:0 0 1px}
+.chead span{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;
+ color:var(--ink-3);font-weight:600}
+.addbtn{background:var(--surface-3);border:1px solid var(--border);border-radius:6px;color:var(--ink-2);
+ font:inherit;font-family:var(--display);font-size:12.5px;font-weight:600;padding:5px 12px;cursor:pointer;margin-top:4px}
+.addbtn:hover{background:var(--sky-wash);color:var(--ink)}
+.card.newco{border-style:dashed;align-items:center;justify-content:center;text-align:center;min-height:132px}
+.card.newco h3{justify-content:center}
+.card.newco .plus{font-size:26px;line-height:1;color:var(--ink-3);font-weight:300}
+
+/* ── no pills: squared tags and tabs throughout ──────────────── */
+.chip{border-radius:4px;padding:2px 7px}
+.card .cnt{border-radius:4px}
+.crow .tag{border-radius:4px}
+.railhits .rh-g{border-radius:0}
+.cvpick button{border-radius:5px;padding:6px 13px}
+.chgbtn{border-radius:7px}
+.meter,.meter i{border-radius:2px}
+.stat{border-radius:7px}
+.card{border-radius:8px}
+
+/* one column spec per section, used by the header and its rows alike */
+.cgrid-rate{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 28px}
+.cgrid-msa{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr) 28px}
+.cgrid-sign{grid-template-columns:118px minmax(0,1fr) minmax(0,1fr) minmax(0,1.25fr)}
+.cgrid-people{grid-template-columns:minmax(0,1.2fr) minmax(0,1.3fr) minmax(0,1fr) 28px}
+@media(max-width:820px){
+  .cgrid-rate,.cgrid-msa,.cgrid-sign,.cgrid-people{grid-template-columns:1fr}
+  .crow .cx{justify-self:end}
+  .chead{display:none}
+  .crow{padding-bottom:9px;border-bottom:1px solid var(--rule)}
+}
+.cvrail a[data-cvs],.cvrail #cv-theme{cursor:pointer}
+.cvrail a[data-cvs]:hover,.cvrail #cv-theme:hover{color:#fff;background:rgba(255,255,255,.09)}
+
+/* ── time reporting ──────────────────────────────────────────── */
+.tstate{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--surface-3);
+ border:1px solid var(--border);border-radius:7px;padding:9px 13px;margin-bottom:12px}
+.tstate .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:var(--ink-3)}
+.tstate.open .dot{background:var(--sky)}
+.tstate.sub .dot{background:var(--warn)}
+.tstate.appr .dot{background:var(--good)}
+.tstate .st{font-weight:600;font-size:13px}
+.tstate .sd{font-size:12.5px;color:var(--ink-2)}
+.tstate .acts{margin-left:auto;display:flex;gap:8px}
+.tbtn{background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:6px;
+ font:inherit;font-family:var(--display);font-size:12.5px;font-weight:600;padding:6px 14px;cursor:pointer}
+.tbtn:hover{background:var(--navy-mid)}
+.tbtn.ghost{background:var(--surface);color:var(--ink-2);border-color:var(--border-strong)}
+.tbtn.ghost:hover{background:var(--surface-2);color:var(--ink)}
+:root[data-theme="dark"] .tbtn{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+:root[data-theme="dark"] .tbtn.ghost{background:var(--surface-2);color:var(--ink);border-color:var(--border-strong)}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) .tbtn{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+ :root:not([data-theme="light"]) .tbtn.ghost{background:var(--surface-2);color:var(--ink);border-color:var(--border-strong)} }
+.tw input,.tw select{width:100%;min-width:0;font:inherit;font-size:12.5px;font-family:var(--display);color:var(--ink);
+ background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:4px 7px}
+.tw input.h{font-variant-numeric:tabular-nums;text-align:right}
+.tw input:focus,.tw select:focus{outline:2px solid var(--sky);outline-offset:-1px}
+.tw input:disabled,.tw select:disabled{background:var(--surface-2);color:var(--ink-2);cursor:not-allowed;border-style:dashed}
+.tw td{vertical-align:top;padding:6px 8px}
+.tw .neg{color:var(--bad);font-weight:600}
+.hdot{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.hdot i{width:8px;height:8px;border-radius:50%;background:var(--ink-3);flex:0 0 auto}
+.hdot.g i{background:var(--good)} .hdot.y i{background:var(--warn)} .hdot.r i{background:var(--bad)}
+.steps{counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;position:relative;padding-left:32px;margin-bottom:11px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:22px;height:22px;border-radius:5px;
+ background:var(--navy);color:#fff;font-family:var(--display);font-size:11.5px;font-weight:700;
+ display:flex;align-items:center;justify-content:center}
+:root[data-theme="dark"] .steps li::before{background:var(--sky);color:var(--navy-deep)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .steps li::before{background:var(--sky);color:var(--navy-deep)} }
+
+/* ── one timesheet entry, in the panel ───────────────────────── */
+.tnote label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;
+ color:var(--ink-3);font-weight:600;margin-bottom:4px}
+.tnote textarea{width:100%;min-height:104px;resize:vertical;font:inherit;font-size:13.5px;line-height:1.55;
+ font-family:var(--display);color:var(--ink);background:var(--surface);border:1px solid var(--border);
+ border-radius:7px;padding:10px 12px}
+.tnote textarea:hover{border-color:var(--border-strong)}
+.tnote textarea:focus{outline:2px solid var(--sky);outline-offset:-1px;background:var(--surface-2)}
+.tnote textarea:disabled{background:var(--surface-2);color:var(--ink-2);border-style:dashed;cursor:not-allowed}
+.tnote{margin-top:16px}
+.tnote .cnt2{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.tbar{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:9px;align-items:center;
+ background:var(--surface);border-top:1px solid var(--border);margin:22px -20px -60px;padding:13px 20px 16px}
+.tbar .sp{margin-left:auto;font-size:12.5px;color:var(--ink-3)}
+.tbar .sp b{color:var(--warn)}
+.tw tr.trow{cursor:pointer}
+.tw tr.trow:hover td{background:var(--sky-wash)}
+:root[data-theme="dark"] .tw tr.trow:hover td{background:var(--surface-3)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .tw tr.trow:hover td{background:var(--surface-3)} }
+.tw td.notecell{color:var(--ink-2);font-size:12.5px}
+.tw td.notecell.empty{color:var(--ink-3);font-style:italic}
+
+/* ── fiscal year picker inside their sections ────────────────── */
+.fypick{display:flex;align-items:center;gap:9px;margin:0 0 10px}
+.fypick label{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;
+ color:var(--ink-3);font-weight:600}
+.fypick select{font:inherit;font-size:12.5px;font-family:var(--display);font-weight:600;color:var(--ink);
+ background:var(--surface);border:1px solid var(--border-strong);border-radius:5px;padding:5px 10px;cursor:pointer}
+.fypick select:hover{background:var(--surface-2)}
+.fypick select:focus{outline:2px solid var(--sky);outline-offset:1px}
+.fypick .hint{font-size:11.5px;color:var(--ink-3)}
+
+/* ---------- wording library ---------- */
+.wsec{margin:14px 0 0}
+.wsec h4{margin:0 0 6px;font:600 .78rem/1.3 var(--display);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted)}
+.wsec ul{margin:0;padding-left:18px}
+.wsec li{margin:0 0 5px;font-size:.92rem;line-height:1.5}
+.wsec p{margin:0;font-size:.92rem;line-height:1.55}
+.wfind{margin:0 0 12px}
+.wfind input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:5px;
+  background:var(--card);color:var(--ink);font:400 .95rem/1.3 var(--display)}
+.wfind input:focus{outline:2px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
+h3.sech{margin:26px 0 10px;font:600 1rem/1.3 var(--display);color:var(--ink)}
+
+.crow.isnew input,.crow.isnew select{border-color:var(--sky);background:rgba(116,191,235,.08)}
+.addbtn{margin-top:10px}
+
+.printwarn{margin:12px 0 4px;background:var(--card);border:1px solid var(--warn);
+  border-left:4px solid var(--warn);border-radius:6px;padding:14px 16px;font-size:13px;
+  line-height:1.55;color:var(--ink)}
+.printwarn b{color:var(--ink)}
+.printwarn>b:first-child{color:var(--warn);display:block;margin-bottom:6px;font-size:13.5px}
+.printwarn p{margin:0 0 6px}
+.printwarn ol{margin:0;padding-left:20px}
+.printwarn li{margin-bottom:6px}
+.printwarn .pw-x{margin-top:10px;background:var(--surface-3);border:1px solid var(--border);
+  border-radius:5px;color:var(--ink-2);font:inherit;font-size:12.5px;font-weight:600;
+  padding:5px 12px;cursor:pointer}
+.printwarn .pw-x:hover{background:var(--sky-wash);color:var(--ink)}
+@media print{.printwarn{display:none}}
+
+/* ---------- health: the colour is the value ---------- */
+.hmark{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;
+  background:var(--ink-3);box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+.hmark.g{background:var(--good)} .hmark.y{background:var(--warn)} .hmark.r{background:var(--bad)}
+.hmark.na,.hmark.none{width:auto;height:auto;border-radius:4px;background:none;box-shadow:none;
+  font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--ink-3)}
+.hpick{display:flex;gap:6px;align-items:center}
+.hp{display:inline-flex;align-items:center;justify-content:center;width:34px;height:30px;padding:0;
+  background:var(--card);border:1px solid var(--line);border-radius:5px;cursor:pointer}
+.hp:hover:not(:disabled){border-color:var(--sky)}
+.hp:disabled{cursor:default;opacity:.55}
+.hp:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
+.hp .hpdot{width:13px;height:13px;border-radius:50%;background:var(--ink-3);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+.hp.g .hpdot{background:var(--good)} .hp.y .hpdot{background:var(--warn)} .hp.r .hpdot{background:var(--bad)}
+.hp .hpna{font-family:var(--display);font-size:10.5px;font-weight:700;
+  letter-spacing:.03em;color:var(--ink-3)}
+.hp.na{width:42px}
+.hp.on{border-color:var(--navy);box-shadow:0 0 0 2px var(--sky-wash)}
+.hp.on .hpna{color:var(--ink)}
+:root[data-theme="dark"] .hp.on{border-color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .hp.on{border-color:var(--sky)} }
+.vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.tw th.hcol,.tw td.hcol{text-align:center}
+
+/* A contracting company's block inside the VP's and the President's views. */
+.cvco{border:1px solid var(--border); border-radius:8px; margin:0 0 16px; overflow:hidden}
+.cvco-h{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 12px;
+  padding:10px 14px; background:var(--surface-3); border-bottom:1px solid var(--border)}
+.cvco-h b{font-size:13.5px}
+.cvco-t{margin-left:auto; font-size:12.5px; color:var(--ink-2)}
+.cvco .tbl{border:0}
+.cvaccept{font-size:12.5px; color:var(--ink-2); white-space:nowrap}
+@media (max-width:620px){ .cvco-t{margin-left:0; width:100%} }
+
+/* The order name is a sentence, not a label, so it gets the width — otherwise
+   it wraps one word per line and the table becomes unreadable. */
+.cvq{table-layout:auto; width:100%}
+.cvq th.so, .cvq td:first-child{width:46%; min-width:300px; white-space:normal;
+  overflow-wrap:break-word; line-height:1.35}
+.cvq th.n, .cvq td.n{white-space:nowrap; width:1%}
+.cvq td, .cvq th{vertical-align:middle}
+@media (max-width:900px){ .cvq th.so, .cvq td:first-child{min-width:180px} }
+
+/* A Help page inside a framed screen. */
+.cvhelp{padding:4px 0 0}
+.cvhelp h4{font-size:13px; font-weight:600; margin:18px 0 6px; color:var(--ink)}
+.cvhelp h4:first-child{margin-top:4px}
+.cvhelp ol{margin:0 0 4px; padding-left:22px}
+.cvhelp li{margin:0 0 6px; line-height:1.5; color:var(--ink-2)}
+.cvhelp li b{color:var(--ink)}
+
+/* The totals band — the same one the real portal carries, so the preview and
+   the page agree about what a company sees. */
+/* A headline figure, in the SAME shape as the stat cards on Jonna's screens:
+   a quiet label on its own line, the figure large underneath on plain surface.
+   It used to be a tinted band with the label and the figure jammed on one line,
+   which is why the two halves of the tool read as two different systems. */
+.tot{display:block; margin:0 0 14px; padding:15px 16px; border-radius:8px;
+  background:var(--surface); border:1px solid var(--border)}
+.tot-l{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:600; line-height:1.35}
+.tot-v{display:block; font-size:15px; color:var(--ink); margin-top:6px;
+  font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+.tot-v b,.tot-v .num{font-size:26px; font-weight:600; font-variant-numeric:tabular-nums;
+  letter-spacing:-.02em; line-height:1.1}
+
+/* Review table: keep the order name readable in a narrow scroller */
+.cvbody .tbl{overflow-x:auto}
+.cvbody table.q{min-width:640px}
+.cvbody table.q td:nth-child(2){min-width:280px; white-space:normal; overflow-wrap:normal; word-break:normal}
+@media (max-width:620px){
+  .cvbody table.q{min-width:560px}
+  .cvbody table.q td:nth-child(2){min-width:240px}
+}
+
+/* The role switch on the company preview */
+.cvrolenote{font-size:12.5px; color:var(--ink-3); margin-left:10px; flex:1 1 220px; min-width:0}
+.cvnote.warnnote{border-left:3px solid var(--warn); background:var(--surface-3)}
+@media (max-width:620px){ .cvrolenote{margin-left:0; flex-basis:100%} }
+
+/* Issues & Activity */
+.issacts{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+.resbox{margin-top:12px; padding:12px; border-radius:8px;
+  background:var(--surface-3); border:1px solid var(--border)}
+.resbox .fields{margin:0 0 10px}
+.chip.bad{background:rgba(179,55,44,.14); color:var(--bad); font-weight:600}
+.chip.good{background:rgba(15,123,92,.14); color:var(--good); font-weight:600}
+.row-b textarea{width:100%; box-sizing:border-box; font:inherit; font-size:13px;
+  padding:8px 10px; border-radius:6px; border:1px solid var(--border);
+  background:var(--surface); color:var(--ink); resize:vertical}
+.row-b .f > textarea{margin-top:2px}
+.row-sub .sp.long, .row-b p.long{overflow-wrap:anywhere}
+
+/* The state band inside a submitted week */
+.wkstate{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px;
+  margin:12px 0 0; padding:10px 12px; border-radius:8px;
+  background:var(--surface-3); border-left:3px solid var(--border)}
+.wkstate.good{border-left-color:var(--good)}
+.wkstate.warn{border-left-color:var(--warn)}
+.wk-l{font-family:var(--mono); font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; font-weight:700; color:var(--ink-2); white-space:nowrap}
+.wk-d{font-size:12.5px; color:var(--ink-3); flex:1 1 260px; min-width:0}
+@media (max-width:620px){ .wk-l{width:100%} }
+.nonote{color:var(--ink-3); opacity:.75; font-style:italic; font-size:12.5px}
+
+/* Invoices */
+.cvh4{font-family:var(--display); font-size:13px; font-weight:700; color:var(--ink);
+  margin:26px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--border)}
+.cvh4:first-of-type{margin-top:4px}
+.totrow td{border-top:2px solid var(--border); background:var(--surface-3)}
+.upbox{margin:14px 0; border:1px solid var(--border); border-radius:9px; background:var(--surface)}
+.upl{font-family:var(--mono); font-size:10.5px; letter-spacing:.11em; text-transform:uppercase;
+  font-weight:700; color:var(--ink-3); padding:10px 14px 0}
+.updrop{padding:6px 14px 14px}
+.updrop > p{margin:6px 0 10px; font-size:13px; color:var(--ink-2)}
+.upnote{font-size:12.5px; color:var(--ink-3); margin:10px 0 0; line-height:1.55}
+.upfile{display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:8px 14px 14px}
+.upfile .fn{font-weight:600; font-size:13.5px; color:var(--ink)}
+.upfile .fm{font-family:var(--mono); font-size:11.5px; color:var(--ink-3)}
+.upfile .tbtn{margin-left:auto}
+.invchk{margin:12px 0}
+.invtrail{display:flex; flex-wrap:wrap; gap:6px 22px; margin:14px 0 0; padding:12px 14px;
+  border-radius:8px; background:var(--surface-3)}
+.invtrail .ts{display:flex; align-items:baseline; gap:7px; font-size:12.5px; color:var(--ink-3)}
+.invtrail .tsd{width:7px; height:7px; border-radius:50%; background:var(--border); flex:0 0 auto}
+.invtrail .ts.on .tsd{background:var(--good)}
+.invtrail .ts.on .tsl{color:var(--ink); font-weight:600}
+.invtrail .tsw{font-family:var(--mono); font-size:11.5px; opacity:.85}
+.mailcard{border:1px solid var(--border); border-radius:8px; background:var(--surface); margin:10px 0}
+.mailcard .mrow{display:flex; gap:10px; padding:7px 12px; border-bottom:1px solid var(--border); font-size:13px}
+.mailcard .ml{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  font-weight:700; color:var(--ink-3); width:72px; flex:0 0 auto; padding-top:3px}
+.mailcard .mv{color:var(--ink); overflow-wrap:anywhere}
+.mailcard .mbody{padding:12px; font-size:13.5px; color:var(--ink); line-height:1.6}
+@media (max-width:620px){ .mailcard .mrow{flex-wrap:wrap} .mailcard .ml{width:100%} }
+
+/* Invoice upload outcomes */
+.upreject{padding:6px 14px 14px}
+.upreject > b{display:block; color:var(--bad); font-size:13.5px; margin-bottom:8px}
+.upreject p{margin:0 0 9px; font-size:13px; color:var(--ink-2); line-height:1.6}
+.uptotal{padding:0 14px 14px}
+.uptotal .fields{margin:0 0 8px}
+.linkbtn{background:none; border:0; padding:0; font:inherit; font-size:12.5px;
+  color:var(--navy-mid); text-decoration:underline; cursor:pointer}
+.linkbtn:hover{opacity:.8}
+.sentok{display:flex; gap:11px; align-items:flex-start; margin:0 0 16px;
+  padding:13px 15px; border-radius:9px; background:rgba(15,123,92,.09);
+  border:1px solid rgba(15,123,92,.28); font-size:13px; line-height:1.6; color:var(--ink-2)}
+.sentok svg{width:20px; height:20px; flex:0 0 auto; fill:none; stroke:var(--good);
+  stroke-width:2; stroke-linecap:round; stroke-linejoin:round; margin-top:1px}
+.sentok b{color:var(--ink)}
+:root:not([data-theme="light"]) .linkbtn{color:var(--sky)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .linkbtn{color:var(--sky)} }
+:root[data-theme="dark"] .linkbtn{color:var(--sky)}
+.tbtn:disabled, .tbtn[disabled]{opacity:.42; cursor:not-allowed}
+.tbtn:disabled:hover, .tbtn[disabled]:hover{background:var(--navy)}
+:root[data-theme="dark"] .tbtn:disabled:hover{background:var(--sky)}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .tbtn:disabled:hover{background:var(--sky)} }
+
+/* ---------- Matching Website Migration HQ ---------------------------------
+   The same panel, tiles, cards and rows as the other MISMO tools, so the three
+   read as one family rather than three drawings. */
+
+/* the panel widens, the way Summit HQ's does */
+.panel{transition:width .22s cubic-bezier(.4,0,.2,1)}
+.panel.wide{width:min(1320px, calc(100vw - var(--rail-w,240px) - 24px))}
+body.railmini .panel.wide{width:min(1320px, calc(100vw - var(--rail-mini,62px) - 24px))}
+@media (prefers-reduced-motion:reduce){ .panel{transition:none} }
+.panel-x.wide-b{margin-left:auto; display:inline-flex; align-items:center; justify-content:center;
+  padding:0; border-color:transparent; background:none; color:var(--ink-3)}
+.panel-x.wide-b:hover{color:var(--ink); background:var(--sky-wash,var(--surface-3)); border-color:var(--sky)}
+.panel-x.wide-b + .panel-x{margin-left:-6px}
+.panel-x.wide-b svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.panel-x.wide-b .i-min{display:none}
+.panel.wide .panel-x.wide-b .i-max{display:none}
+.panel.wide .panel-x.wide-b .i-min{display:block}
+@media(max-width:820px){ .panel-x.wide-b{display:none} .panel-x.wide-b + .panel-x{margin-left:auto}
+  .panel.wide, body.railmini .panel.wide{width:100vw} }
+
+/* view header */
+.vhead{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 20px;margin:0 0 22px}
+.vhead h1{font-size:24px;font-weight:700;letter-spacing:-.012em;margin:0}
+.vhead p{margin:4px 0 0;color:var(--ink-2)}
+.vhead .grow{flex:1 1 320px}
+.sect-t{font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-2);margin:26px 0 10px}
+
+/* the navy headline block with its tiles */
+.headline{background:var(--navy);color:#fff;border-radius:8px;padding:20px 22px;
+  display:flex;flex-direction:column;gap:14px;margin:0 0 22px}
+.headline .hl-date{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sky-soft);margin-bottom:-6px}
+.headline .hl-say{font-size:18px;font-weight:600;letter-spacing:-.01em;line-height:1.35;margin:0}
+.headline .hl-say em{font-style:normal;color:var(--sky)}
+.headline .hl-say em.hl-late{color:#ffcf73}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media(max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{background:rgba(255,255,255,.07);border:1px solid rgba(116,191,235,.28);
+  border-radius:6px;padding:12px 14px;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.tile:hover{background:rgba(255,255,255,.13);border-color:rgba(116,191,235,.5)}
+.tile:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.tile b{display:block;font-size:28px;font-weight:700;line-height:1.1;color:#fff;
+  font-variant-numeric:tabular-nums}
+.tile span{display:block;font-size:12.5px;color:var(--sky-soft);margin-top:3px}
+.tile small{display:block;font-size:11.5px;color:rgba(255,255,255,.6);margin-top:2px}
+.tile.warn b{color:#ffcf73}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.cards{grid-template-columns:1fr}}
+.hqcard{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:16px 18px;text-align:left;color:var(--ink);cursor:pointer;display:flex;
+  flex-direction:column;gap:10px;font:inherit;
+  box-shadow:0 1px 2px rgba(13,49,76,.06),0 6px 18px rgba(13,49,76,.06)}
+:root[data-theme="dark"] .hqcard{box-shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .hqcard{
+  box-shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25)} }
+.hqcard:hover{border-color:var(--border-strong)}
+.hqcard:focus-visible{outline:2px solid var(--navy-mid);outline-offset:2px}
+.hqcard h3{font-size:16px;font-weight:700;display:flex;align-items:center;
+  justify-content:space-between;gap:10px;margin:0}
+.hqcard h3 .arr{color:var(--ink-3);font-weight:500;font-size:18px}
+.hqcard p{margin:0;color:var(--ink-2);font-size:13px}
+.hqcard .big{font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.hqcard .big small{font-size:13px;font-weight:500;color:var(--ink-2);margin-left:6px}
+.hqcard .next{font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--rule,var(--border));
+  padding-top:9px;margin-top:auto}
+.hqcard .next b{color:var(--ink);font-weight:600}
+.hqcard .meta{display:flex;flex-wrap:wrap;gap:6px}
+
+/* rows that open in the panel */
+.hqrows{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.hqrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;width:100%;background:none;
+  border:0;border-bottom:1px solid var(--rule,var(--border));text-align:left;padding:10px 14px;
+  color:var(--ink);cursor:pointer;font:inherit;font-size:13.5px}
+.hqrows .hqrow:last-child{border-bottom:0}
+.hqrow:hover{background:var(--surface-2)}
+.hqrow:focus-visible{outline:2px solid var(--navy-mid);outline-offset:-2px}
+.hqrow .t{flex:1 1 260px;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.hqrow .t small{display:block;font-weight:400;color:var(--ink-3);font-size:12.5px;margin-top:1px}
+.hqrow .r{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end}
+.hqrow .d{font-size:12.5px;color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.hqrow .arr{color:var(--ink-3);font-size:16px;line-height:1}
+
+/* chips, the HQ set */
+.ch{display:inline-flex;align-items:center;gap:5px;border-radius:3px;padding:1px 7px;
+  font-size:11.5px;font-weight:600;white-space:nowrap;border:1px solid transparent;line-height:1.6}
+.ch-ns{background:var(--surface-3);color:var(--ink-2)}
+.ch-ip{background:var(--sky-wash,var(--surface-3));color:var(--navy-mid)}
+.ch-bl{background:rgba(179,55,44,.13);color:var(--bad)}
+.ch-dn{background:rgba(15,123,92,.13);color:var(--good)}
+.ch-od{background:rgba(179,55,44,.13);color:var(--bad)}
+.ch-soon{background:rgba(162,112,26,.14);color:var(--warn)}
+:root[data-theme="dark"] .ch-ip{color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .ch-ip{color:var(--sky)} }
+
+/* callout */
+.callout{border-left:3px solid var(--navy-mid);background:var(--sky-wash,var(--surface-3));
+  padding:10px 14px;border-radius:0 6px 6px 0;font-size:13.5px;color:var(--ink-2);margin:0 0 18px}
+.callout b{color:var(--ink)}
+.callout.warn{border-color:var(--warn);background:rgba(162,112,26,.1)}
+.callout.bad{border-color:var(--bad);background:rgba(179,55,44,.09)}
+:root[data-theme="dark"] .callout{border-color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .callout{border-color:var(--sky)} }
+/* Cards line their numbers and footers up across the row, the way the HQ does. */
+.cards > .hqcard{display:grid;grid-row:span 3;grid-template-rows:subgrid;row-gap:10px;align-content:start}
+.hqcard .cfoot{display:flex;flex-direction:column;gap:10px;align-self:start;min-width:0}
+.hqcard .cfoot .next{margin-top:0}
+.hqtop{position:sticky;top:env(safe-area-inset-top,0px);z-index:97;height:var(--hq-h);
+  background:var(--navy);color:#fff;display:flex;align-items:center;gap:0;
+  padding:0 22px;box-shadow:0 1px 0 rgba(80,164,219,.28);
+  margin-left:calc(0px - var(--rail-w));width:calc(100% + var(--rail-w));
+  transition:margin-left .2s cubic-bezier(.4,0,.2,1), width .2s cubic-bezier(.4,0,.2,1)}
+body.railmini .hqtop{margin-left:calc(0px - var(--rail-mini));width:calc(100% + var(--rail-mini))}
+@media (prefers-reduced-motion:reduce){ .hqtop{transition:none} }
+.hqtop .mastrule{display:block;width:2px;height:34px;flex:0 0 auto;margin-inline:20px;border-radius:1px;background:var(--sky)}
+.hqtop .hqname{font-family:var(--display);font-size:15.5px;font-weight:700;letter-spacing:-.005em;color:var(--sky);white-space:nowrap}
+.hqtop-r{margin-left:auto;display:flex;align-items:center;gap:13px}
+.hqtop .eyebrow-m{font-family:var(--display);font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:600;white-space:nowrap}
+@media(max-width:700px){.hqtop .eyebrow-m{display:none}}
+.logoplate{background:#fff;border-radius:7px;padding:8px 14px;display:flex;align-items:center;line-height:0;flex:0 0 auto;position:relative}
+.logoplate .wordmark{height:24px;width:auto;display:block}
+.santa{position:absolute;display:none;pointer-events:none;left:-9px;top:-12px;width:31px;height:31px}
+html[data-season="december"] .logoplate .santa{display:block}
+html[data-season="december"] .hqtop{padding-top:12px}
+
+.hq.rail{position:fixed;left:0;top:calc(var(--hq-h) + env(safe-area-inset-top,0px));bottom:0;width:var(--rail-w);z-index:95;
+  background:var(--navy);color:#fff;display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden auto;
+  overscroll-behavior:contain;box-shadow:1px 0 0 rgba(80,164,219,.22), 4px 0 18px rgba(6,32,47,.14);
+  transition:width .2s cubic-bezier(.4,0,.2,1)}
+@media (prefers-reduced-motion:reduce){ .hq.rail,body{transition:none} }
+body.railmini{padding-left:var(--rail-mini)}
+body.railmini .hq.rail{width:var(--rail-mini)}
+body.railmini .rail-top{justify-content:center;padding:10px 0 9px}
+body.railmini .rail-lbl{display:none}
+body.railmini .railhide{margin:0}
+body.railmini .railhide svg{transform:scaleX(-1)}
+body.railmini .railfind{padding:9px 0 2px;display:flex;justify-content:center}
+body.railmini .railfind .fi,body.railmini .railfind input,body.railmini .railq-x,body.railmini .railhits{display:none}
+body.railmini .railfind-b{display:flex}
+body.railmini .hq nav{padding:6px 0 4px;align-items:center;gap:4px}
+body.railmini .hq nav button{width:42px;padding:10px 0;justify-content:center;border-radius:9px;box-shadow:none}
+body.railmini .hq nav button span{display:none}
+body.railmini .hq nav button svg{width:19px;height:19px}
+body.railmini .hq nav button[aria-current]{background:var(--sky);color:var(--navy-deep)}
+body.railmini .hq nav button[aria-current] svg{stroke:var(--navy-deep);opacity:1}
+body.railmini .railsum{display:none}
+body.railmini .hq .mast-right{gap:3px;padding:8px 0 11px;align-items:center}
+body.railmini .hq .mast-right .theme-btn{width:42px;padding:9px 0;font-size:0;justify-content:center;border-radius:9px}
+body.railmini .hq .mast-right .theme-btn .ti{width:19px;height:19px}
+body.railmini .hq .mast-right .theme-btn span{display:none}
+.railfind-b{display:none;width:34px;height:30px;border:1px solid rgba(255,255,255,.18);border-radius:7px;
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);align-items:center;justify-content:center;padding:0;cursor:pointer}
+.railfind-b svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.railfind-b:hover{background:rgba(255,255,255,.18);color:#fff}
+.rail-top{display:flex;align-items:center;gap:8px;padding:11px 10px 9px;border-bottom:1px solid rgba(80,164,219,.2);flex:0 0 auto}
+.rail-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.55);padding-left:3px}
+.railhide{margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:5px;
+  color:rgba(255,255,255,.75);width:24px;height:24px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.railhide svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.railhide:hover{background:rgba(255,255,255,.14);color:#fff}
+.railfind{position:relative;padding:11px 12px 3px;flex:0 0 auto}
+.railfind .fi{position:absolute;left:21px;top:20px;width:14px;height:14px;fill:none;stroke:rgba(255,255,255,.5);stroke-width:2;stroke-linecap:round;pointer-events:none}
+.railfind input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:6px;
+  color:#fff;font:inherit;font-size:12.5px;padding:6px 26px 6px 30px}
+.railfind input::placeholder{color:rgba(255,255,255,.5)}
+.railfind input:focus{outline:2px solid var(--sky);outline-offset:-1px;background:rgba(255,255,255,.16)}
+.railfind input::-webkit-search-cancel-button{display:none}
+.railq-x{position:absolute;right:17px;top:16px;width:20px;height:20px;border:0;border-radius:4px;background:transparent;
+  color:rgba(255,255,255,.6);font-size:15px;line-height:1;padding:0;cursor:pointer}
+.railq-x:hover{background:rgba(255,255,255,.16);color:#fff}
+.railhits{margin-top:7px;background:var(--surface);border:1px solid var(--border-strong);border-radius:6px;
+  box-shadow:0 10px 26px rgba(6,32,47,.3);overflow:hidden auto;max-height:min(52vh,420px)}
+.railhits .rh-g{font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;
+  color:var(--ink-3);background:var(--sunk);padding:4px 10px;border-bottom:1px solid var(--line);position:sticky;top:0}
+.railhits .rh{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);
+  padding:6px 10px;color:var(--ink);font-family:var(--ui);cursor:pointer}
+.railhits .rh:last-child{border-bottom:0}
+.railhits .rh:hover,.railhits .rh.on{background:var(--accent-soft)}
+.railhits .rh b{display:block;font-size:12.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.railhits .rh i{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--ink-3);margin-top:1px;overflow-wrap:anywhere}
+.railhits .rh-none{padding:10px;font-size:12.5px;color:var(--ink-3)}
+.hq nav{display:flex;flex-direction:column;gap:1px;padding:8px 8px 4px;flex:0 0 auto}
+.hq nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-radius:6px;
+  color:rgba(255,255,255,.76);padding:8px 10px;font:inherit;font-family:var(--display);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+.hq nav button svg{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.hq nav button:hover{color:#fff;background:rgba(255,255,255,.09)}
+.hq nav button[aria-current]{color:#fff;font-weight:600;background:var(--navy-mid);box-shadow:inset 3px 0 0 var(--sky)}
+.hq nav button[aria-current] svg{opacity:1;stroke:var(--sky)}
+.hq nav button:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+.railsum{padding:6px 12px 10px;flex:0 0 auto;border-top:1px solid rgba(80,164,219,.16);margin-top:4px;padding-top:11px}
+.railsum label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.52);font-weight:700;margin-bottom:4px}
+.hq .hq-pick{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);color:#fff;border-radius:5px;
+  padding:6px 9px;font:inherit;font-family:var(--display);font-size:12.5px;font-weight:600;cursor:pointer;width:100%;max-width:100%}
+.hq .hq-pick:hover{background:rgba(255,255,255,.2)}
+.hq .hq-pick:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.hq .hq-pick option{background:var(--surface);color:var(--ink);font-weight:500}
+.hq .mast-right{margin-top:auto;display:flex;flex-direction:column;align-items:stretch;gap:1px;padding:8px 8px 10px;
+  border-top:1px solid rgba(80,164,219,.2);flex:0 0 auto}
+.theme-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-radius:6px;
+  color:rgba(255,255,255,.76);padding:8px 10px;font:inherit;font-family:var(--display);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+.theme-btn .ti{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.theme-btn .ti-sun{display:none}
+:root[data-theme="dark"] .theme-btn .ti-moon{display:none}
+:root[data-theme="dark"] .theme-btn .ti-sun{display:block}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .theme-btn .ti-moon{display:none}
+  :root:not([data-theme="light"]) .theme-btn .ti-sun{display:block} }
+.theme-btn:hover{color:#fff;background:rgba(255,255,255,.09)}
+.theme-btn:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+.railscrim{position:fixed;inset:0;z-index:94;background:rgba(6,32,47,.42);border:0;padding:0;display:none}
+@media(max-width:900px){
+  body:not(.railmini){padding-left:var(--rail-mini)}
+  body:not(.railmini) .hqtop{margin-left:calc(0px - var(--rail-mini));width:calc(100% + var(--rail-mini))}
+  body:not(.railmini) .hq.rail{box-shadow:4px 0 26px rgba(6,32,47,.4)}
+  body:not(.railmini) .railscrim{display:block} }
+
+/* the page name is longer than Summit HQ's — let it shrink rather than push the bar wide */
+.hqtop .hqname{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:700px){
+  .hqtop{padding:0 14px}
+  .hqtop .mastrule{margin-inline:12px}
+  .hqtop .hqname{font-size:14px}
+}
+
+/* The count beside a rail item — the same number the section header carries. */
+.hq nav button .railn{margin-left:auto; font-style:normal;
+  font-family:var(--mono); font-size:10.5px; font-weight:600;
+  color:var(--side-dim,rgba(255,255,255,.55)); padding-left:8px}
+.hq nav button[aria-current="page"] .railn{color:rgba(255,255,255,.85)}
+body.railmini .hq nav button .railn{display:none}
+
+/* Counts in the rail, the same shape and colours as Website Migration HQ.
+   GOLD is the default — it arrived and it is waiting on you.  RED (.late)
+   means nothing arrived and somebody is past a deadline.  Both are written out
+   rather than taken from --warn/--bad, which follow the theme; the rail is
+   navy in BOTH themes, so a badge that follows the theme changes colour
+   against a background that never did. */
+.hq nav button{position:relative}
+.hq nav button .railbadge{margin-left:auto; box-sizing:border-box; flex:0 0 auto;
+  width:20px; height:20px; padding:0; border-radius:10px;
+  display:inline-flex; align-items:center; justify-content:center; text-align:center;
+  background:#e0a83c; color:#0d314c;
+  font-family:var(--display); font-size:11.5px; font-weight:700; line-height:1;
+  font-variant-numeric:tabular-nums}
+.hq nav button .railbadge.w2{width:26px}
+.hq nav button .railbadge.w3{width:32px}
+.hq nav button .railbadge.late{background:#d8453a; color:#fff}
+.hq nav button .railbadge.slot1{margin-left:3px}
+body.railmini .hq nav button .railbadge{display:inline-flex; position:absolute; top:2px; right:0;
+  width:17px; height:17px; padding:0; font-size:10.5px; margin:0;
+  box-shadow:0 0 0 2px var(--navy,#0d314c)}
+body.railmini .hq nav button .railbadge.w2{width:22px; right:-3px}
+body.railmini .hq nav button .railbadge.w3{width:27px; right:-6px}
+body.railmini .hq nav button .railbadge.slot1{top:22px; margin-left:0}
+
+/* =========================================================================
+ * ONE TYPEFACE.
+ *
+ * ⚠ The portal was using IBM Plex Mono for labels, totals, table headers,
+ * chips and status pills, and IBM Plex Sans for everything else — two families
+ * interleaved line by line, which is what "the font looks all over the place"
+ * was.  Every other MISMO artifact (Website Migration HQ, Summit HQ) maps
+ * --mono straight onto the display face and carries the whole hierarchy on
+ * SIZE, WEIGHT and LETTER-SPACING instead.  This does the same.
+ *
+ * Tabular figures came free with the monospace; they are put back explicitly
+ * on the body so columns of numbers still line up.
+ * ======================================================================= */
+:root{ --mono:var(--display); }
+body{ font-variant-numeric:tabular-nums; }
+/* A button, input or select does NOT inherit the page font by default — the
+   browser gives it its own. The two close crosses (the rail search and the
+   panel) were the last two things on the page set in something else. */
+button,input,select,textarea,optgroup{font-family:inherit}
+
+/* The platform page — resources.mismo.org/service-orders/
+   Sits on top of style.css so the portal, the Sponsorship Portal and Summit HQ
+   read as the same family. Only what is different lives here. */
+
+/* the portal has no rail — undo the offsets the shared masthead stylesheet
+   applies for one, and make sure nothing in the masthead can swallow a click */
+/* The rail's offset comes back.  These two lines zeroed it, from when this page
+   had no rail — it now carries the same one as Summit HQ and the review page,
+   so style.css's padding-left:var(--rail-w) is what should win. */
+/* The masthead spans the full width ABOVE the rail, which is what railcss.css
+   already arranges — so the override that used to flatten it is gone too. */
+/* the sticky masthead holds one control; nothing else in it takes a click, so it
+   can never sit on top of a button lower down the page */
+.hqtop{pointer-events:none}
+.hqtop .theme-btn{pointer-events:auto}
+/* and leave room under it when something is scrolled into view */
+.psec,.psec-h,.row,.row-h,.gobtn,.ghost{scroll-margin-top:84px}
+.wrap{padding:22px 30px 90px;max-width:1500px;margin:0 auto}
+@media(max-width:640px){ .wrap{padding:16px 16px 70px} }
+
+/* ── masthead ─────────────────────────────────────────────── */
+.hqtop{position:sticky;top:0;z-index:40}
+.hqtop .who{font-size:12.5px;color:var(--sky-soft);white-space:nowrap;overflow:hidden;
+ text-overflow:ellipsis;max-width:46vw;flex:0 0 auto}
+.hqtop .hqname{flex:0 1 auto;min-width:0}
+@media(max-width:1000px){ .hqtop .who{max-width:34vw} }
+.hqtop .who i{font-style:normal;opacity:.55;padding:0 4px}
+@media(max-width:640px){ .hqtop .who{display:none} }
+
+/* ── collapsible sections, Title Case, closed by default ──── */
+/* ── a section is a PAGE ──────────────────────────────────────────────
+   One is shown at a time; the rail chooses which. There is no fold, so the
+   heading is a title and not a control: no pointer, no hover, no chevron,
+   nothing to press. The card border goes with the fold — a page is the page,
+   not a box sitting on one. */
+.psec{display:none;margin:0}
+.psec.current{display:block}
+.psec-h{display:flex;align-items:baseline;gap:11px;margin:0 0 4px;padding:0;
+ font-size:21px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.psec-h .cnt{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+ font-weight:600;color:var(--ink-3);background:var(--surface-3);border-radius:4px;padding:3px 10px;
+ position:relative;top:-2px}
+.psec-b{display:block;padding:0}
+/* The page title and the first thing under it need air between them, but a
+   lede immediately after the title should not be pushed away from it. */
+.psec-b > .lede:first-child{margin-top:10px}
+.subh{font-size:12.5px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;
+ color:var(--ink-3);margin:22px 0 9px;font-weight:600}
+
+/* ── rows behave as they do everywhere else ───────────────── */
+.row-h{cursor:pointer}
+.docstack{margin-top:16px}
+.dochost{overflow-wrap:anywhere}
+
+/* ── status pills ─────────────────────────────────────────── */
+.pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10.5px;
+ letter-spacing:.07em;text-transform:uppercase;font-weight:600;border-radius:20px;
+ padding:3px 9px;background:var(--surface-3);color:var(--ink-2);flex:0 0 auto;white-space:nowrap}
+.pill.good{background:rgba(15,123,92,.14);color:var(--good)}
+.pill.warn{background:rgba(162,112,26,.16);color:var(--warn)}
+.pill.quiet{background:transparent;border:1px solid var(--border);color:var(--ink-3)}
+:root[data-theme="dark"] .pill.good{background:rgba(79,199,155,.16)}
+:root[data-theme="dark"] .pill.warn{background:rgba(224,168,60,.18)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .pill.good{background:rgba(79,199,155,.16)}
+ :root:not([data-theme="light"]) .pill.warn{background:rgba(224,168,60,.18)} }
+
+/* ── tables ───────────────────────────────────────────────── */
+.tbl{margin:12px 0}
+.tbl table{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+ text-transform:uppercase;color:var(--ink-3);font-weight:600;padding:9px 12px;
+ background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.n,.tbl th.n{text-align:right;font-family:inherit;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl td.bad{color:var(--bad);font-weight:600}
+.tbl td.tick,.tbl th.tick{width:34px;text-align:center;padding-right:0}
+.tbl input[type=checkbox]{width:16px;height:16px;accent-color:var(--navy-mid);cursor:pointer}
+.tbl tr.openrow{cursor:default}
+/* On a phone a table either side-scrolls or crushes its columns. Neither is
+   good, so the columns that are read rather than compared step out of the way
+   and the detail stays one tap below, on the order itself. */
+@media(max-width:700px){
+  .tbl .hide-narrow{display:none}
+  .tbl td,.tbl th{padding:9px 10px}
+}
+
+/* ── the acceptance bar ───────────────────────────────────── */
+.ackbar,.batchbar,.onebar,.askbox{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;
+ margin:16px 0 6px;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);
+ border-radius:9px}
+.ackbar .f,.onebar .f,.askbox .f{min-width:200px;flex:1 1 220px}
+.gobtn{font:inherit;font-size:13px;font-weight:600;padding:9px 18px;border-radius:7px;
+ background:var(--navy);color:#fff;border:1px solid var(--navy);cursor:pointer;white-space:nowrap}
+.gobtn:hover:not(:disabled){background:var(--navy-mid);border-color:var(--navy-mid)}
+.gobtn:disabled{opacity:.45;cursor:not-allowed}
+.gobtn:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+:root[data-theme="dark"] .gobtn{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .gobtn{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)} }
+.ghost{font:inherit;font-size:12.5px;padding:8px 14px;border-radius:7px;background:var(--surface);
+ color:var(--ink);border:1px solid var(--border-strong);cursor:pointer;white-space:nowrap}
+.ghost:hover{background:var(--surface-3)}
+
+/* ⚠ Two faults lived here, both on Save Without Sending.
+   SIZE: .ghost set its own font-size and padding, so a .gobtn.ghost came out
+   smaller than the .gobtn beside it and the pair never lined up.
+   HOVER: .gobtn:hover:not(:disabled) is more specific than .ghost:hover, so it
+   won — painting a navy background behind .ghost's dark text and making the
+   label vanish on the way to clicking it.
+   Both fixed by making the ghost a real variant of the button rather than a
+   second button that happens to share a class. */
+.gobtn.ghost{font-size:13px;font-weight:600;padding:9px 18px;border-radius:7px;
+  background:var(--surface);color:var(--ink);border:1px solid var(--border-strong)}
+.gobtn.ghost:hover:not(:disabled){background:var(--surface-3);color:var(--ink);
+  border-color:var(--navy-mid)}
+:root[data-theme="dark"] .gobtn.ghost{background:var(--surface-2);color:var(--ink);
+  border-color:var(--border-strong)}
+:root[data-theme="dark"] .gobtn.ghost:hover:not(:disabled){background:var(--surface-3);
+  color:var(--ink);border-color:var(--sky)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .gobtn.ghost{background:var(--surface-2);color:var(--ink);
+    border-color:var(--border-strong)}
+  :root:not([data-theme="light"]) .gobtn.ghost:hover:not(:disabled){background:var(--surface-3);
+    color:var(--ink);border-color:var(--sky)}
+}
+/* the same pairing on the smaller buttons */
+.tbtn.ghost{background:var(--surface);color:var(--ink);border-color:var(--border-strong)}
+.tbtn.ghost:hover:not(:disabled){background:var(--surface-3);color:var(--ink);
+  border-color:var(--navy-mid)}
+:root[data-theme="dark"] .tbtn.ghost{background:var(--surface-2);color:var(--ink)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .tbtn.ghost{background:var(--surface-2);color:var(--ink)}
+}
+.qc{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);align-self:center}
+.fineprint{font-size:12.5px;color:var(--ink-3);margin:8px 0 0;max-width:none}
+/* A note under a totals band explains THAT band, so it hugs it and the air
+   goes below the pair instead — it was floating midway between the band and
+   the rows and reading as a caption for the wrong thing. */
+.tot + .fineprint{margin:-6px 0 20px}
+/* ---- the week you are logging -----------------------------------------
+   Figures are set in the display face with tabular numerals, never a
+   typewriter face: the week and the hours line up as a column without
+   looking like a terminal. */
+.wkband{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  margin:0 0 14px;padding:16px 18px;border-radius:8px;background:var(--surface-2);
+  border:1px solid var(--line);border-left:4px solid var(--navy)}
+.wkband-l{display:flex;flex-direction:column;gap:2px;min-width:0}
+.wkband-k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  color:var(--ink-3)}
+.wkband-d{font-size:30px;line-height:1.1;font-weight:700;color:var(--navy);
+  font-variant-numeric:tabular-nums}
+.wkband-s{font-size:13px;color:var(--ink-2)}
+.wkband-r{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.wkband-h{font-size:26px;line-height:1.1;font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.wkband-u{font-size:12px;color:var(--ink-3)}
+.wkband.is-sent{border-left-color:var(--ink-3)}
+.wkband.is-late{border-left-color:var(--bad)}
+:root[data-theme="dark"] .wkband.is-late{border-left-color:var(--bad)}
+.wkband + .note,.wkband + .fineprint{margin-top:-4px}
+:root[data-theme="dark"] .wkband{background:var(--surface-2);border-left-color:var(--sky)}
+:root[data-theme="dark"] .wkband-d{color:var(--sky)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .wkband{background:var(--surface-2);border-left-color:var(--sky)}
+  :root:not([data-theme="light"]) .wkband-d{color:var(--sky)}
+}
+@media (max-width:560px){
+  .wkband{align-items:flex-start}
+  .wkband-r{align-items:flex-start}
+  .wkband-d{font-size:26px}
+}
+.dl{color:var(--navy-mid);font-weight:600}
+:root[data-theme="dark"] .dl{color:var(--sky)}
+
+/* ── what was signed ──────────────────────────────────────── */
+.signed{border-left:3px solid var(--good);background:rgba(15,123,92,.07);padding:10px 14px;
+ border-radius:0 7px 7px 0;margin:14px 0 0;font-size:13px}
+.signed .what{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.note.warn{border-left-color:var(--warn)}
+/* ⚠ This was called .upl, which the SHARED sheet already uses for a tiny
+   uppercase monospace LABEL.  The portal used the same name for a whole
+   container, so every value and every sentence inside it inherited mono,
+   uppercase and 9.5px — which is what made Executed Documents look broken.
+   Renamed rather than overridden: two different things must not share a name. */
+.execbox{border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin:12px 0;
+  background:var(--surface)}
+.execbox input[type=file]{font:inherit;font-size:12.5px;color:var(--ink-2)}
+
+/* ── the board ────────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px}
+@media(max-width:900px){ .stats{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.stat{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:11px 13px}
+.stat.warn{border-color:var(--warn)}
+.stat .lab{display:block;font-size:10.5px;font-family:var(--mono);letter-spacing:.09em;
+ text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.stat .val{display:block;font-family:inherit;font-variant-numeric:tabular-nums;
+ font-size:22px;font-weight:600;color:var(--ink);margin-top:2px}
+
+/* ── states ───────────────────────────────────────────────── */
+.loading{display:flex;align-items:center;gap:12px;color:var(--ink-2);padding:50px 0;font-size:14px}
+.spin{width:16px;height:16px;border:2px solid var(--border-strong);border-top-color:var(--navy-mid);
+ border-radius:50%;animation:sp .8s linear infinite;flex:0 0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.shut{max-width:620px;margin:60px auto;text-align:center;background:var(--surface);
+ border:1px solid var(--border);border-radius:12px;padding:34px 30px}
+.shut h2{font-size:19px;margin-bottom:10px}
+.shut p{color:var(--ink-2);font-size:14px;margin:0}
+.empty{color:var(--ink-3);font-size:13.5px;margin:4px 0}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);opacity:0;z-index:300;
+ background:var(--navy);color:#fff;font-size:13.5px;padding:11px 20px;border-radius:9px;
+ box-shadow:0 8px 26px rgba(6,32,47,.28);transition:opacity .2s,transform .2s;max-width:88vw}
+.toast.go{opacity:1;transform:translate(-50%,0)}
+.toast.good{background:var(--good)} .toast.warn{background:var(--bad)}
+
+/* ── print / save as PDF ──────────────────────────────────── */
+#printhost{display:none}
+@media print{
+  body{background:#fff;padding:0}
+  body.printing > *{display:none !important}
+  body.printing #printhost{display:block !important;padding:0}
+  body.printing .doc{border:0;margin:0;padding:0;background:#fff;color:#000;box-shadow:none}
+  body.printing .doc .sn{color:#000}
+  .psec,.tbl,.row{box-shadow:none}
+}
+
+/* ── narrow ───────────────────────────────────────────────── */
+@media(max-width:640px){
+  .psec-h{font-size:14px;padding:13px 14px}
+  .psec-b{padding:13px 14px 16px}
+  .ackbar,.batchbar,.onebar,.askbox{padding:12px}
+  .gobtn,.ghost{width:100%}
+  .row-h{flex-wrap:wrap;gap:7px 10px}
+  .row-h .rt{flex:1 1 100%}
+  .doc{padding:15px 16px}
+  .doc .sig{grid-template-columns:1fr;gap:16px}
+}
+
+/* ── Help ─────────────────────────────────────────────────── */
+.hblk{border-top:1px solid var(--rule);padding:14px 0 2px}
+.hblk:first-child{border-top:0;padding-top:0}
+.hblk h4{font-size:13px;font-weight:600;margin:0 0 6px}
+.hblk p{margin:0 0 8px;color:var(--ink-2);font-size:13.5px;max-width:none}
+/* .steps already has its numbered badges in the shared stylesheet — only the
+   colour and size of the text belong here, or the badges land on the words */
+ol.steps{color:var(--ink-2);font-size:13.5px;margin:0 0 10px}
+.hblk b{color:var(--ink)}
+.why{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:3px;white-space:normal}
+.note code{font-family:var(--mono);font-size:11.5px;background:var(--surface-3);
+ border-radius:4px;padding:1px 5px}
+
+/* ---- fee totals (decision 31) -------------------------------------------
+   One band, used by To Review and by My Service Orders, so the two read as the
+   same thing said about two different sets of orders. */
+
+/* The fiscal-year picker sits INSIDE the totals band, so it takes the band's
+   own type and weight rather than arriving as raw browser chrome. */
+.tot select{font:inherit; font-size:14px; font-weight:600; color:var(--ink);
+  background:var(--surface); border:1px solid var(--border-strong); border-radius:6px;
+  padding:3px 26px 3px 9px; margin-right:4px; cursor:pointer; line-height:1.3;
+  -webkit-appearance:none; appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237794aa' stroke-width='2.2' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat; background-position:right 7px center; background-size:12px}
+.tot select:hover{border-color:var(--accent)}
+.tot select:focus-visible{outline:2px solid var(--sky); outline-offset:1px}
+:root[data-theme="dark"] .tot select,
+:root:not([data-theme="light"]) .tot select{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a9db4' stroke-width='2.2' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>")}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .tot select{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237794aa' stroke-width='2.2' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>")} }
+
+/* ---------- signing in ----------------------------------------------------
+   The first screen anybody sees. Signed out there is nothing to navigate, so
+   the rail goes entirely and the card sits centred in the page on its own. */
+body.signedout{padding-left:0}
+body.signedout .hq.rail{display:none}
+body.signedout .railscrim{display:none}
+body.signedout .hqtop{margin-left:0;width:100%}
+body.signedout main,body.signedout #view{padding:0}
+
+.signwrap{min-height:calc(100vh - var(--hq-h, 64px));display:flex;align-items:center;
+  justify-content:center;padding:32px 20px 64px}
+.signcard{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:38px 36px 30px;
+  box-shadow:0 1px 2px rgba(13,49,76,.06),0 12px 34px rgba(13,49,76,.10)}
+:root[data-theme="dark"] .signcard{box-shadow:0 1px 2px rgba(0,0,0,.4),0 12px 34px rgba(0,0,0,.34)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .signcard{
+  box-shadow:0 1px 2px rgba(0,0,0,.4),0 12px 34px rgba(0,0,0,.34)} }
+
+/* The wordmark's body is navy by design, so on a navy plate it has to be
+   inverted or it vanishes and only the sky S shows. */
+.signmark{background:var(--navy);border-radius:8px;padding:12px 18px;display:flex;
+  align-items:center;justify-content:center;margin:0 0 24px;
+  --logo-body:#ffffff; --logo-s:var(--sky)}
+.signmark .wordmark{height:22px;width:auto;display:block}
+.signcard h2{font-size:19px;font-weight:700;letter-spacing:-.012em;margin:0 0 6px;color:var(--ink)}
+.signsub{margin:0 0 22px;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
+.signnote:empty{display:none}
+.signnote{margin:0 0 18px}
+.signnote .note{margin:0}
+
+.signfields{display:flex;flex-direction:column;gap:15px;margin:0 0 20px}
+.signfields .f{display:flex;flex-direction:column;gap:6px}
+.signfields label{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-3)}
+.signfields input{width:100%;box-sizing:border-box;font:inherit;font-size:14px;
+  padding:11px 13px;border:1px solid var(--border-strong);border-radius:7px;
+  background:var(--surface-2);color:var(--ink)}
+.signfields input::placeholder{color:var(--ink-3);opacity:.85}
+.signfields input:focus{outline:none;border-color:var(--navy-mid);
+  background:var(--surface);box-shadow:0 0 0 3px rgba(20,72,110,.16)}
+:root[data-theme="dark"] .signfields input:focus{border-color:var(--sky);
+  box-shadow:0 0 0 3px rgba(116,191,235,.22)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .signfields input:focus{
+  border-color:var(--sky);box-shadow:0 0 0 3px rgba(116,191,235,.22)} }
+
+.signgo{display:block;width:100%;background:var(--navy);color:#fff;border:1px solid var(--navy);
+  border-radius:7px;padding:12px 16px;font:inherit;font-family:var(--display);font-size:14px;
+  font-weight:600;cursor:pointer}
+.signgo:hover:not(:disabled){background:var(--navy-mid)}
+.signgo:disabled{opacity:.6;cursor:wait}
+.signgo:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+:root[data-theme="dark"] .signgo{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .signgo{
+  background:var(--sky);color:var(--navy-deep);border-color:var(--sky)} }
+
+.signfine{margin:18px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-3);text-align:center}
+.signfine a{color:var(--navy-mid);font-weight:600}
+.subh5{margin:14px 0 4px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.ticks{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 16px;margin:6px 0 2px}
+.tick1{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;line-height:1.45;
+  padding:3px 0;cursor:pointer}
+.tick1 input{margin-top:3px;flex:none}
+.va-built{font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+/* A list inside a note: the bullets line up under the sentence above them
+   rather than being pushed in by the browser default. */
+/* ---- the receipt ------------------------------------------------------- */
+.rcpt-drop{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
+  padding:22px 16px;border:2px dashed var(--border-strong);border-radius:8px;
+  background:var(--surface-2);cursor:pointer;margin:6px 0 2px}
+.rcpt-drop:hover,.rcpt-drop:focus-visible{border-color:var(--navy-mid);background:var(--surface-3);
+  outline:none}
+.rcpt-drop.over{border-color:var(--sky);background:var(--surface-3)}
+.rcpt-drop.has{border-style:solid;border-color:var(--good,var(--navy-mid))}
+.rcpt-ic{width:26px;height:26px;fill:none;stroke:var(--ink-3);stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.rcpt-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.rcpt-ok{color:var(--ink-2);font-weight:600}
+.rcpt-bad{color:var(--bad);font-weight:600}
+.rcpt-have{display:flex;gap:14px;align-items:flex-start;margin:6px 0 2px;padding:12px;
+  border:1px solid var(--line);border-radius:8px;background:var(--surface-2)}
+.rcpt-thumb{flex:0 0 110px;width:110px;min-height:84px;display:flex;align-items:center;
+  justify-content:center;border-radius:6px;overflow:hidden;background:var(--surface-3)}
+.rcpt-thumb img{width:100%;height:auto;display:block}
+.rcpt-pdf{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--ink-3)}
+.rcpt-meta{display:flex;flex-direction:column;gap:3px;min-width:0}
+.rcpt-acts{display:flex;gap:12px;margin-top:6px}
+:root[data-theme="dark"] .rcpt-drop{background:var(--surface-2)}
+@media (max-width:560px){ .rcpt-have{flex-direction:column} .rcpt-thumb{width:100%;flex:none} }
+ul.plain{margin:6px 0 0;padding-left:18px}
+ul.plain li{margin:3px 0;line-height:1.5}
+.minebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.mbtn{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:4px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink-2);cursor:pointer}
+.mbtn:hover{border-color:var(--navy-mid)}
+.mbtn.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.mct{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:3px;
+  background:rgba(0,0,0,.08);font-size:12px}
+.mbtn.on .mct{background:rgba(255,255,255,.22)}
+.pill.cover{background:var(--sky-soft,rgba(116,191,235,.22));color:var(--navy);border-radius:3px}
+.hqrow.covering .t{opacity:.92}
+.fac{display:inline-block;margin-left:8px;font-size:12px;color:var(--ink-3);font-weight:500}
+:root[data-theme="dark"] .mct{background:rgba(255,255,255,.12)}
+:root[data-theme="dark"] .pill.cover{background:rgba(116,191,235,.18);color:var(--sky)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .mct{background:rgba(255,255,255,.12)}
+  :root:not([data-theme="light"]) .pill.cover{background:rgba(116,191,235,.18);color:var(--sky)}
+}
+/* ⚠ Deliberately quiet and deliberately NOT in IBM Plex Mono — it is a label,
+   not a figure. It only has to be legible when somebody is asked to read it
+   out, so it sits below the fold of attention. */
+.buildline{margin-top:10px;font-size:11px;letter-spacing:.02em;color:var(--ink-4,var(--ink-3));opacity:.7}
+:root[data-theme="dark"] .signfine a{color:var(--sky)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .signfine a{color:var(--sky)} }
+.signerr{display:block;margin-top:6px;font-family:var(--mono);font-size:11.5px;opacity:.8}
+
+@media(max-width:480px){
+  .signwrap{padding:18px 14px 48px;align-items:flex-start}
+  .signcard{padding:28px 22px 24px;border-radius:10px}
+}
+
+/* sign out, at the foot of the rail */
+/* A heading inside the rail. ⚠ Not a button and not reachable by tab — it is
+   a label, and stopping on it on the way to a page would be noise. */
+.railgroup{padding:14px 10px 5px;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  font-weight:700;color:rgba(255,255,255,.42);white-space:nowrap;pointer-events:none}
+.railgroup:first-child{padding-top:2px}
+/* Collapsed to the icon rail the labels would be meaningless, so they become a
+   hairline that still separates the groups. */
+body.railmini .railgroup{padding:8px 0 7px;font-size:0;letter-spacing:0;
+  border-top:1px solid rgba(80,164,219,.18);margin:4px 8px 0}
+body.railmini .railgroup:first-child{border-top:0;margin-top:0;padding-top:0}
+.railout{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;
+  border:0;border-top:1px solid rgba(80,164,219,.2);border-radius:0;margin-top:8px;padding:11px 10px 8px;
+  color:rgba(255,255,255,.62);font:inherit;font-family:var(--display);font-size:12.5px;
+  font-weight:500;cursor:pointer;white-space:nowrap}
+.railout svg{width:16px;height:16px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.railout:hover{color:#fff;background:rgba(255,255,255,.07)}
+.railout:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+body.railmini .railout span{display:none}
+body.railmini .railout{justify-content:center;padding:11px 0 8px}
+
+/* ===== Hours ==============================================================
+   My Hours, the cover split and the month view.  Everything here builds on
+   the shared .fields / .f / .note / .meter rules in style.css rather than
+   restating them, so the hours screens read as the same page as the rest. */
+
+/* A note that is saying nothing is wrong, rather than warning. */
+.note.ok{border-left-color:var(--good);background:rgba(30,110,70,.07)}
+.note.ok b{color:var(--good)}
+
+/* A field that wants the whole row — the two note lines, which are sentences
+   rather than values and look wrong squeezed into a 190px column. */
+.fields .f.wide{grid-column:1/-1}
+
+/* The hours box itself: narrow, monospaced, and lined up with the figures it
+   is compared against. */
+.f input.hnum,.f input.covhrs{font-family:inherit;font-variant-numeric:tabular-nums;max-width:120px}
+
+.meterwrap{display:flex;align-items:center;gap:10px;margin:10px 0 2px}
+/* ⚠ The percentage is a .fineprint, which carries margin-top:8px — in a flex
+   row that shifts it 8px BELOW the bar it describes, so the pair read as two
+   things at different heights rather than one measurement. Zeroed here, given
+   a fixed width and tabular figures, so the numbers form a straight column
+   down the table however wide they are. */
+.meterwrap .fineprint{margin:0;flex:0 0 auto;min-width:34px;text-align:right;
+  font-variant-numeric:tabular-nums;line-height:1}
+/* In a table cell the bar is the whole cell: no stray top margin pushing the
+   row taller than the figures beside it. */
+td .meterwrap{margin:0}
+td .meter{min-width:0}
+
+/* ---- the cover split ----------------------------------------------------
+   Folded away by default and opened by a plain text link, because on a normal
+   week there is nothing to say here and it must not read like a required
+   field. */
+.covwrap{margin:12px 0 4px;padding:10px 0 0;border-top:1px dashed var(--border)}
+.covbody{display:none;margin-top:8px}
+.covbody.open{display:block}
+.covrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0}
+.covrow select.covwho{font:inherit;font-size:13.5px;font-family:var(--display);color:var(--ink);
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 8px;
+  min-width:190px;flex:1 1 190px}
+.covrow input.covhrs{font-size:13.5px;font-family:inherit;font-variant-numeric:tabular-nums;
+  color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:6px 8px;width:100px}
+.covrow select.covwho:focus,.covrow input.covhrs:focus{outline:2px solid var(--sky);outline-offset:-1px}
+
+/* A text link that does something on the page, as distinct from a button that
+   sends something to MISMO. */
+.lnk{background:none;border:0;padding:0;font:inherit;font-size:12.5px;color:var(--navy-mid);
+  text-decoration:underline;text-underline-offset:2px;cursor:pointer;text-align:left}
+.lnk:hover{color:var(--navy)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .lnk{color:var(--sky)}
+  :root:not([data-theme="light"]) .lnk:hover{color:var(--sky-soft)}
+}
+:root[data-theme="dark"] .lnk{color:var(--sky)}
+:root[data-theme="dark"] .lnk:hover{color:var(--sky-soft)}
+.covdel{font-size:11.5px;color:var(--ink-3)}
+
+/* The pre-send check. */
+.checks{margin:8px 0 10px;padding-left:18px}
+.checks li{margin:4px 0;font-size:13px;line-height:1.5}
+
+@media(max-width:560px){
+  .covrow select.covwho,.covrow input.covhrs{flex:1 1 100%;width:100%;max-width:none}
+}
+
+/* ===== View As ============================================================
+   ⚠ Sticky, not repeated per section: it has to be impossible to forget whose
+   screen you are on, and a banner that scrolls away fails at exactly the
+   moment somebody is deep in a training session. */
+/* ⚠ It stuck at top:0 — which is exactly where the masthead already is, so on
+   a phone it sat on top of the MISMO logo.  It sticks BELOW the masthead. */
+.vabar{position:sticky;top:calc(var(--hq-h,64px) + env(safe-area-inset-top,0px));z-index:40;
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  padding:10px 16px;margin:0 0 14px;border-radius:0 0 10px 10px;
+  background:var(--navy);color:#fff;box-shadow:0 2px 10px rgba(6,32,47,.22)}
+.vabar .va-l{font-family:var(--mono);font-size:9px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--sky);white-space:nowrap}
+.vabar .va-c{font-weight:700;font-size:14px;white-space:nowrap}
+.vabar .va-r{font-size:12.5px;color:var(--sky-soft);min-width:0;overflow-wrap:anywhere}
+.vabar .va-ro{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;background:var(--warn);color:#2a1d05;border-radius:999px;
+  padding:3px 10px;white-space:nowrap}
+.vabar .va-out{font:inherit;font-size:12.5px;background:transparent;color:#fff;cursor:pointer;
+  border:1px solid rgba(255,255,255,.45);border-radius:6px;padding:5px 11px;white-space:nowrap}
+.vabar .va-out:hover{background:rgba(255,255,255,.12);border-color:#fff}
+.vabar .va-out:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
+
+/* ⚠ On a phone the banner was five lines deep and ate the screen before the
+   page began.  It keeps every piece of information and gives up the space. */
+@media(max-width:700px){
+  .vabar{gap:4px 8px;padding:8px 12px;margin-bottom:10px}
+  .vabar .va-l{font-size:9px;letter-spacing:.09em}
+  .vabar .va-c{font-size:13px;flex:1 1 auto;min-width:0}
+  .vabar .va-r{flex:1 1 100%;font-size:11.5px;line-height:1.35}
+  .vabar .va-ro{margin-left:0;order:3;font-size:9px;padding:2px 8px}
+  .vabar .va-out{order:4;margin-left:auto;padding:4px 10px;font-size:11.5px}
+}
+
+/* ===== The Status Board, in the HQ shape ==================================
+   Built on the shared .headline / .tiles / .cards / .hqcard rules in
+   style.css.  Only the two things the portal adds are here. */
+
+/* A company card is not a link — nothing opens from it — so it loses the
+   pointer and the hover lift the clickable HQ cards carry. */
+.hqcard.flat{cursor:default}
+.hqcard.flat:hover{border-color:var(--border)}
+
+/* The pipeline along the bottom of a company card.  ⚠ A stage with nothing in
+   it is greyed rather than dropped, so all five cards line up and the shape of
+   the pipeline reads the same on every one. */
+.stepline{display:flex;flex-wrap:wrap;gap:4px}
+.stp{display:inline-flex;align-items:center;gap:4px;border-radius:4px;padding:2px 6px;
+  font-size:11.5px;font-weight:600;background:var(--sky-wash);color:var(--navy-mid);
+  border:1px solid transparent;white-space:nowrap}
+.stp i{font-style:normal;font-variant-numeric:tabular-nums;font-weight:700}
+.stp.none{background:transparent;border-color:var(--border);color:var(--ink-3);font-weight:500}
+.stp.none i{color:var(--ink-3)}
+:root[data-theme="dark"] .stp{background:var(--surface-3);color:var(--sky-soft)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .stp{background:var(--surface-3);color:var(--sky-soft)}
+}
+
+/* Four tiles across is right at 1400px and wrong on a phone. */
+@media(max-width:900px){ .tiles{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:560px){ .tiles{grid-template-columns:1fr} }
+@media(max-width:1100px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:700px){ .cards{grid-template-columns:1fr} }
+
+/* ⚠ In dark mode the navy headline sits on a navy ground and all but
+   disappears.  The tiles inside carry their own borders so it never looked
+   broken — it just stopped reading as a block. */
+:root[data-theme="dark"] .headline{border:1px solid var(--border-strong)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .headline{border:1px solid var(--border-strong)}
+}
+
+/* ===== Hours, second pass =================================================
+   Health as a colour, the two notes side by side, and the month split. */
+
+/* ⚠ Health is a colour. A dropdown as wide as the hours box gave four words
+   the same weight as the figure, and the point of a health flag is being able
+   to see it without reading. The select stays for choosing; the dot is what
+   you read. */
+.healthpick{display:flex;align-items:center;gap:8px}
+.healthpick select{flex:1 1 auto;min-width:0}
+.hdot{flex:0 0 auto;width:13px;height:13px;border-radius:50%;display:inline-block;
+  border:1px solid rgba(13,49,76,.22)}
+.hdot.g{background:var(--good)}
+.hdot.y{background:var(--warn)}
+.hdot.r{background:var(--bad)}
+.hdot.none{background:transparent;border-style:dashed;border-color:var(--border-strong)}
+.hdot.na{width:auto;height:auto;border:0;border-radius:3px;padding:1px 6px;background:var(--surface-3);
+  color:var(--ink-3);font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;font-weight:600}
+.row-h .hdot{margin-left:2px}
+/* the Health column in a table wants to be narrow, not a third of the width */
+th.hcol,td.hcol{width:62px;text-align:center}
+td.hcol .hdot{margin:0 auto}
+
+/* A field that only ever holds a small number should not stretch to 220px. */
+.fields .f.narrow{max-width:210px}
+
+/* ⚠ The two notes are what MISMO actually reads. Side by side, five rows deep,
+   and draggable further — a one-line box that scrolls sideways is where a
+   status report goes to die. */
+.fields.notes2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.f textarea{font:inherit;font-size:13.5px;font-family:var(--display);color:var(--ink);
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;
+  width:100%;min-width:0;resize:vertical;line-height:1.5}
+.f textarea:hover{border-color:var(--border-strong)}
+.f textarea:focus{outline:2px solid var(--sky);outline-offset:-1px;background:var(--surface-2)}
+.f textarea:disabled{background:var(--sunk);color:var(--ink-3)}
+
+/* A block of quoted words in the panel — what somebody actually said. */
+.saidbox{margin:6px 0 14px;padding:10px 14px;border-left:3px solid var(--sky);
+  background:var(--sky-wash);border-radius:0 6px 6px 0;font-size:13.5px;line-height:1.55}
+:root[data-theme="dark"] .saidbox{background:var(--surface-2)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .saidbox{background:var(--surface-2)}
+}
+/* the panel's own content needs the same spacing the page has */
+.panel-b .fields{margin-top:0}
+.panel-b .subh{margin:16px 0 6px}
+
+/* ===== Health, as colour ==================================================
+   ⚠ Radio buttons wearing dots. A dropdown of the words Green, Yellow and Red
+   is not a health flag: the point is being able to take it in without reading.
+   The word stays on every one of them, because colour alone is not a label. */
+.hpick{display:flex;flex-wrap:wrap;gap:4px}
+.hbtn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:12.5px;
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:5px 9px;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.hbtn:hover:not(:disabled){border-color:var(--border-strong);color:var(--ink)}
+.hbtn:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
+.hbtn:disabled{opacity:.5;cursor:not-allowed}
+.hbtn .hd{width:11px;height:11px;border-radius:50%;flex:0 0 auto;
+  border:1px solid rgba(13,49,76,.22);background:var(--surface-3)}
+.hbtn.g .hd{background:var(--good)}
+.hbtn.y .hd{background:var(--warn)}
+.hbtn.r .hd{background:var(--bad)}
+.hbtn .hna{font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-3)}
+.hbtn.on{border-color:var(--navy);background:var(--sky-wash);color:var(--ink);font-weight:600}
+.hbtn.on .hd{box-shadow:0 0 0 2px var(--surface),0 0 0 3px currentColor}
+:root[data-theme="dark"] .hbtn.on{background:var(--surface-3);border-color:var(--sky)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .hbtn.on{background:var(--surface-3);border-color:var(--sky)}
+}
+/* at the narrowest, the words would wrap the row onto four lines */
+@media(max-width:480px){ .hbtn .hw{display:none} .hbtn{padding:6px 10px} }
+
+/* The Status Board sits on the page rather than inside a collapsible section,
+   so it needs the card the section used to give it. */
+.board{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:20px 22px;margin:0 0 18px;box-shadow:var(--shadow,0 1px 2px rgba(13,49,76,.06))}
+@media(max-width:700px){ .board{padding:16px 14px} }
+
+/* The signature block as it will look, before it can be used. */
+.sigprev{margin:16px 0 4px;border:1px dashed var(--border-strong);border-radius:9px;
+  padding:12px 14px;background:var(--sunk,var(--surface-2))}
+.sigprev-h{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:8px}
+.sigprev .onebar{margin:0}
+.sigprev input:disabled{background:var(--surface);color:var(--ink-3);cursor:not-allowed}
+.sigprev .gobtn:disabled{opacity:.4}
+
+/* ===== Grouped lists, the HQ's shape =====================================
+   A group header inside a row list, with the batch action on it. */
+.rgrp{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--surface-3);
+  border-bottom:1px solid var(--rule);font-size:11.5px;font-weight:700;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-2)}
+.rgrp > span{background:var(--surface);border:1px solid var(--border);border-radius:3px;
+  padding:0 6px;font-size:11.5px;letter-spacing:0;color:var(--ink)}
+.rgrp-go{margin-left:auto;font:inherit;font-size:11.5px;font-weight:600;letter-spacing:0;
+  text-transform:none;background:var(--navy);color:#fff;border:1px solid var(--navy);
+  border-radius:5px;padding:4px 11px;cursor:pointer;white-space:nowrap}
+.rgrp-go:hover{background:var(--navy-mid);border-color:var(--navy-mid)}
+:root[data-theme="dark"] .rgrp-go{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .rgrp-go{background:var(--sky);color:var(--navy-deep);border-color:var(--sky)}
+}
+/* the decide action inside the panel */
+.decidebar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+
+/* ===== The unsaved-changes question ======================================
+   ⚠ Hours are entered in the panel now, and a panel can be dismissed with a
+   stray click on the scrim or the Escape key.  Nothing is allowed to close
+   over unsaved work without asking — the same three-way question the Website
+   Migration HQ asks. */
+.modal{position:fixed;inset:0;z-index:150;background:rgba(6,32,47,.5);display:flex;
+  align-items:center;justify-content:center;padding:16px}
+.modal[hidden]{display:none!important}
+.modal-box{background:var(--surface);color:var(--ink);border:1px solid var(--border-strong);
+  border-radius:9px;box-shadow:0 18px 48px rgba(6,32,47,.35);padding:20px 22px;max-width:480px;width:100%}
+.modal-box h2{font-size:17px;font-weight:700;margin:0}
+.modal-box p{margin:6px 0 16px;color:var(--ink-2)}
+.modal-acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.gobtn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+.gobtn.danger:hover:not(:disabled){background:var(--bad-soft,var(--surface-3));color:var(--bad)}
+
+/* ===== The actions at the foot of a panel ================================
+   ⚠ This markup was carried over from the HQ without its styling, so the
+   buttons and the Unsaved label sat jammed together with nothing above them. */
+.rowacts{display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+  margin:20px 0 4px;padding-top:16px;border-top:1px solid var(--rule,var(--border))}
+.rowacts .unsaved{margin-right:auto;display:inline-flex;align-items:center;gap:7px;
+  font-size:12.5px;font-weight:600;color:var(--warn)}
+.rowacts .unsaved::before{content:"";width:7px;height:7px;border-radius:50%;
+  background:var(--warn);flex:0 0 auto}
+.rowacts .unsaved[hidden]{display:none}
+/* with nothing unsaved, the buttons still sit to the right */
+.rowacts .unsaved[hidden] + .gobtn{margin-left:auto}
+@media(max-width:480px){
+  .rowacts{gap:8px}
+  .rowacts .gobtn{flex:1 1 auto}
+}
+
+/* ===== The signed service orders =========================================
+   ⚠ Only on a signer's screen, and only for orders both parties have signed.
+   A facilitator's list is built separately and carries no document at all,
+   because the order has the rate written on it. */
+.signedbox{border:1px solid var(--border);border-radius:9px;padding:14px 16px 6px;
+  margin:0 0 20px;background:var(--surface-2)}
+.signedbox .subh{margin:0 0 4px}
+.signedbox .tbl{margin-top:10px}
+.signedbox .ackbar{margin-top:12px}
+
+/* ⚠ Even and aligned: the tick column is a fixed width, centred, and the row
+   height does not change when a box is ticked. The download column is fixed
+   too, so every button sits on the same edge. */
+.signtbl th.tick,.signtbl td.tick{width:38px;text-align:center;padding-left:10px;padding-right:0}
+.signtbl th.tick input,.signtbl td.tick input{width:16px;height:16px;margin:0;vertical-align:middle;
+  accent-color:var(--navy-mid);cursor:pointer;display:inline-block}
+.signtbl th.dl-col,.signtbl td.dl-col{width:1%;white-space:nowrap;text-align:right;
+  padding-right:12px}
+.signtbl td,.signtbl th{vertical-align:middle}
+.signtbl td{padding-top:9px;padding-bottom:9px}
+.signtbl .gobtn.ghost{padding:5px 12px;font-size:12.5px;font-weight:600}
+#signhost{display:none}
+
+/* every order starts a new sheet */
+@media print{ .pagebreak{break-before:page;page-break-before:always} }
+
+@media(max-width:560px){
+  .signedbox{padding:12px 12px 6px}
+  .signtbl th.dl-col,.signtbl td.dl-col{padding-right:8px}
+  .signtbl .gobtn.ghost{padding:5px 9px}
+}
+
+
+/* ── weeks still owed ───────────────────────────────────────────────────────
+   Decision 40. A missed week used to be unreachable, so this band is the only
+   thing standing between somebody and putting last week's hours on this
+   month's invoice. It sits ABOVE everything else in My Hours on purpose. */
+.owed{background:var(--surface);border:1px solid var(--warn);border-left:3px solid var(--warn);
+  border-radius:8px;padding:13px 16px;margin:0 0 18px}
+.owed-h{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:var(--ink)}
+.owed-n{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
+  padding:0 6px;border-radius:11px;background:var(--warn);color:#fff;font-size:11.5px;font-weight:700}
+:root[data-theme="dark"] .owed-n{color:var(--navy-deep)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .owed-n{color:var(--navy-deep)} }
+.owedrows{display:flex;flex-direction:column;margin:10px 0 0}
+.owedrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;
+  padding:9px 0;border-top:1px solid var(--rule)}
+.owedrow .owed-w{font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap}
+.owedrow .owed-s{font-size:12.5px;color:var(--ink-3);flex:1 1 180px;min-width:0}
+.owedrow .gobtn{margin-left:auto}
+@media(max-width:560px){
+  .owedrow{gap:6px 10px}
+  .owedrow .owed-s{flex:1 1 100%;order:3}
+  .owedrow .gobtn{margin-left:0;width:100%;order:4}
+}
+.owed .fineprint{margin-top:11px}
+
+/* =========================================================================
+ * ONE BUTTON SYSTEM, and nothing pill-shaped
+ *
+ * Jonna, 9 October: "these buttons are inconsistent size... make sure all
+ * buttons are consistent... there are no pill shaped anything".
+ *
+ * ⚠ Why this sits at the END of the stylesheet rather than being edited into
+ * each rule above: there were six button classes, each with its own font
+ * size (12.5, 13, 14), its own padding (6×13 up to 12×16) and its own radius
+ * (4, 6, 7, 24). Two of them side by side never lined up, and fixing them one
+ * at a time is how they drifted apart in the first place. The geometry is set
+ * ONCE here for every one of them; the individual rules above now only decide
+ * colour. A new button class added later and not listed here will look wrong
+ * next to these, which is the point — it has to be added to the list.
+ *
+ * Text links (.lnk) are deliberately not included: they are not buttons and
+ * must not grow button-shaped padding. The rail's own items are navigation,
+ * not content controls, and keep their own geometry.
+ * ======================================================================= */
+:root{ --btn-r:4px; }
+
+/* ⚠ The .ghost variants are listed too, and that is not belt and braces.
+   `.gobtn.ghost` is two classes, so it beats a single-class rule however far
+   down the file that rule sits — which is exactly how the ghost buttons kept
+   a 7px radius while the solid ones went to 4px. Matching specificity is the
+   only thing that settles it. */
+.gobtn, .tbtn, .printbtn, .mbtn, .chgbtn, .signgo, .covdel, .exec-go,
+.gobtn.ghost, .tbtn.ghost, .printbtn.ghost, .mbtn.ghost{
+  font-family:var(--display);
+  font-size:13px;
+  font-weight:600;
+  line-height:1.25;
+  padding:9px 16px;
+  border-width:1px;
+  border-style:solid;
+  border-radius:var(--btn-r);
+  cursor:pointer;
+  white-space:nowrap;
+  /* ⚠ The one line that makes two buttons the same height whatever is in
+     them: an icon, a count or a long company name all sit on the same
+     baseline box. */
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:36px;
+  box-sizing:border-box;
+}
+/* The only size that differs, and only because it is the full width of the
+   sign-in card and carries the weight of that screen on its own. */
+.signgo{ font-size:14px; min-height:44px; padding:12px 16px; display:block; width:100%; }
+/* Floating, so it keeps its shadow and its position — but not its 24px
+   radius, which made it the one pill left on the page. */
+.chgbtn{ border-radius:var(--btn-r); padding:9px 16px; }
+.chgbtn.on{ display:inline-flex; }
+.printbtn{ margin:14px 0 0; }
+/* ⚠ A count sitting inside a button must not make that button taller than the
+   one beside it. Its own line-height was doing exactly that — one pixel, on
+   every screen that pairs a counted button with a plain one. */
+.mbtn .mct, .gobtn .n, .tbtn .n, .chgbtn .n{ line-height:1; }
+
+/* ---- nothing pill-shaped --------------------------------------------------
+   Counts, tags, status chips and badges were drawn at 20px, 24px and 999px —
+   fully rounded. Squared to the same small radius the buttons use, so a chip
+   beside a button reads as part of the same system.
+   ⚠ Round DOTS are left alone on purpose: a 9px status dot is a dot, not a
+   pill, and squaring it would make it a speck. */
+.pill, .card .cnt, .chgbtn .n, .cvpick button, .railn, .cnt, .owed-n, .mct,
+.qc, .va-ro, .row.edited .row-h .rt::after{
+  border-radius:var(--btn-r) !important;
+}
+/* The two cards still at 12px, brought onto the 8px the rest of the page
+   uses, so no two panels round differently. */
+.cvframe, .signcard, .signwrap > *{ border-radius:8px; }
