@@ -369,6 +369,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   function whoCanISee() {
     var s = R.session() || {};
     var access = s.access || {};
+    /* A MISMO platform administrator can read every firm through the relay, so the
+       page shows all three rather than only the keys written on their account. */
+    if (s.platformAdmin) return FIRMS.slice();
     return FIRMS.filter(function (f) { return !!access[f.key]; });
   }
 
@@ -675,6 +678,15 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       el("as-pick").innerHTML = mine.map(function (f) {
         return '<option value="' + esc(f.key) + '">' + esc(f.slug) + "</option>";
       }).join("");
+      /* Label each firm with its own proper name, taken from its own file. */
+      mine.forEach(function (f) {
+        R.readOr(f.key, "engagements/" + f.slug + ".json", null).then(function (r) {
+          var d = r && r.data ? r.data : r;
+          var pick = el("as-pick");
+          var opt = pick && pick.querySelector('option[value="' + f.key + '"]');
+          if (opt && d && d.firm) opt.textContent = d.firm;
+        })["catch"](function () {});
+      });
       el("as-pick").addEventListener("change", function () {
         var k = this.value;
         var f = mine.filter(function (x) { return x.key === k; })[0];
