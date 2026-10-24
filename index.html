@@ -239,6 +239,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 
 <main id="as-main"></main>
 
+<!-- Where the relay lives. relay.js reads window.RELAY; without it every call
+     goes to a relative URL and nothing can sign in. Copied from Service Orders. -->
+<script>window.RELAY={"base": "https://rgvdi67cg27o5kcmiytcqbqnrm0hmztx.lambda-url.us-east-1.on.aws", "projects": ["so-phoenix", "so-actualize", "so-trex", "so-falcon", "so-trudigital", "so-vianteye", "so-phoenix-hours", "so-actualize-hours", "so-trex-hours", "so-falcon-hours", "so-trudigital-hours", "so-vianteye-hours"], "slugs": {"so-phoenix": "phoenixteam", "so-actualize": "actualize", "so-trex": "trex", "so-falcon": "falcon", "so-trudigital": "trudigital", "so-vianteye": "vianteye", "so-phoenix-hours": "phoenixteam", "so-actualize-hours": "actualize", "so-trex-hours": "trex", "so-falcon-hours": "falcon", "so-trudigital-hours": "trudigital", "so-vianteye-hours": "vianteye"}, "note": "base is the relay's Lambda function URL. projects is every key this page may sign in against, tried in turn; the token is not project-bound, so the first that works covers them all. slugs maps a project key to the filename its data uses. lite names the HOURS-ONLY keys: a person holding one of those can read orders-public/ and nothing else, so a rate is not merely hidden from their screen, it never reaches their browser. All four are configuration: a sixth company is a change HERE and in projects.json, and nowhere else.", "lite": ["so-phoenix-hours", "so-actualize-hours", "so-trex-hours", "so-falcon-hours", "so-trudigital-hours", "so-vianteye-hours"]};</script>
 <script src="relay.js"></script>
 <script>
 /* ── The assessor portal ──────────────────────────────────────────────────────
