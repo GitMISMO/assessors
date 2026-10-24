@@ -9,135 +9,215 @@
 <link rel="stylesheet" href="portal.css">
 <style>
 /* ── The assessor portal's own layer ────────────────────────────────────────
-   Everything above this comes from portal.css, which is the Service Orders
-   stylesheet copied across unchanged. Only what is genuinely new to this page
-   is declared here, prefixed as- so it can never collide with the chassis. */
+   Everything above comes from portal.css, the Service Orders stylesheet copied
+   across unchanged. Only what is new to this page is declared here, prefixed
+   as- so it can never collide with the chassis.
+
+   The shape follows the Certification Management System: a scannable list of
+   cards, and one record at a time in a panel on the right with labelled
+   sections. Nothing expands inline, because an engagement carries a twenty-odd
+   question questionnaire and inline expansion turns the list into a mile of
+   scroll where you cannot tell what is what. */
 
 /* Tags are rectangles here, not pills. */
 .chip, .as-tag{border-radius:3px}
-
 .as-tag{display:inline-flex;align-items:center;gap:5px;font-family:var(--display);
-  font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;
-  padding:2px 8px;border-radius:3px;background:var(--surface-3);color:var(--ink-2);
+  font-size:10px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;
+  padding:2px 7px;border-radius:3px;background:var(--surface-3);color:var(--ink-2);
   white-space:nowrap}
-.as-tag.wait{background:var(--sky-wash,#e4f2fb);color:var(--navy-mid,#14486e)}
-.as-tag.good{background:rgba(15,123,92,.12);color:var(--good)}
-.as-tag.warn{background:rgba(162,112,26,.14);color:var(--warn)}
+.as-tag.you{background:rgba(162,112,26,.16);color:var(--warn)}
+.as-tag.good{background:rgba(15,123,92,.13);color:var(--good)}
+.as-tag.bad{background:rgba(179,55,44,.12);color:var(--bad)}
+.as-tag.cool{background:var(--surface-3);color:var(--ink-2)}
 
-/* A row of engagements: shut by default, opens on a click anywhere on the row. */
-.as-rows{border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface)}
-.as-row{border-bottom:1px solid var(--rule,var(--border))}
-.as-row:last-child{border-bottom:0}
-.as-head{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;
-  border:0;padding:13px 16px;font:inherit;font-family:var(--display);color:var(--ink);
-  cursor:pointer}
-.as-head:hover{background:var(--surface-2)}
-.as-head:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
-.as-head .as-caret{width:14px;height:14px;flex:0 0 auto;fill:none;stroke:currentColor;
-  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--ink-3);
-  transition:transform .15s ease}
-.as-row.open .as-head .as-caret{transform:rotate(90deg)}
-.as-head .as-org{font-size:14px;font-weight:600;letter-spacing:-.008em;
-  flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.as-head .as-prog{font-family:var(--mono);font-size:11px;color:var(--ink-3);
-  white-space:nowrap;flex:0 0 auto}
-.as-head .as-age{font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums;
-  color:var(--ink-3);white-space:nowrap;flex:0 0 auto}
-@media(max-width:760px){
-  .as-head{flex-wrap:wrap}
-  .as-head .as-org{flex:1 0 100%}
-}
+.as-wrap{padding:26px 30px 90px}
+.as-pane{display:none}
+.as-pane.on{display:block}
+.as-h2{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:-.014em;
+  color:var(--ink);margin:0 0 4px}
+.as-asof{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-3);
+  margin:0 0 22px;font-variant-numeric:tabular-nums}
+.as-lede{font-family:var(--display);font-size:13.5px;color:var(--ink-2);line-height:1.6;
+  margin:0 0 20px}
 
-.as-body{display:none;padding:4px 16px 20px 42px;border-top:1px solid var(--rule,var(--border));
+/* The headline card, in the shape the Action Queue uses */
+.as-top{background:var(--navy,#0d314c);border-radius:11px;padding:20px 22px;margin-bottom:26px}
+.as-say1{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.5;
+  letter-spacing:-.008em;color:#fff;margin:0 0 17px}
+.as-say1 b{color:var(--sky,#74bfeb);font-weight:700}
+.as-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:11px}
+.as-tile{background:rgba(255,255,255,.07);border:1px solid rgba(116,191,235,.22);
+  border-radius:8px;padding:12px 14px}
+.as-tile .n{font-family:var(--display);font-size:25px;font-weight:700;line-height:1.1;
+  color:#fff;font-variant-numeric:tabular-nums}
+.as-tile .k{font-family:var(--display);font-size:12px;font-weight:600;color:var(--sky,#74bfeb);
+  margin-top:3px}
+.as-tile .s{font-family:var(--display);font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
+.as-tile.hot .n{color:var(--sky,#74bfeb)}
+
+/* The list: a heading per group, then cards */
+.as-grp{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  font-weight:700;color:var(--ink-3);margin:26px 0 9px;padding-bottom:5px;
+  border-bottom:1px solid var(--rule,var(--border))}
+.as-grp:first-of-type{margin-top:0}
+.as-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(316px,1fr));gap:11px}
+.as-card{position:relative;text-align:left;width:100%;background:var(--surface);
+  border:1px solid var(--border);border-left:3px solid var(--border-strong);
+  border-radius:8px;padding:13px 15px;font:inherit;font-family:var(--display);
+  color:var(--ink);cursor:pointer}
+.as-card:hover{border-color:var(--border-strong);background:var(--surface-2)}
+.as-card:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.as-card.you{border-left-color:var(--warn)}
+.as-card .org{font-size:14.5px;font-weight:600;letter-spacing:-.008em;line-height:1.25;
+  overflow-wrap:anywhere}
+.as-card .sub{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:2px;
+  overflow-wrap:anywhere}
+.as-card .meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:9px}
+.as-card .age{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;margin-left:auto}
+
+.as-empty{border:1px dashed var(--border-strong);border-radius:9px;padding:34px 24px;
+  text-align:center;color:var(--ink-3);font-family:var(--display);font-size:13.5px;
   background:var(--surface-2)}
-.as-row.open .as-body{display:block}
+.as-bad{border:1px solid var(--bad);border-radius:8px;background:rgba(179,55,44,.08);
+  color:var(--bad);font-family:var(--display);font-size:13px;padding:12px 14px;margin-bottom:18px}
 
-.as-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
-  gap:12px 20px;margin:16px 0 4px}
+/* The panel on the right, one engagement at a time */
+.as-panel{position:fixed;top:0;right:0;bottom:0;width:min(680px,calc(100vw - 56px));z-index:121;
+  background:var(--ground);border-left:1px solid var(--border-strong);
+  box-shadow:-10px 0 34px rgba(6,32,47,.28);display:none;flex-direction:column}
+.as-panel.on{display:flex}
+.as-panel.wide{width:min(1100px,calc(100vw - 56px))}
+.as-scrim{position:fixed;inset:0;z-index:120;background:rgba(6,32,47,.42);border:0;padding:0;display:none}
+.as-scrim.on{display:block}
+.as-ph{display:flex;align-items:flex-start;gap:12px;padding:15px 20px;background:var(--surface);
+  border-bottom:1px solid var(--border);flex:0 0 auto}
+.as-ph h3{font-family:var(--display);font-size:17px;font-weight:700;letter-spacing:-.012em;
+  color:var(--ink);margin:0;line-height:1.25;overflow-wrap:anywhere}
+.as-ph .sub{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:3px;
+  overflow-wrap:anywhere}
+.as-ph .acts{margin-left:auto;display:flex;gap:6px;flex:0 0 auto}
+.as-ic{width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--border-strong);border-radius:5px;
+  color:var(--ink-2);cursor:pointer;padding:0}
+.as-ic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.as-ic:hover{background:var(--surface-3);color:var(--ink)}
+.as-ic:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
+.as-pb{overflow:auto;padding:0 20px 70px;flex:1 1 auto}
+
+/* A section inside the panel: shut by default, opens on a click on its heading */
+.as-sec{border-bottom:1px solid var(--rule,var(--border))}
+.as-sh{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
+  border:0;padding:15px 0;font:inherit;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:var(--ink-2);
+  cursor:pointer}
+.as-sh:hover{color:var(--ink)}
+.as-sh:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+.as-sh .cv{width:13px;height:13px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2.2;
+  stroke-linecap:round;stroke-linejoin:round;color:var(--ink-3);transition:transform .15s ease}
+.as-sec.open .as-sh .cv{transform:rotate(90deg)}
+.as-sh .cnt{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--ink-3);
+  letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.as-sb{display:none;padding:0 0 20px}
+.as-sec.open .as-sb{display:block}
+.as-sec.always .as-sb{display:block}
+
+.as-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(152px,1fr));gap:15px 22px}
 .as-k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
   font-weight:700;color:var(--ink-3);margin-bottom:2px}
-.as-v{font-family:var(--display);font-size:13.5px;font-weight:500;color:var(--ink);
+.as-v{font-family:var(--display);font-size:14px;font-weight:500;color:var(--ink);
   font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.as-v.none{color:var(--ink-3);font-weight:400;font-style:normal}
+.as-v.none{color:var(--ink-3);font-weight:400}
+.as-note{font-family:var(--display);font-size:12.5px;color:var(--ink-3);margin:14px 0 0}
 
-.as-sect{margin-top:26px}
-.as-sect > h4{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.04em;
-  text-transform:uppercase;color:var(--ink-2);margin:0 0 9px;
-  padding-bottom:5px;border-bottom:1px solid var(--rule,var(--border))}
-
+/* The questionnaire, one closed block per section of the form */
+.as-qsec{border:1px solid var(--border);border-radius:7px;background:var(--surface);
+  margin-bottom:8px;overflow:hidden}
+.as-qh{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;
+  border:0;padding:11px 13px;font:inherit;font-family:var(--display);font-size:13px;
+  font-weight:600;color:var(--ink);cursor:pointer}
+.as-qh:hover{background:var(--surface-2)}
+.as-qh:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+.as-qh .cv{width:12px;height:12px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2.2;
+  stroke-linecap:round;stroke-linejoin:round;color:var(--ink-3);transition:transform .15s ease}
+.as-qsec.open .as-qh .cv{transform:rotate(90deg)}
+.as-qh .cnt{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+.as-qb{display:none;padding:2px 13px 10px;border-top:1px solid var(--rule,var(--border))}
+.as-qsec.open .as-qb{display:block}
 .as-qa{margin:0;padding:0;list-style:none}
-.as-qa li{padding:9px 0;border-bottom:1px solid var(--rule,var(--border))}
+.as-qa li{padding:10px 0;border-bottom:1px solid var(--rule,var(--border))}
 .as-qa li:last-child{border-bottom:0}
 .as-qa .q{font-family:var(--display);font-size:12px;font-weight:600;color:var(--ink-2);
   margin-bottom:3px}
-.as-qa .a{font-family:var(--display);font-size:13px;color:var(--ink);line-height:1.5;
+.as-qa .a{font-family:var(--display);font-size:13px;color:var(--ink);line-height:1.55;
   overflow-wrap:anywhere;white-space:pre-wrap}
 .as-qa .a.none{color:var(--ink-3);font-style:italic}
-.as-qa li.as-qs{font-family:var(--mono);font-size:9px;letter-spacing:.1em;
-  text-transform:uppercase;font-weight:700;color:var(--ink-3);
-  padding:14px 0 4px;border-bottom:0}
-.as-qa li.as-qs:first-child{padding-top:2px}
 
-.as-hist{font-family:var(--display);font-size:13px;color:var(--ink)}
-.as-hist div{padding:7px 0;border-bottom:1px solid var(--rule,var(--border))}
+.as-hist div{padding:9px 0;border-bottom:1px solid var(--rule,var(--border));
+  font-family:var(--display);font-size:13px;color:var(--ink)}
 .as-hist div:last-child{border-bottom:0}
 .as-hist b{font-weight:600}
-.as-hist span{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:8px;
+.as-hist span{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-left:8px;
   font-variant-numeric:tabular-nums}
 
 /* Recording a finding */
 .as-find label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
   text-transform:uppercase;font-weight:700;color:var(--ink-3);margin:0 0 4px}
-.as-find .as-f{margin-bottom:12px}
-.as-find select, .as-find textarea, .as-find input[type="text"]{
-  width:100%;background:var(--surface);border:1px solid var(--border-strong);border-radius:5px;
-  color:var(--ink);font:inherit;font-family:var(--display);font-size:13px;padding:8px 10px}
-.as-find textarea{min-height:92px;resize:vertical;line-height:1.5}
-.as-find select:focus, .as-find textarea:focus, .as-find input:focus{
-  outline:2px solid var(--sky);outline-offset:-1px}
-.as-go{background:var(--navy,#0d314c);color:#fff;border:0;border-radius:5px;
-  padding:9px 18px;font:inherit;font-family:var(--display);font-size:13px;font-weight:600;
-  cursor:pointer;white-space:nowrap;min-width:max-content}
+.as-f{margin-bottom:13px}
+.as-find select, .as-find textarea{width:100%;background:var(--surface);
+  border:1px solid var(--border-strong);border-radius:5px;color:var(--ink);font:inherit;
+  font-family:var(--display);font-size:13px;padding:9px 10px}
+.as-find textarea{min-height:98px;resize:vertical;line-height:1.55}
+.as-find select:focus, .as-find textarea:focus{outline:2px solid var(--sky);outline-offset:-1px}
+.as-go{background:var(--navy,#0d314c);color:#fff;border:0;border-radius:5px;padding:10px 18px;
+  font:inherit;font-family:var(--display);font-size:13px;font-weight:600;cursor:pointer;
+  white-space:nowrap;min-width:max-content}
 .as-go:hover:not(:disabled){background:var(--navy-mid,#14486e)}
 .as-go:disabled{opacity:.45;cursor:not-allowed}
 .as-go:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 .as-say{font-family:var(--display);font-size:12.5px;margin-left:12px}
 .as-say.ok{color:var(--good)}
 .as-say.bad{color:var(--bad)}
+.as-one{border:1px solid var(--border);border-radius:6px;background:var(--surface);
+  padding:11px 13px;margin-bottom:8px}
+.as-one p{margin:7px 0 0;font-family:var(--display);font-size:13px;color:var(--ink);
+  line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.as-when{font-family:var(--mono);font-size:10px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 
-.as-logged{margin-bottom:16px}
-.as-logged .as-one{border:1px solid var(--border);border-radius:6px;background:var(--surface);
-  padding:10px 12px;margin-bottom:8px}
-.as-logged .as-one p{margin:6px 0 0;font-family:var(--display);font-size:13px;color:var(--ink);
-  line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
-.as-logged .as-when{font-family:var(--mono);font-size:10px;color:var(--ink-3);
-  font-variant-numeric:tabular-nums}
+/* Help */
+.as-help h3{font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:-.008em;
+  color:var(--ink);margin:30px 0 7px}
+.as-help h3:first-child{margin-top:0}
+.as-help p{font-family:var(--display);font-size:13.5px;color:var(--ink-2);line-height:1.65;
+  margin:0 0 11px}
+.as-help ul{margin:0 0 13px;padding-left:19px}
+.as-help li{font-family:var(--display);font-size:13.5px;color:var(--ink-2);line-height:1.65;
+  margin-bottom:6px}
+.as-help b{color:var(--ink);font-weight:600}
+.as-help .as-box{border:1px solid var(--border);border-left:3px solid var(--sky,#74bfeb);
+  border-radius:7px;background:var(--surface);padding:13px 15px;margin:0 0 15px}
+.as-help .as-box p:last-child{margin-bottom:0}
+.as-help table{width:100%;border-collapse:collapse;margin:0 0 15px;
+  font-family:var(--display);font-size:13px}
+.as-help th{text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:700;padding:7px 10px;
+  background:var(--surface-3);border-bottom:1px solid var(--border-strong)}
+.as-help td{padding:9px 10px;border-bottom:1px solid var(--rule,var(--border));
+  color:var(--ink-2);vertical-align:top}
+.as-help td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
 
-.as-empty{border:1px dashed var(--border-strong);border-radius:9px;padding:34px 24px;
-  text-align:center;color:var(--ink-3);font-family:var(--display);font-size:13.5px;
-  background:var(--surface-2)}
-.as-lede{font-family:var(--display);font-size:13.5px;color:var(--ink-2);line-height:1.6;
-  margin:0 0 20px;max-width:none}
-.as-h2{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:-.012em;
-  color:var(--ink);margin:0 0 4px}
-.as-asof{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-3);
-  margin:0 0 20px;font-variant-numeric:tabular-nums}
-.as-pane{display:none}
-.as-pane.on{display:block}
-.as-wrap{padding:26px 30px 90px}
-.as-bad{border:1px solid var(--bad);border-radius:8px;background:rgba(179,55,44,.08);
-  color:var(--bad);font-family:var(--display);font-size:13px;padding:12px 14px;margin-bottom:18px}
 .as-sign-out{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;
   border-radius:5px;padding:5px 10px;font:inherit;font-family:var(--display);font-size:11.5px;
   cursor:pointer;white-space:nowrap;min-width:max-content}
 .as-sign-out:hover{background:rgba(255,255,255,.18)}
 
-/* Signed out there is no rail, so nothing should be held clear of one. */
-body.as-noshell{padding-left:0}
-body.as-noshell .hqtop{margin-left:0;width:100%}
 /* .hq.rail sets display:flex, which beats the browser's own rule for [hidden],
    so the rail has to be told explicitly to go away when it is hidden. */
 .hq.rail[hidden]{display:none}
+body.as-noshell{padding-left:0}
+body.as-noshell .hqtop{margin-left:0;width:100%}
 body.as-noshell .railscrim{display:none}
 </style>
 </head>
@@ -222,9 +302,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     <button type="button" data-hq="found" title="Findings Recorded">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
       <span>Findings Recorded</span></button>
-    <button type="button" data-hq="about" title="About This Portal">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
-      <span>About This Portal</span></button>
+    <button type="button" data-hq="help" title="Help">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 114.3 2c-.9.7-1.9 1.2-1.9 2.4M12 17.2h.01"/></svg>
+      <span>Help</span></button>
   </nav>
 
   <div class="railsum" id="as-pickwrap" hidden>
@@ -243,6 +323,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 <div class="railscrim" id="rail-scrim"></div>
 
 <main id="as-main"></main>
+<div class="as-scrim" id="as-scrim"></div>
+<aside class="as-panel" id="as-panel" aria-label="Engagement"></aside>
 
 <!-- Where the relay lives. relay.js reads window.RELAY; without it every call
      goes to a relative URL and nothing can sign in. Copied from Service Orders. -->
@@ -257,7 +339,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
  * was found last time.
  *
  * It sees nothing else. Not another firm's work, not what the company was
- * charged, not MISMO's revenue — because none of that is in the file it is
+ * charged, not MISMO's revenue - because none of that is in the file it is
  * given. The cutting happens on the server, in cms-data's build-engagements.js,
  * before anything is published. This page could not show those figures if it
  * tried.
@@ -274,7 +356,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   var R = window.MISMO_RELAY;
 
   /* The three firms with a portal. A person sees a firm only if their account
-     holds that firm's key — the list here just says which keys mean "assessor".
+     holds that firm's key - the list here just says which keys mean "assessor".
      The firm's proper name comes out of its own file, never typed in here. */
   var FIRMS = [
     { key: "as-falcon",    slug: "falcon" },
@@ -283,19 +365,32 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   ];
 
   var OUTCOMES = [
-    { v: "",                     t: "Choose an outcome" },
-    { v: "pass",                 t: "Meets the standard" },
-    { v: "fail",                 t: "Does not meet the standard" },
-    { v: "recommend_remediation",t: "Remediation recommended" },
-    { v: "waiting_on_artifact",  t: "Waiting on an artifact" },
-    { v: "note",                 t: "Observation, no outcome" }
+    { v: "",                      t: "Choose an outcome" },
+    { v: "pass",                  t: "No findings — meets the standard" },
+    { v: "fail",                  t: "Finding — does not meet the standard" },
+    { v: "recommend_remediation", t: "Finding — remediation recommended" },
+    { v: "waiting_on_artifact",   t: "Waiting on an artifact" },
+    { v: "note",                  t: "Observation, no outcome" }
   ];
+
+  /* Who the certification is waiting on, in the order an assessor cares. */
+  var ORDER = ["Assessor", "MISMO + Company", "Company", "MISMO"];
+  var GROUP_LABEL = {
+    "Assessor": "Waiting on You",
+    "MISMO + Company": "Waiting on MISMO and the Company",
+    "Company": "Waiting on the Company",
+    "MISMO": "Waiting on MISMO"
+  };
 
   var mine = [];        /* the firms this account can see */
   var current = null;   /* the one being shown */
   var book = null;      /* its engagements file */
   var findings = {};    /* row -> the findings file for that engagement */
-  var openRows = {};    /* which rows the person has opened */
+  var openRow = null;   /* the engagement in the panel, if any */
+  var openSecs = { find: true };  /* which panel sections are open */
+  var openQ = {};       /* which questionnaire sections are open */
+  var wide = false;
+  var pane = "open";
 
   /* ---- small helpers ------------------------------------------------------ */
   function esc(s) {
@@ -318,12 +413,26 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     for (var i = 0; i < OUTCOMES.length; i++) if (OUTCOMES[i].v === v) return OUTCOMES[i].t;
     return v || "";
   }
+  function outcomeTone(v) {
+    if (v === "pass") return "good";
+    if (v === "fail" || v === "recommend_remediation") return "bad";
+    return "cool";
+  }
+  function list() { return (book && book.engagements) || []; }
+  function byRow(row) {
+    return list().filter(function (e) { return String(e.row) === String(row); })[0] || null;
+  }
+  function countFindings(row) {
+    var d = findings[row];
+    return (d && d.entries) ? d.entries.length : 0;
+  }
 
   /* ---- the sign-in card --------------------------------------------------- */
   function gate(note) {
-    document.getElementById("rail").hidden = true;
+    el("rail").hidden = true;
     document.body.classList.add("as-noshell");
     el("as-out").hidden = true;
+    shut();
     el("as-main").innerHTML =
       '<div class="signwrap"><div class="signcard">' +
         '<div class="signmark">' +
@@ -384,6 +493,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     current = firm;
     book = null;
     findings = {};
+    shut();
     paint();
     return R.read(firm.key, "engagements/" + firm.slug + ".json")
       .then(function (r) {
@@ -402,102 +512,227 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       return R.readOr(current.key, "findings/" + e.row + ".json", null)
         .then(function (r) {
           var d = r && r.data ? r.data : r;
-          if (d && d.entries) findings[e.row] = d;
+          if (d && d.entries && d.entries.length) findings[e.row] = d;
         })["catch"](function () { /* no findings yet is not an error */ });
     })).then(paint);
   }
 
-  /* ---- the engagement list ------------------------------------------------ */
-  function detail(e) {
+  /* ---- the list ----------------------------------------------------------- */
+  function headline() {
+    var all = list();
+    var you = all.filter(function (e) { return e.waiting === "Assessor"; }).length;
+    var old = all.filter(function (e) { return (e.age || 0) > 30; }).length;
+    var rec = Object.keys(findings).reduce(function (n, k) { return n + countFindings(k); }, 0);
+
+    var says = "<b>" + all.length + "</b> engagement" + (all.length === 1 ? " is" : "s are") + " open.";
+    says += you
+      ? " <b>" + you + "</b> " + (you === 1 ? "is" : "are") + " waiting on you."
+      : " None are waiting on you right now.";
+    if (old) says += " <b>" + old + "</b> " + (old === 1 ? "has" : "have") + " been open more than 30 days.";
+
+    function tile(n, k, s, hot) {
+      return '<div class="as-tile' + (hot ? " hot" : "") + '"><div class="n">' + n + "</div>" +
+        '<div class="k">' + esc(k) + "</div>" +
+        (s ? '<div class="s">' + esc(s) + "</div>" : "") + "</div>";
+    }
+    return '<div class="as-top"><p class="as-say1">' + says + "</p>" +
+      '<div class="as-tiles">' +
+        tile(all.length, "Open Engagements", "assigned to your firm") +
+        tile(you, "Waiting on You", you ? "your move" : "nothing to do", !!you) +
+        tile(old, "Over 30 Days", "open a while") +
+        tile(rec, "Findings Recorded", "by your firm") +
+      "</div></div>";
+  }
+
+  function card(e) {
+    var you = e.waiting === "Assessor";
+    var n = countFindings(e.row);
+    return '<button class="as-card' + (you ? " you" : "") + '" type="button" data-open="' +
+        esc(e.row) + '">' +
+      '<div class="org">' + esc(e.org || "") + "</div>" +
+      '<div class="sub">' + esc(e.program || "") +
+        (e.product ? " · " + esc(e.product) : "") +
+        (e.kind === "renewal" ? " · Renewal" + (e.renewalNumber ? " " + e.renewalNumber : "") : "") +
+        "</div>" +
+      '<div class="meta">' +
+        '<span class="as-tag' + (you ? " you" : "") + '">' + esc(e.stateLabel || e.state || "") + "</span>" +
+        (n ? '<span class="as-tag good">' + n + " finding" + (n === 1 ? "" : "s") + "</span>" : "") +
+        '<span class="age">' + (e.age == null ? "" : esc(e.age) + " days") + "</span>" +
+      "</div></button>";
+  }
+
+  function paneOpen() {
+    if (!book) return '<div class="as-empty">Loading your engagements…</div>';
+    if (book.error) {
+      return '<div class="as-bad">Your engagements could not be loaded. ' + esc(book.error) + "</div>";
+    }
+    var all = list();
+    if (!all.length) {
+      return '<h2 class="as-h2">Engagements</h2>' +
+        '<div class="as-empty">Nothing is assigned to your firm at the moment. When MISMO ' +
+        "assigns a certification to you it appears here the same day.</div>";
+    }
+
+    var groups = {};
+    all.forEach(function (e) {
+      var w = e.waiting || "MISMO";
+      (groups[w] = groups[w] || []).push(e);
+    });
+    var keys = Object.keys(groups).sort(function (a, b) {
+      var ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+
+    var out = '<h2 class="as-h2">Engagements</h2>' +
+      '<p class="as-asof">' + esc(book.firm || "") + " · as of " +
+        esc(day(book.asOf) || day(book.writtenAt) || "") + "</p>" +
+      headline();
+
+    keys.forEach(function (w) {
+      var g = groups[w].slice().sort(function (a, b) { return (b.age || 0) - (a.age || 0); });
+      out += '<div class="as-grp">' + esc(GROUP_LABEL[w] || ("Waiting on " + w)) +
+        " · " + g.length + "</div>" +
+        '<div class="as-cards">' + g.map(card).join("") + "</div>";
+    });
+    return out;
+  }
+
+  function paneFound() {
+    var all = [];
+    Object.keys(findings).forEach(function (row) {
+      var e = byRow(row) || {};
+      (findings[row].entries || []).forEach(function (f) {
+        all.push({ row: row, org: e.org, program: e.program, f: f });
+      });
+    });
+    if (!all.length) {
+      return '<h2 class="as-h2">Findings Recorded</h2>' +
+        '<div class="as-empty">Nothing recorded yet. Open an engagement and use the Findings ' +
+        "section at the foot of it; whatever you record shows here as well.</div>";
+    }
+    all.sort(function (a, b) { return String(b.f.at).localeCompare(String(a.f.at)); });
+    return '<h2 class="as-h2">Findings Recorded</h2>' +
+      '<p class="as-lede">Everything your firm has recorded, newest first. Click one to open ' +
+      "the engagement it belongs to.</p>" +
+      all.map(function (x) {
+        return '<div class="as-one"><span class="as-tag ' + outcomeTone(x.f.outcome) + '">' +
+          esc(outcomeText(x.f.outcome)) + "</span> " +
+          '<span class="as-when">' + esc(x.org || "") +
+          (x.program ? " · " + esc(x.program) : "") + " · " +
+          esc(day(x.f.at) || "") + (x.f.by ? " · " + esc(x.f.by) : "") + "</span>" +
+          "<p>" + esc(x.f.text || "") + "</p></div>";
+      }).join("");
+  }
+
+  /* ---- the panel ---------------------------------------------------------- */
+  function sec(id, title, count, body, always) {
+    var open = always || !!openSecs[id];
+    return '<div class="as-sec' + (open ? " open" : "") + (always ? " always" : "") +
+        '" data-sec="' + id + '">' +
+      '<button class="as-sh" type="button" data-sectog="' + id + '" aria-expanded="' +
+        (open ? "true" : "false") + '">' +
+        (always ? "" : '<svg class="cv" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>') +
+        "<span>" + esc(title) + "</span>" +
+        (count != null ? '<span class="cnt">' + esc(count) + "</span>" : "") +
+      "</button>" +
+      '<div class="as-sb">' + body + "</div></div>";
+  }
+
+  function facts(e) {
     var bits = [];
     function add(k, v) {
       bits.push('<div><div class="as-k">' + esc(k) + "</div>" +
         '<div class="as-v' + (v == null ? " none" : "") + '">' +
         esc(v == null ? "Not recorded" : v) + "</div></div>");
     }
+    add("Where It Stands", e.stateLabel || e.state);
+    add("Phase", e.phase);
+    add("Waiting On", e.waiting === "Assessor" ? "You" : e.waiting);
+    add("Days in This State", e.age == null ? null : e.age);
     add("Program", e.program);
     add("Product", e.product);
     add("Kind", e.kind === "renewal"
       ? ("Renewal" + (e.renewalNumber ? " " + e.renewalNumber : ""))
       : (e.kind === "initial" ? "First certification" : e.kind));
-    add("Where It Stands", e.stateLabel || e.state);
-    add("Waiting On", e.waiting);
-    add("Days in This State", e.age == null ? null : e.age);
     add("Your Fee", money(e.assessorFee));
     add("Demonstration", day(e.demoOn));
-
     var cs = e.certificationScript || {};
     add("Certification Script", cs.sent ? ("Sent " + (day(cs.sentOn) || "")) : "Not sent yet");
-
     var p = e.prelim || {};
-    var scored = (p.scored || 0);
-    add("Preliminary Scoring", scored
-      ? (scored + " scored, " + (p.fails || 0) + " not met, " + (p.waitingOnArtifact || 0) + " awaiting an artifact")
+    add("Preliminary Scoring", (p.scored || 0)
+      ? ((p.scored) + " scored, " + (p.fails || 0) + " not met, " +
+         (p.waitingOnArtifact || 0) + " awaiting an artifact")
       : null);
-
     var out = '<div class="as-grid">' + bits.join("") + "</div>";
-
-    if (Array.isArray(e.answers) && e.answers.length) {
-      /* The questionnaire comes through with capitalised keys - Section, Question,
-         Answer - so read those, and group the list by section the way the applicant
-         filled it in. A question left blank is shown as unanswered rather than hidden:
-         what an applicant did not say can matter as much as what it did. */
-      out += '<div class="as-sect"><h4>What the Applicant Told Us</h4><ul class="as-qa">';
-      var sec = null;
-      e.answers.forEach(function (a) {
-        if (!a) return;
-        var s = a.Section || a.section || "";
-        var q = a.Question || a.question || a.q || a.label || "";
-        var v = (a.Answer !== undefined) ? a.Answer
-              : (a.answer !== undefined) ? a.answer
-              : a.a;
-        if (s && s !== sec) {
-          sec = s;
-          out += '<li class="as-qs">' + esc(s) + '</li>';
-        }
-        var blank = (v == null || String(v).trim() === "");
-        out += '<li>' + (q ? '<div class="q">' + esc(q) + '</div>' : '') +
-          '<div class="a' + (blank ? ' none' : '') + '">' +
-          esc(blank ? 'No answer given' : v) + '</div></li>';
-      });
-      out += "</ul></div>";
+    if (e.assessorFee == null) {
+      out += '<p class="as-note">MISMO has not recorded a fee against this engagement yet. ' +
+        "That is a gap in MISMO's records, not a statement that the work is unpaid.</p>";
     }
-
-    if (Array.isArray(e.history) && e.history.length) {
-      out += '<div class="as-sect"><h4>Earlier Certifications</h4><div class="as-hist">';
-      e.history.forEach(function (h) {
-        out += "<div><b>" + esc(h.program || "") +
-          (h.product ? " — " + esc(h.product) : "") + "</b>" +
-          "<span>first certified " + esc(day(h.originalCertifiedOn) || "not recorded") +
-          (h.completedRenewals != null ? " · " + h.completedRenewals + " renewal" +
-            (h.completedRenewals === 1 ? "" : "s") : "") +
-          (h.status ? " · " + esc(h.status) : "") + "</span></div>";
-      });
-      out += "</div></div>";
-    }
-
-    out += findingsBlock(e);
     return out;
   }
 
-  function findingsBlock(e) {
-    var doc = findings[e.row];
-    var out = '<div class="as-sect as-find"><h4>Findings</h4>';
+  function questionnaire(e) {
+    var rows = Array.isArray(e.answers) ? e.answers : [];
+    if (!rows.length) return '<p class="as-note">No questionnaire answers came through for this one.</p>';
+    /* The questionnaire arrives with capitalised keys - Section, Question, Answer.
+       Group it the way the applicant filled it in, one closed block per section. */
+    var secs = [], byName = {};
+    rows.forEach(function (a) {
+      if (!a) return;
+      var s = a.Section || a.section || "Questionnaire";
+      if (!byName[s]) { byName[s] = []; secs.push(s); }
+      byName[s].push(a);
+    });
+    return secs.map(function (s, i) {
+      var id = e.row + "|" + i;
+      var open = !!openQ[id];
+      var body = '<ul class="as-qa">' + byName[s].map(function (a) {
+        var q = a.Question || a.question || a.q || a.label || "";
+        var v = (a.Answer !== undefined) ? a.Answer
+              : (a.answer !== undefined) ? a.answer : a.a;
+        var blank = (v == null || String(v).trim() === "");
+        return "<li>" + (q ? '<div class="q">' + esc(q) + "</div>" : "") +
+          '<div class="a' + (blank ? " none" : "") + '">' +
+          esc(blank ? "No answer given" : v) + "</div></li>";
+      }).join("") + "</ul>";
+      return '<div class="as-qsec' + (open ? " open" : "") + '">' +
+        '<button class="as-qh" type="button" data-qtog="' + esc(id) + '" aria-expanded="' +
+          (open ? "true" : "false") + '">' +
+          '<svg class="cv" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>' +
+          "<span>" + esc(s) + "</span>" +
+          '<span class="cnt">' + byName[s].length + "</span>" +
+        "</button>" +
+        '<div class="as-qb">' + body + "</div></div>";
+    }).join("");
+  }
 
+  function history(e) {
+    var h = Array.isArray(e.history) ? e.history : [];
+    if (!h.length) return '<p class="as-note">No earlier certification for this company in this program.</p>';
+    return '<div class="as-hist">' + h.map(function (x) {
+      return "<div><b>" + esc(x.program || "") +
+        (x.product ? " — " + esc(x.product) : "") + "</b>" +
+        "<span>first certified " + esc(day(x.originalCertifiedOn) || "not recorded") +
+        (x.completedRenewals != null ? " · " + x.completedRenewals + " renewal" +
+          (x.completedRenewals === 1 ? "" : "s") : "") +
+        (x.status ? " · " + esc(x.status) : "") + "</span></div>";
+    }).join("") + "</div>";
+  }
+
+  function findingsBody(e) {
+    var doc = findings[e.row];
+    var out = "";
     if (doc && doc.entries && doc.entries.length) {
-      out += '<div class="as-logged">';
-      doc.entries.slice().reverse().forEach(function (f) {
-        out += '<div class="as-one"><span class="as-tag ' +
-          (f.outcome === "pass" ? "good" : (f.outcome === "fail" ? "warn" : "")) + '">' +
-          esc(outcomeText(f.outcome)) + '</span> ' +
+      out += doc.entries.slice().reverse().map(function (f) {
+        return '<div class="as-one"><span class="as-tag ' + outcomeTone(f.outcome) + '">' +
+          esc(outcomeText(f.outcome)) + "</span> " +
           '<span class="as-when">' + esc(day(f.at) || "") +
           (f.by ? " · " + esc(f.by) : "") + "</span>" +
           "<p>" + esc(f.text || "") + "</p></div>";
-      });
-      out += "</div>";
+      }).join("");
     }
-
-    out += '<div class="as-f"><label for="fo-' + e.row + '">Outcome</label>' +
+    out += '<div class="as-find">' +
+      '<div class="as-f"><label for="fo-' + e.row + '">Outcome</label>' +
       '<select id="fo-' + e.row + '">' +
       OUTCOMES.map(function (o) {
         return '<option value="' + esc(o.v) + '">' + esc(o.t) + "</option>";
@@ -510,17 +745,170 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return out;
   }
 
+  function drawPanel() {
+    var p = el("as-panel");
+    if (openRow == null) { p.className = "as-panel"; p.innerHTML = ""; el("as-scrim").className = "as-scrim"; return; }
+    var e = byRow(openRow);
+    if (!e) { openRow = null; drawPanel(); return; }
+
+    var qn = (Array.isArray(e.answers) ? e.answers.length : 0);
+    p.className = "as-panel on" + (wide ? " wide" : "");
+    el("as-scrim").className = "as-scrim on";
+    p.innerHTML =
+      '<div class="as-ph"><div><h3>' + esc(e.org || "") + "</h3>" +
+        '<div class="sub">' + esc(e.program || "") +
+          (e.product ? " · " + esc(e.product) : "") +
+          (e.kind === "renewal" ? " · Renewal" + (e.renewalNumber ? " " + e.renewalNumber : "")
+                                : " · First certification") + "</div></div>" +
+        '<div class="acts">' +
+          '<button class="as-ic" type="button" id="as-wide" aria-label="' +
+            (wide ? "Back to normal size" : "Make this wider") + '" title="' +
+            (wide ? "Back to normal size" : "Make this wider") + '">' +
+            (wide
+              ? '<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 20v-5h5"/></svg>'
+              : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 15v5h-5"/></svg>') +
+          "</button>" +
+          '<button class="as-ic" type="button" id="as-shut" aria-label="Close" title="Close">' +
+            '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+        "</div></div>" +
+      '<div class="as-pb">' +
+        sec("facts", "Where It Stands", null, facts(e), true) +
+        sec("qa", "What the Applicant Told Us", qn ? qn + " answers" : "none", questionnaire(e)) +
+        sec("hist", "Earlier Certifications",
+            (Array.isArray(e.history) ? e.history.length : 0) || null, history(e)) +
+        sec("find", "Findings", countFindings(e.row) || null, findingsBody(e)) +
+      "</div>";
+  }
+
+  function open(row) { openRow = row; drawPanel(); }
+  function shut() { openRow = null; drawPanel(); }
+
+  /* ---- help --------------------------------------------------------------- */
+  function paneHelp() {
+    return '<h2 class="as-h2">Help</h2>' +
+      '<p class="as-lede">How this portal works and what you do in it. This covers the system, ' +
+      "not how to carry out an assessment — that is MISMO's process, and your engagement " +
+      "letter governs it.</p>" +
+      '<div class="as-help">' +
+
+      "<h3>Signing In</h3>" +
+      "<p>Your account is created by MISMO and you set your own password from the link you are " +
+      "sent. A session lasts four hours and ends when you close the tab. If you lose the " +
+      "password, email MISMO for a fresh reset link — nobody at MISMO can read your " +
+      "password, only replace it.</p>" +
+
+      "<h3>What Appears Here, and When</h3>" +
+      "<p>An engagement appears once MISMO assigns the certification to your firm in its own " +
+      "certification system. The list is rebuilt <b>every morning, and again whenever MISMO " +
+      "changes a record</b>, so a change MISMO makes during the day shows up here within " +
+      "minutes rather than the next day.</p>" +
+      "<p>You cannot add an engagement yourself. If one is missing, or one is here that should " +
+      "not be, tell MISMO rather than working around it.</p>" +
+
+      "<h3>Reading the List</h3>" +
+      "<p>Engagements are grouped by <b>who has to act next</b>, and the group that needs you " +
+      "comes first. Within a group the ones open longest come first.</p>" +
+      "<table><tr><th>Group</th><th>What it means</th></tr>" +
+      "<tr><td>Waiting on You</td><td>The certification cannot move until your firm does " +
+      "something — most often the demonstration or the preliminary result.</td></tr>" +
+      "<tr><td>Waiting on the Company</td><td>The applicant owes MISMO something: a document, " +
+      "a date, a remediation. Nothing is expected from you.</td></tr>" +
+      "<tr><td>Waiting on MISMO</td><td>MISMO owes the next step — a decision, a licence, " +
+      "an invoice.</td></tr>" +
+      "<tr><td>Waiting on MISMO and the Company</td><td>Both sides have something outstanding, " +
+      "usually around payment.</td></tr></table>" +
+      "<p>The number on a card is how many days the certification has sat in its current state.</p>" +
+
+      "<h3>Opening an Engagement</h3>" +
+      "<p>Click a card and it opens in a panel on the right. <b>Where It Stands</b> is always " +
+      "open; the rest are closed until you click them, so the panel stays readable:</p>" +
+      "<ul>" +
+      "<li><b>What the Applicant Told Us</b> — the questionnaire, one block per section of " +
+      "the form. A question the applicant left blank is shown as unanswered rather than hidden.</li>" +
+      "<li><b>Earlier Certifications</b> — the same company's history in the same program, " +
+      "so a renewal can be judged against what was found last time.</li>" +
+      "<li><b>Findings</b> — what your firm has recorded, and the box to record more.</li>" +
+      "</ul>" +
+      "<p>The arrows at the top of the panel make it wider and put it back; the cross closes it.</p>" +
+
+      "<h3>Recording a Finding</h3>" +
+      "<p>Open the engagement, go to <b>Findings</b>, choose an outcome, write what you found, " +
+      "and press <b>Record This Finding</b>. Both fields are required — an outcome with no " +
+      "explanation is not a finding anyone can act on.</p>" +
+      "<table><tr><th>Outcome</th><th>Use it when</th></tr>" +
+      "<tr><td>No findings</td><td>You looked and it meets the standard. Record this " +
+      "explicitly — silence is not the same as a pass, and MISMO cannot tell the two " +
+      "apart.</td></tr>" +
+      "<tr><td>Does not meet the standard</td><td>Something fails outright.</td></tr>" +
+      "<tr><td>Remediation recommended</td><td>Something falls short but the applicant could " +
+      "fix it.</td></tr>" +
+      "<tr><td>Waiting on an artifact</td><td>You cannot judge it yet because something has not " +
+      "been produced.</td></tr>" +
+      "<tr><td>Observation, no outcome</td><td>Worth writing down, but not a judgement.</td></tr>" +
+      "</table>" +
+      '<div class="as-box"><p><b>Findings are kept, never overwritten.</b> There is no edit and ' +
+      "no delete. If you need to correct or withdraw something, record a new finding that says " +
+      "so. The record is meant to show what was known and when, which an editable record " +
+      "cannot.</p></div>" +
+      "<p>Everything you record is visible to MISMO as soon as it saves, and it is stamped with " +
+      "your name and the time. Recording a finding does not move the certification to the next " +
+      "step — MISMO does that.</p>" +
+
+      "<h3>Demonstrations</h3>" +
+      "<p>When a demonstration is scheduled its date shows on the engagement, and while the " +
+      "certification is in that phase it sits in <b>Waiting on You</b>.</p>" +
+      '<div class="as-box"><p><b>Scheduling is not in this portal yet.</b> Dates are still ' +
+      "arranged with MISMO directly and entered by MISMO. Do not treat a blank date as " +
+      "“nothing booked” without checking.</p></div>" +
+
+      "<h3>Your Fee</h3>" +
+      "<p>Each engagement shows what MISMO pays your firm for it. Where it reads “Not " +
+      "recorded”, MISMO has not entered a figure yet — that is a gap in MISMO's " +
+      "records, not a statement that the work is unpaid. Raise it with MISMO.</p>" +
+      "<p>Invoicing is not done here.</p>" +
+
+      "<h3>What You Can and Cannot See</h3>" +
+      "<p>You see your firm's own engagements and nothing else. You do not see another firm's " +
+      "work, what any company was charged, MISMO's revenue, invoice numbers, whether an invoice " +
+      "is paid, or MISMO's internal notes.</p>" +
+      "<p>That is not a matter of this page hiding things. Your firm's file is cut on MISMO's " +
+      "server before it is published and those figures are not in it, and the service that " +
+      "hands out the file refuses any request outside your firm's own folder. A fault in this " +
+      "page could not expose them.</p>" +
+
+      "<h3>If Something Looks Wrong</h3>" +
+      "<p>Email <a href=\"mailto:jcritchley@mismo.org\">Jonna Critchley</a>. Worth reporting: an " +
+      "engagement that is missing or should not be there, a company or product named wrongly, a " +
+      "fee that is blank or looks wrong, a questionnaire that is empty, or a finding that did " +
+      "not save.</p>" +
+      "</div>";
+  }
+
+  /* ---- painting ----------------------------------------------------------- */
+  function paint() {
+    el("as-main").innerHTML = '<div class="as-wrap">' +
+      '<div class="as-pane' + (pane === "open" ? " on" : "") + '">' +
+        (pane === "open" ? paneOpen() : "") + "</div>" +
+      '<div class="as-pane' + (pane === "found" ? " on" : "") + '">' +
+        (pane === "found" ? paneFound() : "") + "</div>" +
+      '<div class="as-pane' + (pane === "help" ? " on" : "") + '">' +
+        (pane === "help" ? paneHelp() : "") + "</div>" +
+      "</div>";
+    drawPanel();
+  }
+
   function record(row) {
-    var e = (book.engagements || []).filter(function (x) { return String(x.row) === String(row); })[0];
+    var e = byRow(row);
     if (!e) return;
     var sel = el("fo-" + row), ta = el("ft-" + row), say = el("fs-" + row);
+    if (!sel || !ta) return;
     var outcome = sel.value, text = (ta.value || "").trim();
     say.className = "as-say";
     if (!outcome) { say.className = "as-say bad"; say.textContent = "Choose an outcome first."; return; }
     if (!text) { say.className = "as-say bad"; say.textContent = "Write what you found."; return; }
 
     var btn = document.querySelector('[data-rec="' + row + '"]');
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
     say.textContent = "Saving…";
 
     var s = R.session() || {};
@@ -543,141 +931,55 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         return d;
       }, "Finding on " + (e.org || "") + " " + (e.program || ""), fresh, 3)
     ).then(function () {
-      findings[row] = findings[row] && findings[row].entries
-        ? { entries: findings[row].entries.concat([entry]) }
-        : { entries: [entry] };
-      openRows[row] = true;
+      var had = (findings[row] && findings[row].entries) || [];
+      findings[row] = { entries: had.concat([entry]) };
+      openSecs.find = true;
       paint();
       var s2 = el("fs-" + row);
       if (s2) { s2.className = "as-say ok"; s2.textContent = "Recorded."; }
     })["catch"](function (err) {
-      btn.disabled = false;
-      say.className = "as-say bad";
-      say.textContent = (err && err.message) ? err.message : "That did not save.";
+      if (btn) btn.disabled = false;
+      var s3 = el("fs-" + row);
+      if (s3) { s3.className = "as-say bad"; s3.textContent = (err && err.message) ? err.message : "That did not save."; }
     });
-  }
-
-  /* ---- painting ----------------------------------------------------------- */
-  function paneOpen() {
-    if (!book) return '<div class="as-empty">Loading your engagements…</div>';
-    if (book.error) {
-      return '<div class="as-bad">Your engagements could not be loaded. ' + esc(book.error) + "</div>";
-    }
-    var list = book.engagements || [];
-    if (!list.length) {
-      return '<div class="as-empty">Nothing is assigned to your firm at the moment. ' +
-        "When MISMO assigns a certification to you it appears here the same day.</div>";
-    }
-    var rows = list.map(function (e) {
-      var waiting = e.waiting ? '<span class="as-tag wait">' + esc(e.waiting) + " to act</span>" : "";
-      return '<div class="as-row' + (openRows[e.row] ? " open" : "") + '" data-row="' + esc(e.row) + '">' +
-        '<button class="as-head" type="button" data-open="' + esc(e.row) + '" aria-expanded="' +
-          (openRows[e.row] ? "true" : "false") + '">' +
-          '<svg class="as-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>' +
-          '<span class="as-org">' + esc(e.org || "") + "</span>" +
-          '<span class="as-prog">' + esc(e.program || "") +
-            (e.product ? " · " + esc(e.product) : "") + "</span>" +
-          '<span class="as-tag">' + esc(e.stateLabel || e.state || "") + "</span>" +
-          waiting +
-          '<span class="as-age">' + (e.age == null ? "" : esc(e.age) + "d") + "</span>" +
-        "</button>" +
-        '<div class="as-body">' + (openRows[e.row] ? detail(e) : "") + "</div>" +
-      "</div>";
-    }).join("");
-
-    return '<h2 class="as-h2">Engagements</h2>' +
-      '<p class="as-asof">' + esc(book.firm || "") + " · " + list.length +
-        " open · as of " + esc(day(book.asOf) || day(book.writtenAt) || "") + "</p>" +
-      '<p class="as-lede">Everything your firm is assessing for MISMO right now. Open a row for the ' +
-      "applicant's own answers, what MISMO pays you for it, and the same company's earlier " +
-      "certifications.</p>" +
-      '<div class="as-rows">' + rows + "</div>";
-  }
-
-  function paneFound() {
-    var all = [];
-    Object.keys(findings).forEach(function (row) {
-      var d = findings[row];
-      var e = ((book && book.engagements) || []).filter(function (x) {
-        return String(x.row) === String(row);
-      })[0] || {};
-      (d.entries || []).forEach(function (f) {
-        all.push({ org: e.org, program: e.program, f: f });
-      });
-    });
-    if (!all.length) {
-      return '<h2 class="as-h2">Findings Recorded</h2>' +
-        '<div class="as-empty">Nothing recorded yet. Findings you record against an engagement ' +
-        "appear here as well.</div>";
-    }
-    all.sort(function (a, b) { return String(b.f.at).localeCompare(String(a.f.at)); });
-    return '<h2 class="as-h2">Findings Recorded</h2>' +
-      '<p class="as-lede">Everything your firm has recorded, newest first.</p>' +
-      '<div class="as-logged">' + all.map(function (x) {
-        return '<div class="as-one"><span class="as-tag ' +
-          (x.f.outcome === "pass" ? "good" : (x.f.outcome === "fail" ? "warn" : "")) + '">' +
-          esc(outcomeText(x.f.outcome)) + "</span> " +
-          '<span class="as-when">' + esc(x.org || "") +
-          (x.program ? " · " + esc(x.program) : "") + " · " +
-          esc(day(x.f.at) || "") + "</span><p>" + esc(x.f.text || "") + "</p></div>";
-      }).join("") + "</div>";
-  }
-
-  function paneAbout() {
-    return '<h2 class="as-h2">About This Portal</h2>' +
-      '<p class="as-lede">This page shows your firm its own assessment work for MISMO, and nothing ' +
-      "else.</p>" +
-      '<div class="as-sect"><h4>What You Can See</h4><p class="as-lede">The certifications assigned ' +
-      "to your firm: the company, the program, where the certification stands, what the applicant " +
-      "told MISMO in its questionnaire, what MISMO pays your firm for the engagement, and that " +
-      "company's earlier certifications in the same program so a renewal can be judged against what " +
-      "was found last time.</p></div>" +
-      '<div class="as-sect"><h4>What You Cannot See</h4><p class="as-lede">Another firm’s ' +
-      "engagements, what any company was charged, MISMO’s revenue, invoice numbers, whether an " +
-      "invoice is paid, or MISMO’s own notes. None of it is in the file your firm is given, so " +
-      "this page could not show it even if it tried — and the relay refuses a request for " +
-      "anything outside your firm’s own folder.</p></div>" +
-      '<div class="as-sect"><h4>Recording a Finding</h4><p class="as-lede">Open an engagement and use ' +
-      "the Findings box at the foot of it. What you record is saved to your firm’s own record and " +
-      "is visible to MISMO. It is kept, never overwritten — record a correction as a new finding " +
-      "rather than editing an old one.</p></div>" +
-      '<div class="as-sect"><h4>Something Wrong?</h4><p class="as-lede">If an engagement is missing, ' +
-      "or one is here that should not be, email " +
-      '<a href="mailto:jcritchley@mismo.org">Jonna Critchley</a>. The list is rebuilt from MISMO’s ' +
-      "certification system every morning.</p></div>";
-  }
-
-  var pane = "open";
-  function paint() {
-    var main = el("as-main");
-    main.innerHTML = '<div class="as-wrap">' +
-      '<div class="as-pane' + (pane === "open" ? " on" : "") + '" id="p-open">' +
-        (pane === "open" ? paneOpen() : "") + "</div>" +
-      '<div class="as-pane' + (pane === "found" ? " on" : "") + '" id="p-found">' +
-        (pane === "found" ? paneFound() : "") + "</div>" +
-      '<div class="as-pane' + (pane === "about" ? " on" : "") + '" id="p-about">' +
-        (pane === "about" ? paneAbout() : "") + "</div>" +
-      "</div>";
   }
 
   /* one delegated listener, so repainting never loses the wiring */
   document.addEventListener("click", function (ev) {
-    var head = ev.target.closest ? ev.target.closest("[data-open]") : null;
-    if (head) {
-      var row = head.getAttribute("data-open");
-      openRows[row] = !openRows[row];
-      paint();
+    var t = ev.target;
+    if (!t || !t.closest) return;
+    var c;
+    if ((c = t.closest("[data-open]"))) { open(c.getAttribute("data-open")); return; }
+    if ((c = t.closest("[data-sectog]"))) {
+      var id = c.getAttribute("data-sectog");
+      openSecs[id] = !openSecs[id];
+      drawPanel();
       return;
     }
-    var rec = ev.target.closest ? ev.target.closest("[data-rec]") : null;
-    if (rec) { record(rec.getAttribute("data-rec")); }
+    if ((c = t.closest("[data-qtog]"))) {
+      var q = c.getAttribute("data-qtog");
+      openQ[q] = !openQ[q];
+      drawPanel();
+      return;
+    }
+    if (t.closest("#as-wide")) { wide = !wide; drawPanel(); return; }
+    if (t.closest("#as-shut") || t.closest("#as-scrim")) { shut(); return; }
+    if ((c = t.closest("[data-rec]"))) { record(c.getAttribute("data-rec")); }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && openRow != null) {
+      var t = e.target;
+      if (t && (t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      shut();
+    }
   });
 
   /* ---- starting up -------------------------------------------------------- */
   function start() {
     mine = whoCanISee();
     if (!mine.length) {
-      document.getElementById("rail").hidden = true;
+      el("rail").hidden = true;
       document.body.classList.add("as-noshell");
       el("as-out").hidden = false;
       el("as-main").innerHTML = '<div class="as-wrap"><div class="as-empty">' +
@@ -688,7 +990,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       return;
     }
 
-    document.getElementById("rail").hidden = false;
+    el("rail").hidden = false;
     document.body.classList.remove("as-noshell");
     el("as-out").hidden = false;
 
@@ -710,19 +1012,20 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       el("as-pick").addEventListener("change", function () {
         var k = this.value;
         var f = mine.filter(function (x) { return x.key === k; })[0];
-        if (f) { openRows = {}; loadFirm(f); }
+        if (f) loadFirm(f);
       });
     } else {
       pw.hidden = true;
     }
 
-    document.querySelectorAll('.hq nav button[data-hq]').forEach(function (b) {
+    document.querySelectorAll(".hq nav button[data-hq]").forEach(function (b) {
       b.addEventListener("click", function () {
-        document.querySelectorAll('.hq nav button[data-hq]').forEach(function (o) {
+        document.querySelectorAll(".hq nav button[data-hq]").forEach(function (o) {
           o.removeAttribute("aria-current");
         });
         b.setAttribute("aria-current", "page");
         pane = b.getAttribute("data-hq");
+        shut();
         paint();
       });
     });
@@ -732,23 +1035,12 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       location.reload();
     });
 
-    loadFirm(mine[0]).then(function () {
-      /* once the file is in, label the picker with each firm's real name */
-      if (mine.length > 1 && book && book.firm) {
-        var opt = el("as-pick").querySelector('option[value="' + current.key + '"]');
-        if (opt) opt.textContent = book.firm;
-      }
-    });
+    loadFirm(mine[0]);
   }
 
   /* what the rail's search reads, and how it opens what it finds */
   window.__assessorBook = function () { return book; };
-  window.__assessorOpen = function (row) {
-    openRows[row] = true;
-    paint();
-    var node = document.querySelector('.as-row[data-row="' + row + '"]');
-    if (node) try { node.scrollIntoView({ block: "center", behavior: "smooth" }); } catch (e) {}
-  };
+  window.__assessorOpen = function (row) { open(row); };
 
   /* December, every year, with no upkeep */
   if (new Date().getMonth() === 11) {
