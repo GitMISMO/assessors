@@ -40,42 +40,93 @@
 .as-lede{font-family:var(--display);font-size:13.5px;color:var(--ink-2);line-height:1.6;
   margin:0 0 20px}
 
-/* The headline card, in the shape the Action Queue uses */
-.as-top{background:var(--navy,#0d314c);border-radius:11px;padding:20px 22px;margin-bottom:26px}
-.as-say1{font-family:var(--display);font-size:17px;font-weight:600;line-height:1.5;
-  letter-spacing:-.008em;color:#fff;margin:0 0 17px}
-.as-say1 b{color:var(--sky,#74bfeb);font-weight:700}
-.as-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:11px}
-.as-tile{background:rgba(255,255,255,.07);border:1px solid rgba(116,191,235,.22);
-  border-radius:8px;padding:12px 14px}
-.as-tile .n{font-family:var(--display);font-size:25px;font-weight:700;line-height:1.1;
-  color:#fff;font-variant-numeric:tabular-nums}
-.as-tile .k{font-family:var(--display);font-size:12px;font-weight:600;color:var(--sky,#74bfeb);
-  margin-top:3px}
-.as-tile .s{font-family:var(--display);font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
-.as-tile.hot .n{color:var(--sky,#74bfeb)}
+/* ── The board, copied from the Certification Management System ────────────
+   The CMS already shows MISMO what a firm's portal looks like, and that preview
+   is the agreed design. These rules are the same rules, so the two pages do not
+   drift: the navy headline card with four tiles, then one panel per section with
+   a real table inside it. The only deliberate difference is that tags here are
+   rectangles rather than pills. */
 
-/* The list: a heading per group, then cards */
-.as-grp{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
-  font-weight:700;color:var(--ink-3);margin:26px 0 9px;padding-bottom:5px;
-  border-bottom:1px solid var(--rule,var(--border))}
-.as-grp:first-of-type{margin-top:0}
-.as-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(316px,1fr));gap:11px}
-.as-card{position:relative;text-align:left;width:100%;background:var(--surface);
-  border:1px solid var(--border);border-left:3px solid var(--border-strong);
-  border-radius:8px;padding:13px 15px;font:inherit;font-family:var(--display);
-  color:var(--ink);cursor:pointer}
-.as-card:hover{border-color:var(--border-strong);background:var(--surface-2)}
-.as-card:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
-.as-card.you{border-left-color:var(--warn)}
-.as-card .org{font-size:14.5px;font-weight:600;letter-spacing:-.008em;line-height:1.25;
-  overflow-wrap:anywhere}
-.as-card .sub{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:2px;
-  overflow-wrap:anywhere}
-.as-card .meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:9px}
-.as-card .age{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);
-  font-variant-numeric:tabular-nums;margin-left:auto}
+.headline{background:var(--navy,#0d314c);color:#fff;border-radius:8px;padding:20px 22px;
+  display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.headline .hl-date{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sky-soft,#a8d8f2)}
+.hl-body{display:flex;flex-direction:column;gap:14px}
+.hl-say{font-size:18px;font-weight:600;letter-spacing:-.01em;line-height:1.35;color:#fff}
+.hl-say em{font-style:normal}
+.hl-say em.hl-late{color:#ffcf73}
+.hl-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:1100px){.hl-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.hl-tiles{grid-template-columns:1fr}}
+.hl-tile{background:rgba(255,255,255,.07);border:1px solid rgba(116,191,235,.28);
+  border-radius:6px;padding:12px 14px;display:block;width:100%;text-align:left}
+.hl-tile b{display:block;font-size:28px;font-weight:700;line-height:1.1;color:#fff;
+  font-variant-numeric:tabular-nums}
+.hl-tile span{display:block;font-size:12px;color:var(--sky-soft,#a8d8f2);margin-top:3px}
+.hl-tile small{display:block;font-size:11.5px;color:rgba(255,255,255,.6);margin-top:2px}
+.hl-tile.warn b{color:#ffcf73}
 
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:20px 22px;margin-bottom:28px}
+.panel h2{font-family:var(--display);font-size:21.75px;font-weight:600;letter-spacing:-.012em;
+  line-height:1.55;color:var(--ink);margin:0}
+.phead{display:flex;align-items:baseline;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
+.phead>div:first-child{flex:1 1 420px;min-width:0}
+.panel .psub{font-size:12.5px;line-height:1.55;color:var(--ink-3);margin:4px 0 16px}
+
+.etable{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.ehead,.erow{display:grid;grid-template-columns:2fr 1fr 1.3fr .8fr .7fr auto;gap:14px;
+  align-items:center;padding:10px 15px;text-align:left}
+.ehead{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;color:var(--ink-3);background:var(--surface-3);
+  border-bottom:1px solid var(--border-strong)}
+.erow{width:100%;background:var(--surface);border:0;border-bottom:1px solid var(--rule,var(--border));
+  font:inherit;font-family:var(--display);font-size:13px;color:var(--ink);cursor:pointer}
+.erow:last-child{border-bottom:0}
+.erow:hover{background:var(--surface-2)}
+.erow:focus-visible{outline:2px solid var(--sky);outline-offset:-2px}
+.erow.mine{box-shadow:inset 3px 0 0 var(--c3,#0f7b5c)}
+.erow.flat{cursor:default}
+.erow.flat:hover{background:var(--surface)}
+.erow .num,.ehead .num{text-align:right;font-variant-numeric:tabular-nums}
+.ehead.coming,.erow.coming{grid-template-columns:2fr 1fr 1.4fr}
+.e-co{font-weight:600;min-width:0}
+.e-pr{display:block;font-size:11.5px;font-weight:400;color:var(--ink-3);margin-top:1px}
+.e-sub{display:block;font-size:11px;color:var(--ink-3);margin-top:1px}
+.e-sub.bad{color:var(--bad);font-weight:600}
+.e-pg,.e-st,.e-sc,.e-fee{min-width:0}
+.e-go{font-size:11.5px;font-weight:600;color:var(--navy-mid,#14486e);white-space:nowrap;
+  display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+@media (max-width:860px){
+  .ehead{display:none}
+  .erow{grid-template-columns:1fr auto;row-gap:4px;padding:12px 14px}
+  .erow .e-pg,.erow .e-st{grid-column:1}
+  .erow .e-sc,.erow .e-fee{grid-column:2;text-align:right}
+  .erow .e-co{grid-column:1 / -1}
+  .erow .e-go{grid-column:1 / -1;padding-top:2px}
+  .erow.coming{grid-template-columns:1fr auto;row-gap:3px}
+  .erow.coming .e-co{grid-column:1 / -1}
+  .erow.coming .e-st{text-align:right}
+}
+
+table.av{width:100%;border-collapse:collapse;margin:0 0 12px;font-family:var(--display);
+  font-size:13px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+table.av th{text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:700;padding:7px 12px;
+  background:var(--surface-3);border-bottom:1px solid var(--border-strong)}
+table.av td{padding:9px 12px;border-bottom:1px solid var(--rule,var(--border));color:var(--ink)}
+table.av tr:last-child td{border-bottom:0}
+table.av td:first-child{font-weight:600;white-space:nowrap}
+
+.prog-facts{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+.fact{font-size:11.5px;color:var(--ink-2);background:var(--chip,var(--surface-3));
+  border-radius:3px;padding:3px 10px}
+.fact.no{color:var(--ink-3);border:1px dashed var(--border-strong);background:transparent;
+  text-decoration:line-through;text-decoration-color:var(--bad)}
+
+.empty{border:1px dashed var(--border-strong);border-radius:8px;padding:26px 20px;
+  text-align:center;color:var(--ink-3);font-family:var(--display);font-size:13px;
+  background:var(--surface-2)}
 .as-empty{border:1px dashed var(--border-strong);border-radius:9px;padding:34px 24px;
   text-align:center;color:var(--ink-3);font-family:var(--display);font-size:13.5px;
   background:var(--surface-2)}
@@ -373,15 +424,6 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     { v: "note",                  t: "Observation, no outcome" }
   ];
 
-  /* Who the certification is waiting on, in the order an assessor cares. */
-  var ORDER = ["Assessor", "MISMO + Company", "Company", "MISMO"];
-  var GROUP_LABEL = {
-    "Assessor": "Waiting on You",
-    "MISMO + Company": "Waiting on MISMO and the Company",
-    "Company": "Waiting on the Company",
-    "MISMO": "Waiting on MISMO"
-  };
-
   var mine = [];        /* the firms this account can see */
   var current = null;   /* the one being shown */
   var book = null;      /* its engagements file */
@@ -517,48 +559,171 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     })).then(paint);
   }
 
-  /* ---- the list ----------------------------------------------------------- */
-  function headline() {
-    var all = list();
-    var you = all.filter(function (e) { return e.waiting === "Assessor"; }).length;
-    var old = all.filter(function (e) { return (e.age || 0) > 30; }).length;
-    var rec = Object.keys(findings).reduce(function (n, k) { return n + countFindings(k); }, 0);
+  /* ---- the board ----------------------------------------------------------
+   *
+   * The same shape the Certification Management System already shows MISMO when
+   * it previews a firm's portal: a sentence that says what is actually waiting,
+   * four tiles, then three sections - what is with you, what MISMO still owes
+   * you, and what is queued behind somebody else. Finished and the rows stop
+   * appearing, unless you have not invoiced for them.
+   */
 
-    var says = "<b>" + all.length + "</b> engagement" + (all.length === 1 ? " is" : "s are") + " open.";
-    says += you
-      ? " <b>" + you + "</b> " + (you === 1 ? "is" : "are") + " waiting on you."
-      : " None are waiting on you right now.";
-    if (old) says += " <b>" + old + "</b> " + (old === 1 ? "has" : "have") + " been open more than 30 days.";
+  function kindLabel(e) {
+    if (e.kind === "initial") return "Initial";
+    if (e.kind === "renewal") return e.renewalNumber ? "Renewal " + e.renewalNumber : "Renewal";
+    return "Not recorded";
+  }
+  function isMine(e) { return !!(e.waiting && String(e.waiting).indexOf("Assessor") >= 0); }
+  /* Approved and with MISMO's licensing step. It stays on the board only while the
+     firm still has to invoice for it. */
+  function showToFirm(e) { return !e.done || e.assessorFee == null; }
 
-    function tile(n, k, s, hot) {
-      return '<div class="as-tile' + (hot ? " hot" : "") + '"><div class="n">' + n + "</div>" +
-        '<div class="k">' + esc(k) + "</div>" +
-        (s ? '<div class="s">' + esc(s) + "</div>" : "") + "</div>";
+  function em(n, late) { return "<em" + (late ? ' class="hl-late"' : "") + ">" + n + "</em>"; }
+
+  function headline(mine, withMe, others, blocked) {
+    var invoiced = mine.filter(function (e) { return e.assessorFee != null; });
+    var feeTotal = invoiced.reduce(function (t, e) { return t + (e.assessorFee || 0); }, 0);
+    var name = esc((book && book.firm) || (current && current.slug) || "your firm");
+
+    var say = withMe.length
+      ? em(withMe.length, true) + " engagement" + (withMe.length === 1 ? " is" : "s are") +
+        " waiting on " + name + " right now"
+      : "Nothing is waiting on " + name + " right now";
+    say += ", out of " + em(mine.length) + " on the board. " +
+      (blocked.length
+        ? em(blocked.length, true) + " cannot start until MISMO sends the certification script."
+        : others.length
+          ? em(others.length) + " " + (others.length === 1 ? "is" : "are") +
+            " coming once somebody else moves first."
+          : "Nothing else is queued behind them.");
+
+    function tile(n, k, s, warn) {
+      return '<div class="hl-tile' + (warn ? " warn" : "") + '"><b>' + n + "</b>" +
+        "<span>" + esc(k) + "</span><small>" + esc(s) + "</small></div>";
     }
-    return '<div class="as-top"><p class="as-say1">' + says + "</p>" +
-      '<div class="as-tiles">' +
-        tile(all.length, "Open Engagements", "assigned to your firm") +
-        tile(you, "Waiting on You", you ? "your move" : "nothing to do", !!you) +
-        tile(old, "Over 30 Days", "open a while") +
-        tile(rec, "Findings Recorded", "by your firm") +
+    return '<div class="headline">' +
+      '<div class="hl-date">' +
+        esc((book && book.legalName) || (book && book.firm) || "") +
+        ((book && book.inHouse) ? " · MISMO’s own audit team" : " · Assessor Portal") +
+      "</div>" +
+      '<div class="hl-body">' +
+        '<div class="hl-say">' + say + "</div>" +
+        '<div class="hl-tiles">' +
+          tile(withMe.length, "With You", withMe.length ? "your move" : "all clear", !!withMe.length) +
+          tile(others.length, "Coming to You", "waiting on somebody else") +
+          tile(blocked.length, "Waiting on MISMO",
+               blocked.length ? "script not sent" : "nothing blocked", !!blocked.length) +
+          tile(money(feeTotal) || "$0", "Invoiced",
+               "across " + invoiced.length + " of " + mine.length + " engagements") +
+        "</div>" +
       "</div></div>";
   }
 
-  function card(e) {
-    var you = e.waiting === "Assessor";
+  /* One row. The Scored column is this firm's progress through MISMO's certification
+     script for that program: how many of its questions have an answer recorded. */
+  function engRow(e) {
+    var p = e.prelim || {};
+    var mine = isMine(e);
     var n = countFindings(e.row);
-    return '<button class="as-card' + (you ? " you" : "") + '" type="button" data-open="' +
+    return '<button class="erow' + (mine ? " mine" : "") + '" type="button" data-open="' +
         esc(e.row) + '">' +
-      '<div class="org">' + esc(e.org || "") + "</div>" +
-      '<div class="sub">' + esc(e.program || "") +
-        (e.product ? " · " + esc(e.product) : "") +
-        (e.kind === "renewal" ? " · Renewal" + (e.renewalNumber ? " " + e.renewalNumber : "") : "") +
-        "</div>" +
-      '<div class="meta">' +
-        '<span class="as-tag' + (you ? " you" : "") + '">' + esc(e.stateLabel || e.state || "") + "</span>" +
-        (n ? '<span class="as-tag good">' + n + " finding" + (n === 1 ? "" : "s") + "</span>" : "") +
-        '<span class="age">' + (e.age == null ? "" : esc(e.age) + " days") + "</span>" +
-      "</div></button>";
+      '<span class="e-co">' + esc(e.org || "") +
+        (e.product ? '<span class="e-pr">' + esc(e.product) + "</span>" : "") + "</span>" +
+      '<span class="e-pg">' + esc(e.program || "") +
+        '<span class="e-sub">' + esc(kindLabel(e)) + "</span></span>" +
+      '<span class="e-st">' + esc(e.stateLabel || e.state || "") +
+        '<span class="e-sub">' +
+          (e.demoOn ? esc(day(e.demoOn)) : mine ? "with you" : "waiting on " + esc(e.waiting || "")) +
+        "</span></span>" +
+      '<span class="e-sc num">' + (p.total ? (p.scored + " / " + p.total) : "—") +
+        '<span class="e-sub">' + esc(p.total ? (p.label || "") : "no script") + "</span></span>" +
+      '<span class="e-fee num">' + (e.assessorFee != null ? esc(money(e.assessorFee)) : "—") +
+        (e.done && e.assessorFee == null
+          ? '<span class="e-sub bad">not invoiced</span>'
+          : n ? '<span class="e-sub">' + n + " finding" + (n === 1 ? "" : "s") + "</span>" : "") +
+        "</span>" +
+      '<span class="e-go">Open</span>' +
+    "</button>";
+  }
+
+  function engTable(rows, empty) {
+    if (!rows.length) return '<div class="empty">' + esc(empty) + "</div>";
+    return '<div class="etable"><div class="ehead">' +
+      "<span>Company</span><span>Program</span><span>Stage</span>" +
+      '<span class="num">Scored</span><span class="num">My Fee</span><span></span>' +
+      "</div>" + rows.map(engRow).join("") + "</div>";
+  }
+
+  /* The queued-behind-somebody-else table is narrower on purpose: there is nothing to
+     do on these, so a fee and a score would only be noise. */
+  function comingTable(rows) {
+    return '<div class="etable"><div class="ehead coming">' +
+      "<span>Company</span><span>Program</span><span>Waiting On</span></div>" +
+      rows.map(function (e) {
+        return '<button class="erow coming" type="button" data-open="' + esc(e.row) + '">' +
+          '<span class="e-co">' + esc(e.org || "") +
+            (e.product ? '<span class="e-pr">' + esc(e.product) + "</span>" : "") + "</span>" +
+          '<span class="e-pg">' + esc(e.program || "") +
+            '<span class="e-sub">' + esc(kindLabel(e)) + "</span></span>" +
+          '<span class="e-st">' + (e.done ? "Your invoice" : esc(e.waiting || "")) +
+            '<span class="e-sub' + (e.done ? " bad" : "") + '">' +
+              (e.done ? "Approved — you have not invoiced for it"
+                      : esc(e.stateLabel || e.state || "")) +
+            "</span></span>" +
+        "</button>";
+      }).join("") + "</div>";
+  }
+
+  var CANNOT_SEE = [
+    "Other firms’ engagements",
+    "Companies this firm is not assessing",
+    "What the company was charged",
+    "MISMO’s revenue on any certification",
+    "MISMO’s internal notes and decision threads",
+    "Test-suite keys for runs not issued to this firm",
+    "The price list",
+    "Every other section of the board"
+  ];
+
+  /* How this firm takes demonstration bookings, as MISMO has it recorded. Shown rather
+     than described, because the two firms do it differently and neither does it through
+     this portal yet. */
+  function availability() {
+    var sc = (book && book.scheduling) || null;
+    if (!sc) return "";
+    var body = "";
+    if (sc.windows && sc.windows.length) {
+      body += '<table class="av"><thead><tr><th>Day</th><th>Window</th></tr></thead><tbody>' +
+        sc.windows.map(function (w) {
+          return "<tr><td>" + esc(w.day) + "</td><td>" + esc(w.from) + "\u2013" + esc(w.to) +
+            (sc.timezone ? " " + esc(sc.timezone) : "") + "</td></tr>";
+        }).join("") + "</tbody></table>";
+    }
+    if (sc.reviewLink) {
+      body += '<p class="psub" style="margin:0 0 10px"><a href="' + esc(sc.reviewLink) +
+        '" target="_blank" rel="noopener noreferrer">Your published calendar</a>' +
+        (sc.reviewOnly ? " \u2014 to look at only. MISMO does not book through it." : "") +
+        "</p>";
+    }
+    if (sc.note) body += '<p class="psub" style="margin:0">' + esc(sc.note) + "</p>";
+    return '<div class="panel"><div class="phead"><div><h2>Your Availability</h2>' +
+      '<p class="psub">What MISMO has recorded as the times your firm takes demonstrations. ' +
+      "Tell MISMO if this is wrong \u2014 it is what companies are offered.</p></div></div>" +
+      body + "</div>";
+  }
+
+  function cannotSee() {
+    return '<div class="panel"><div class="phead"><div>' +
+      "<h2>What You Cannot See</h2>" +
+      '<p class="psub">Not hidden by leaving it off the screen. None of it is in the file ' +
+      "this page loads, so it cannot be reached by guessing a URL either, and the relay " +
+      "refuses the request as well. Blueprint §5.3.</p></div></div>" +
+      '<div class="prog-facts">' +
+      CANNOT_SEE.map(function (t) { return '<span class="fact no">' + esc(t) + "</span>"; }).join("") +
+      "</div>" +
+      '<p class="psub" style="margin-top:14px;margin-bottom:0">What you do see beyond this ' +
+      "list: the same company’s earlier engagements in the same program, so a renewal can " +
+      "be judged against what was found last time.</p></div>";
   }
 
   function paneOpen() {
@@ -568,33 +733,40 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     var all = list();
     if (!all.length) {
-      return '<h2 class="as-h2">Engagements</h2>' +
-        '<div class="as-empty">Nothing is assigned to your firm at the moment. When MISMO ' +
-        "assigns a certification to you it appears here the same day.</div>";
+      return '<div class="as-empty">Nothing is assigned to your firm at the moment. When MISMO ' +
+        "assigns a certification to you it appears here the same day.</div>" +
+        availability() + cannotSee();
     }
 
-    var groups = {};
-    all.forEach(function (e) {
-      var w = e.waiting || "MISMO";
-      (groups[w] = groups[w] || []).push(e);
-    });
-    var keys = Object.keys(groups).sort(function (a, b) {
-      var ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
-      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-    });
+    var withMe = all.filter(isMine);
+    var others = all.filter(function (e) { return !isMine(e); }).filter(showToFirm);
+    var blocked = all.filter(function (e) { return !!e.scriptOutstanding; });
+    var progs = (book.programs || []).join(", ");
 
-    var out = '<h2 class="as-h2">Engagements</h2>' +
-      '<p class="as-asof">' + esc(book.firm || "") + " · as of " +
-        esc(day(book.asOf) || day(book.writtenAt) || "") + "</p>" +
-      headline();
+    var out = headline(all, withMe, others, blocked);
 
-    keys.forEach(function (w) {
-      var g = groups[w].slice().sort(function (a, b) { return (b.age || 0) - (a.age || 0); });
-      out += '<div class="as-grp">' + esc(GROUP_LABEL[w] || ("Waiting on " + w)) +
-        " · " + g.length + "</div>" +
-        '<div class="as-cards">' + g.map(card).join("") + "</div>";
-    });
-    return out;
+    out += '<div class="panel"><div class="phead"><div><h2>To Do</h2>' +
+      '<p class="psub">Engagements where the next move is yours.' +
+      (progs ? " " + esc(book.firm || "") + " assesses " + esc(progs) + "." : "") +
+      (book.inHouse ? " This is MISMO’s own audit team, working the same portal as an " +
+        "outside firm." : "") +
+      "</p></div></div>" +
+      engTable(withMe, "Nothing is waiting on you right now.") + "</div>";
+
+    if (blocked.length) {
+      out += '<div class="panel"><div class="phead"><div><h2>Waiting on MISMO</h2>' +
+        '<p class="psub">The certification script has not reached you yet, so these cannot ' +
+        "start.</p></div></div>" + engTable(blocked, "") + "</div>";
+    }
+
+    if (others.length) {
+      out += '<div class="panel"><div class="phead"><div><h2>Coming to You</h2>' +
+        '<p class="psub">Assigned to ' + esc(book.firm || "your firm") + ", but waiting on " +
+        "somebody else first. Nothing to do on these yet.</p></div></div>" +
+        comingTable(others) + "</div>";
+    }
+
+    return out + availability() + cannotSee();
   }
 
   function paneFound() {
@@ -657,16 +829,25 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     add("Your Fee", money(e.assessorFee));
     add("Demonstration", day(e.demoOn));
     var cs = e.certificationScript || {};
-    add("Certification Script", cs.sent ? ("Sent " + (day(cs.sentOn) || "")) : "Not sent yet");
+    add("Certification Script", cs.sent
+      ? ("Sent " + (day(cs.sentOn) || ""))
+      : (e.scriptOutstanding ? "Not sent yet \u2014 this cannot start" : null));
     var p = e.prelim || {};
-    add("Preliminary Scoring", (p.scored || 0)
-      ? ((p.scored) + " scored, " + (p.fails || 0) + " not met, " +
-         (p.waitingOnArtifact || 0) + " awaiting an artifact")
+    add("Scored", p.total
+      ? (p.scored + " of " + p.total + " \u2014 " + (p.label || ""))
       : null);
+    add("Not Met", p.total && p.scored ? ((p.fails || 0) + " item" + (p.fails === 1 ? "" : "s")) : null);
+    add("Awaiting an Artifact", p.total && p.scored
+      ? ((p.waitingOnArtifact || 0) + " item" + (p.waitingOnArtifact === 1 ? "" : "s")) : null);
     var out = '<div class="as-grid">' + bits.join("") + "</div>";
     if (e.assessorFee == null) {
       out += '<p class="as-note">MISMO has not recorded a fee against this engagement yet. ' +
         "That is a gap in MISMO's records, not a statement that the work is unpaid.</p>";
+    }
+    if (!(e.prelim && e.prelim.total)) {
+      out += '<p class="as-note">MISMO has not authored a certification script for this ' +
+        "program and cycle kind yet, so there is nothing to score item by item. The findings " +
+        "box at the foot of this panel is how you record what you found in the meantime.</p>";
     }
     return out;
   }
@@ -786,101 +967,140 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   /* ---- help --------------------------------------------------------------- */
   function paneHelp() {
     return '<h2 class="as-h2">Help</h2>' +
-      '<p class="as-lede">How this portal works and what you do in it. This covers the system, ' +
-      "not how to carry out an assessment — that is MISMO's process, and your engagement " +
-      "letter governs it.</p>" +
+      '<p class="as-lede">How a MISMO certification runs from your side of it, and how to do ' +
+      "each part of it in this portal. This is the system and the process, not the assessment " +
+      "method - what to look for in a demonstration is MISMO's certification script, which " +
+      "arrives with the engagement.</p>" +
       '<div class="as-help">' +
 
-      "<h3>Signing In</h3>" +
-      "<p>Your account is created by MISMO and you set your own password from the link you are " +
-      "sent. A session lasts four hours and ends when you close the tab. If you lose the " +
-      "password, email MISMO for a fresh reset link — nobody at MISMO can read your " +
-      "password, only replace it.</p>" +
+      "<h3>What This Portal Is</h3>" +
+      "<p>Your firm's own engagements and nothing else. The file this page loads is cut for " +
+      "your firm before it leaves MISMO's server, so another firm's work, what the company was " +
+      "charged, MISMO's revenue and the price list are not in it at all. You could not reach " +
+      "them by guessing a URL, and the relay would refuse the request as well.</p>" +
+      '<div class="as-box"><p><b>What you do see beyond your own engagements:</b> the same ' +
+      "company's earlier certifications in the same program, so a renewal can be judged against " +
+      "what was found last time.</p></div>" +
 
-      "<h3>What Appears Here, and When</h3>" +
-      "<p>An engagement appears once MISMO assigns the certification to your firm in its own " +
-      "certification system. The list is rebuilt <b>every morning, and again whenever MISMO " +
-      "changes a record</b>, so a change MISMO makes during the day shows up here within " +
-      "minutes rather than the next day.</p>" +
-      "<p>You cannot add an engagement yourself. If one is missing, or one is here that should " +
-      "not be, tell MISMO rather than working around it.</p>" +
-
-      "<h3>Reading the List</h3>" +
-      "<p>Engagements are grouped by <b>who has to act next</b>, and the group that needs you " +
-      "comes first. Within a group the ones open longest come first.</p>" +
-      "<table><tr><th>Group</th><th>What it means</th></tr>" +
-      "<tr><td>Waiting on You</td><td>The certification cannot move until your firm does " +
-      "something — most often the demonstration or the preliminary result.</td></tr>" +
-      "<tr><td>Waiting on the Company</td><td>The applicant owes MISMO something: a document, " +
-      "a date, a remediation. Nothing is expected from you.</td></tr>" +
-      "<tr><td>Waiting on MISMO</td><td>MISMO owes the next step — a decision, a licence, " +
-      "an invoice.</td></tr>" +
-      "<tr><td>Waiting on MISMO and the Company</td><td>Both sides have something outstanding, " +
-      "usually around payment.</td></tr></table>" +
-      "<p>The number on a card is how many days the certification has sat in its current state.</p>" +
-
-      "<h3>Opening an Engagement</h3>" +
-      "<p>Click a card and it opens in a panel on the right. <b>Where It Stands</b> is always " +
-      "open; the rest are closed until you click them, so the panel stays readable:</p>" +
+      "<h3>The Board</h3>" +
+      "<p>Three sections, in the order they matter to you.</p>" +
       "<ul>" +
-      "<li><b>What the Applicant Told Us</b> — the questionnaire, one block per section of " +
-      "the form. A question the applicant left blank is shown as unanswered rather than hidden.</li>" +
-      "<li><b>Earlier Certifications</b> — the same company's history in the same program, " +
-      "so a renewal can be judged against what was found last time.</li>" +
-      "<li><b>Findings</b> — what your firm has recorded, and the box to record more.</li>" +
+      "<li><b>To Do</b> - the next move is yours. These carry a green edge.</li>" +
+      "<li><b>Waiting on MISMO</b> - MISMO has not sent the certification script yet, so the " +
+      "assessment cannot start. Nothing you do will move these; chase MISMO.</li>" +
+      "<li><b>Coming to You</b> - assigned to your firm but waiting on the company or on MISMO " +
+      "first. Nothing to do yet. An engagement stays here after approval only while your " +
+      "invoice is outstanding, and then it leaves the board.</li>" +
       "</ul>" +
-      "<p>The arrows at the top of the panel make it wider and put it back; the cross closes it.</p>" +
+      "<p>Select any row to open it. The columns are the company and its product, the program " +
+      "and whether it is an initial certification or a renewal, the stage with the " +
+      "demonstration date beneath it, how far through the certification script the scoring has " +
+      "got, and your fee.</p>" +
 
-      "<h3>Recording a Finding</h3>" +
-      "<p>Open the engagement, go to <b>Findings</b>, choose an outcome, write what you found, " +
-      "and press <b>Record This Finding</b>. Both fields are required — an outcome with no " +
-      "explanation is not a finding anyone can act on.</p>" +
-      "<table><tr><th>Outcome</th><th>Use it when</th></tr>" +
-      "<tr><td>No findings</td><td>You looked and it meets the standard. Record this " +
-      "explicitly — silence is not the same as a pass, and MISMO cannot tell the two " +
-      "apart.</td></tr>" +
-      "<tr><td>Does not meet the standard</td><td>Something fails outright.</td></tr>" +
-      "<tr><td>Remediation recommended</td><td>Something falls short but the applicant could " +
-      "fix it.</td></tr>" +
-      "<tr><td>Waiting on an artifact</td><td>You cannot judge it yet because something has not " +
-      "been produced.</td></tr>" +
-      "<tr><td>Observation, no outcome</td><td>Worth writing down, but not a judgement.</td></tr>" +
-      "</table>" +
-      '<div class="as-box"><p><b>Findings are kept, never overwritten.</b> There is no edit and ' +
-      "no delete. If you need to correct or withdraw something, record a new finding that says " +
-      "so. The record is meant to show what was known and when, which an editable record " +
-      "cannot.</p></div>" +
-      "<p>Everything you record is visible to MISMO as soon as it saves, and it is stamped with " +
-      "your name and the time. Recording a finding does not move the certification to the next " +
-      "step — MISMO does that.</p>" +
+      "<h3>The Order a Certification Runs In</h3>" +
+      "<table><thead><tr><th>Step</th><th>Who Moves</th><th>What Happens</th></tr></thead><tbody>" +
+      "<tr><td>Application</td><td>Company</td><td>The company applies and signs the " +
+      "application agreement. One application can request several products; each becomes its " +
+      "own engagement.</td></tr>" +
+      "<tr><td>Questionnaire</td><td>Company</td><td>The company answers the programme " +
+      "questionnaire. On a renewal every prior answer is pre-filled and must be marked " +
+      "confirmed or changed. You read it here, under Questionnaire in the engagement.</td></tr>" +
+      "<tr><td>Assignment</td><td>MISMO</td><td>MISMO assigns the engagement to your firm and " +
+      "sends the certification script - the list of audit questions and the acceptance " +
+      "criterion for each. Until that arrives the engagement sits in Waiting on MISMO.</td></tr>" +
+      "<tr><td>Scheduling</td><td>Company, then you</td><td>The company picks a demonstration " +
+      "slot. You accept it or ask to reschedule. See below.</td></tr>" +
+      "<tr><td>Demonstration</td><td>You</td><td>You run the scenarios in the script, record " +
+      "the session, and capture the named screenshots.</td></tr>" +
+      "<tr><td>Artifacts</td><td>Company</td><td>You request what the script requires; the " +
+      "company supplies it. On a renewal, documentation already supplied does not have to be " +
+      "supplied again - it is listed for confirmation instead.</td></tr>" +
+      "<tr><td>Scoring</td><td>You</td><td>You work through the script question by question " +
+      "and record an outcome for each.</td></tr>" +
+      "<tr><td>Preliminary results</td><td>You</td><td>You submit what you found to MISMO.</td></tr>" +
+      "<tr><td>MISMO's decision</td><td>MISMO</td><td>MISMO's Product Manager approves the " +
+      "result or opens a question back to you. Findings are never shown to the company before " +
+      "that approval.</td></tr>" +
+      "<tr><td>Remediation</td><td>Company, then you</td><td>If there are findings, the company " +
+      "sets a target date and supplies evidence. You close each finding on its own evidence.</td></tr>" +
+      "<tr><td>Approval and licence</td><td>MISMO</td><td>MISMO approves, issues the mark " +
+      "licence and the certificate. Your engagement is done.</td></tr>" +
+      "<tr><td>Your invoice</td><td>You</td><td>The engagement stays visible until your fee is " +
+      "recorded against it.</td></tr>" +
+      "</tbody></table>" +
 
-      "<h3>Demonstrations</h3>" +
-      "<p>When a demonstration is scheduled its date shows on the engagement, and while the " +
-      "certification is in that phase it sits in <b>Waiting on You</b>.</p>" +
-      '<div class="as-box"><p><b>Scheduling is not in this portal yet.</b> Dates are still ' +
-      "arranged with MISMO directly and entered by MISMO. Do not treat a blank date as " +
-      "“nothing booked” without checking.</p></div>" +
+      "<h3>Scheduling the Demonstration</h3>" +
+      '<div class="as-box"><p><b>Today this still runs by email.</b> MISMO offers the company ' +
+      "the times your firm has given it \u2014 those are shown on the board under <b>Your " +
+      "Availability</b> \u2014 and the agreed date appears on the engagement as " +
+      "<b>Demonstration</b>. The slot picker described below is agreed in MISMO's blueprint " +
+      "but is not in this portal yet.</p></div>" +
+      "<p>How it is designed to work once it is built:</p>" +
+      "<ul>" +
+      "<li>Your firm publishes <b>availability</b> - open slots, generated from a recurring " +
+      "pattern you set once rather than entered one at a time.</li>" +
+      "<li>MISMO's welcome email sends the company a <b>picker</b> showing only your open " +
+      "slots, with the expected length already set: <b>90 minutes for an initial " +
+      "certification, 60 for a renewal</b>.</li>" +
+      "<li>The company picks one. That creates a <b>demonstration request</b> and puts a task " +
+      "on your board.</li>" +
+      "<li>You <b>accept</b>, which books the slot and sends calendar invitations to everyone, " +
+      "or you <b>ask to reschedule</b>, which releases the slot and sends the company back to " +
+      "the picker. Every request is kept, so the history of a rescheduled demonstration is " +
+      "visible rather than overwritten.</li>" +
+      "<li>MISMO is warned when your open slots run low, so you are not the one chasing it.</li>" +
+      "</ul>" +
+      "<p>Calendar invitations are sent as ordinary <b>.ics</b> attachments. MISMO deliberately " +
+      "decided not to connect to your firm's own calendar system, so nothing here depends on " +
+      "which mail system you use.</p>" +
 
-      "<h3>Your Fee</h3>" +
-      "<p>Each engagement shows what MISMO pays your firm for it. Where it reads “Not " +
-      "recorded”, MISMO has not entered a figure yet — that is a gap in MISMO's " +
-      "records, not a statement that the work is unpaid. Raise it with MISMO.</p>" +
-      "<p>Invoicing is not done here.</p>" +
+      "<h3>Recording What You Find</h3>" +
+      "<p>Open an engagement and use the <b>Findings</b> section at the foot of the panel. " +
+      "Choose an outcome, write what you looked at and what it showed, and record it. Each " +
+      "entry is kept with your name and the date, and nothing is ever overwritten - a later " +
+      "entry is added above the earlier one.</p>" +
+      "<table><thead><tr><th>Outcome</th><th>Use It When</th></tr></thead><tbody>" +
+      "<tr><td>No findings</td><td>You tested it and it meets the standard. This is the " +
+      "ordinary result; most items should end here.</td></tr>" +
+      "<tr><td>Finding</td><td>You tested it and it does not meet the standard. This is what " +
+      "becomes a finding the company has to remediate.</td></tr>" +
+      "<tr><td>Remediation recommended</td><td>It does not meet the standard, but in your " +
+      "judgement it is fixable within the cycle rather than a reason to refuse. MISMO decides; " +
+      "you recommend.</td></tr>" +
+      "<tr><td>Waiting on an artifact</td><td>You could not test it because something you " +
+      "asked for has not arrived. Use this rather than leaving it blank - blank reads as not " +
+      "yet looked at, and this tells MISMO the ball is with the company.</td></tr>" +
+      "<tr><td>Observation</td><td>Worth writing down, but not a pass or a fail. Context for " +
+      "whoever assesses this company next year.</td></tr>" +
+      "</tbody></table>" +
+      '<div class="as-box"><p><b>Nothing you record is shown to the company.</b> Findings go ' +
+      "to MISMO's Product Manager first and reach the company only after MISMO approves the " +
+      "result.</p></div>" +
+      "<p>Item-by-item scoring against the certification script is the next piece of this " +
+      "portal. Until it is built, the Findings box is the record, and the Scored column shows " +
+      "how far the scoring has got in MISMO's own system.</p>" +
 
-      "<h3>What You Can and Cannot See</h3>" +
-      "<p>You see your firm's own engagements and nothing else. You do not see another firm's " +
-      "work, what any company was charged, MISMO's revenue, invoice numbers, whether an invoice " +
-      "is paid, or MISMO's internal notes.</p>" +
-      "<p>That is not a matter of this page hiding things. Your firm's file is cut on MISMO's " +
-      "server before it is published and those figures are not in it, and the service that " +
-      "hands out the file refuses any request outside your firm's own folder. A fault in this " +
-      "page could not expose them.</p>" +
+      "<h3>Reading the Questionnaire</h3>" +
+      "<p>Inside an engagement, <b>Questionnaire</b> holds the company's own answers, grouped " +
+      "the way the company filled them in. Each section opens on its own so you can read one " +
+      "part at a time. An unanswered question shows as <i>No answer given</i> rather than being " +
+      "left out, because a question the company skipped is worth seeing.</p>" +
+      "<p><b>Earlier Certifications</b> lists what this company was certified for before and " +
+      "when. On a renewal this is how you judge the current cycle against the last one.</p>" +
+
+      "<h3>Signing In</h3>" +
+      "<p>Your account is created by MISMO and carries only your firm. A session lasts four " +
+      "hours and ends when you close the tab. If you work for more than one accredited firm, " +
+      "the firm selector sits at the foot of the menu on the left.</p>" +
+      "<p>Dark mode is the toggle at the foot of the menu; the setting is remembered on this " +
+      "device. The menu itself narrows with the backslash key.</p>" +
 
       "<h3>If Something Looks Wrong</h3>" +
-      "<p>Email <a href=\"mailto:jcritchley@mismo.org\">Jonna Critchley</a>. Worth reporting: an " +
-      "engagement that is missing or should not be there, a company or product named wrongly, a " +
-      "fee that is blank or looks wrong, a questionnaire that is empty, or a finding that did " +
-      "not save.</p>" +
+      "<p>Tell MISMO rather than working around it. This portal reads MISMO's records; it does " +
+      "not correct them. Write to <a href=\"mailto:jcritchley@mismo.org\">Jonna Critchley</a> " +
+      "about an engagement that is missing or should not be there, a company or product named " +
+      "wrongly, a fee that is blank or looks wrong, a questionnaire that is empty, a " +
+      "certification script that has not arrived, or a finding that did not save.</p>" +
       "</div>";
   }
 
