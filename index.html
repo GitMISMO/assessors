@@ -227,6 +227,9 @@ table.av td:first-child{font-weight:600;white-space:nowrap}
   white-space:nowrap;min-width:max-content}
 .as-go:hover:not(:disabled){background:var(--navy-mid,#14486e)}
 .as-go:disabled{opacity:.45;cursor:not-allowed}
+.as-go.ghost{background:transparent;color:var(--ink);border:1px solid var(--border-strong)}
+.as-go.ghost:hover:not(:disabled){background:var(--surface-3)}
+table.av select, table.av input{font:inherit;font-size:13px;padding:5px 7px;border:1px solid var(--border-strong);border-radius:5px;background:var(--surface);color:var(--ink)}
 .as-go:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 .as-say{font-family:var(--display);font-size:12.5px;margin-left:12px}
 .as-say.ok{color:var(--good)}
@@ -379,7 +382,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 
 <!-- Where the relay lives. relay.js reads window.RELAY; without it every call
      goes to a relative URL and nothing can sign in. Copied from Service Orders. -->
-<script>window.RELAY={"base": "https://rgvdi67cg27o5kcmiytcqbqnrm0hmztx.lambda-url.us-east-1.on.aws", "projects": ["so-phoenix", "so-actualize", "so-trex", "so-falcon", "so-trudigital", "so-vianteye", "so-phoenix-hours", "so-actualize-hours", "so-trex-hours", "so-falcon-hours", "so-trudigital-hours", "so-vianteye-hours"], "slugs": {"so-phoenix": "phoenixteam", "so-actualize": "actualize", "so-trex": "trex", "so-falcon": "falcon", "so-trudigital": "trudigital", "so-vianteye": "vianteye", "so-phoenix-hours": "phoenixteam", "so-actualize-hours": "actualize", "so-trex-hours": "trex", "so-falcon-hours": "falcon", "so-trudigital-hours": "trudigital", "so-vianteye-hours": "vianteye"}, "note": "base is the relay's Lambda function URL. projects is every key this page may sign in against, tried in turn; the token is not project-bound, so the first that works covers them all. slugs maps a project key to the filename its data uses. lite names the HOURS-ONLY keys: a person holding one of those can read orders-public/ and nothing else, so a rate is not merely hidden from their screen, it never reaches their browser. All four are configuration: a sixth company is a change HERE and in projects.json, and nowhere else.", "lite": ["so-phoenix-hours", "so-actualize-hours", "so-trex-hours", "so-falcon-hours", "so-trudigital-hours", "so-vianteye-hours"]};</script>
+<script>window.RELAY={"base": "https://rgvdi67cg27o5kcmiytcqbqnrm0hmztx.lambda-url.us-east-1.on.aws", "projects": ["as-falcon", "as-actualize", "as-vianteye"], "slugs": {"as-falcon": "falcon", "as-actualize": "actualize", "as-vianteye": "vianteye"}, "lite": [], "note": "base is the relay's Lambda function URL. projects is every key this page may sign in against, tried in turn: the three assessor firms. (Until 25 Oct 2026 this held the Service Orders keys, copied with relay.js, so an account with only an assessor key could not sign in.)"};</script>
 <script src="relay.js"></script>
 <script>
 /* ── The assessor portal ──────────────────────────────────────────────────────
@@ -424,10 +427,37 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     { v: "note",                  t: "Observation, no outcome" }
   ];
 
+  /* The steps an assessor records here. Each one moves the certification on MISMO's board
+     within half an hour, and tells whoever is next - nobody at MISMO has to do it. Approving
+     and everything else that is MISMO's decision is not on this list. */
+  var STEPS = {
+    DemoProposed: [{ to: "DemoScheduled", t: "Confirm the Date",
+      n: "Enter the time you are confirming. The company is told straight away; then send the calendar invitation.", needs: "date" }],
+    DemoScheduled: [
+      { to: "AwaitingArtifacts", t: "The Demonstration Is Done",
+        n: "Say which artifacts you have asked the company for. The engagement waits on the company until they arrive.", needs: "note" },
+      { to: "AwaitingDemoSelection", t: "It Needs a New Date",
+        n: "The company's booking page reopens and they are asked to pick another time. Say why.", needs: "note" }],
+    AwaitingArtifacts: [{ to: "ArtifactReview", t: "The Artifacts Have Arrived", n: "Starts your review.", needs: "optional" }],
+    ArtifactReview: [{ to: "PrelimResultsSubmitted", t: "Submit the Preliminary Result",
+      n: "Goes to MISMO's VP for review. Findings are never shown to the company before MISMO approves.", needs: "result" }],
+    PrelimQueryOpen: [{ to: "PrelimResultsSubmitted", t: "Answer MISMO's Question and Resubmit", n: "Goes back to MISMO's VP.", needs: "result" }],
+    RemediationOpen: [{ to: "RemediationSubmitted", t: "Remediation Evidence Reviewed",
+      n: "Say how each finding was closed on its evidence. Goes to MISMO's VP.", needs: "note" }],
+    RemediationEscalated: [{ to: "RemediationOpen", t: "Send It Back to the Company", n: "", needs: "note" }],
+    RemediationQueryOpen: [{ to: "RemediationSubmitted", t: "Answer MISMO's Question", n: "Goes back to MISMO's VP.", needs: "note" }],
+    ScopeReviewAssessor: [{ to: "ScopeReviewVp", t: "Pass the Scope to MISMO's VP", n: "", needs: "note" }]
+  };
+  var DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
   var mine = [];        /* the firms this account can see */
   var current = null;   /* the one being shown */
   var book = null;      /* its engagements file */
   var findings = {};    /* row -> the findings file for that engagement */
+  var steps = null;     /* notify/assessment/moves.json: the steps this firm has recorded */
+  var answers = null;   /* engagements/<firm>-inbox.json: what MISMO's board did with each */
+  var avail = null;     /* notify/assessment/availability.json: the firm's own open times */
+  var availDraft = null;/* the availability being edited, before it is saved */
   var openRow = null;   /* the engagement in the panel, if any */
   var openSecs = { find: true };  /* which panel sections are open */
   var openQ = {};       /* which questionnaire sections are open */
@@ -447,7 +477,10 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   }
   function day(iso) {
     if (!iso) return null;
-    var d = new Date(iso);
+    /* A bare date is a calendar day, not midnight UTC - read as UTC it shows the day before
+       anywhere west of Greenwich. */
+    var m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    var d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(iso);
     if (isNaN(d)) return String(iso).slice(0, 10);
     return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   }
@@ -535,17 +568,28 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     current = firm;
     book = null;
     findings = {};
+    steps = null; answers = null; avail = null; availDraft = null;
     shut();
     paint();
     return R.read(firm.key, "engagements/" + firm.slug + ".json")
       .then(function (r) {
         book = r.data;
         paint();
-        return loadFindings();
+        return Promise.all([loadFindings(), loadSteps()]);
       })["catch"](function (e) {
         book = { error: (e && e.message) ? e.message : String(e) };
         paint();
       });
+  }
+
+  function loadSteps() {
+    var k = current.key;
+    function grab(p) { return R.readOr(k, p, null).then(function (r) { return r && r.data !== undefined ? r.data : r; })["catch"](function () { return null; }); }
+    return Promise.all([grab("notify/assessment/moves.json"), grab("engagements/" + current.slug + "-inbox.json"),
+      grab("notify/assessment/availability.json")]).then(function (x) {
+      steps = x[0]; answers = x[1]; avail = x[2];
+      paint();
+    });
   }
 
   function loadFindings() {
@@ -688,28 +732,76 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   /* How this firm takes demonstration bookings, as MISMO has it recorded. Shown rather
      than described, because the two firms do it differently and neither does it through
      this portal yet. */
+  /* Your Availability: the weekly windows companies are offered on their booking page. What
+     the firm saves here wins over what MISMO recorded, and reaches the booking pages within
+     half an hour. A window takes one session; a long one is cut into back-to-back sessions
+     (90 minutes for a first certification, 60 for a renewal). */
+  function to24(t) {
+    var m = String(t || "").trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/);
+    if (!m) return "";
+    var h = +m[1], mi = +(m[2] || 0);
+    if (m[3] === "pm" && h < 12) h += 12;
+    if (m[3] === "am" && h === 12) h = 0;
+    return (h < 10 ? "0" : "") + h + ":" + (mi < 10 ? "0" : "") + mi;
+  }
+  function savedAvail() {
+    if (avail && Array.isArray(avail.windows)) return { windows: avail.windows, blocked: avail.blocked || [], from: "you" };
+    var sc = (book && book.scheduling) || {};
+    if (sc.mode === "fixed-windows" && sc.windows) return { windows: sc.windows, blocked: [], from: "MISMO" };
+    return { windows: [], blocked: [], from: "nobody" };
+  }
   function availability() {
-    var sc = (book && book.scheduling) || null;
-    if (!sc) return "";
-    var body = "";
-    if (sc.windows && sc.windows.length) {
-      body += '<table class="av"><thead><tr><th>Day</th><th>Window</th></tr></thead><tbody>' +
-        sc.windows.map(function (w) {
-          return "<tr><td>" + esc(w.day) + "</td><td>" + esc(w.from) + "\u2013" + esc(w.to) +
-            (sc.timezone ? " " + esc(sc.timezone) : "") + "</td></tr>";
-        }).join("") + "</tbody></table>";
-    }
-    if (sc.reviewLink) {
-      body += '<p class="psub" style="margin:0 0 10px"><a href="' + esc(sc.reviewLink) +
-        '" target="_blank" rel="noopener noreferrer">Your published calendar</a>' +
-        (sc.reviewOnly ? " \u2014 to look at only. MISMO does not book through it." : "") +
-        "</p>";
-    }
-    if (sc.note) body += '<p class="psub" style="margin:0">' + esc(sc.note) + "</p>";
+    if (!book || book.inHouse) return "";
+    var saved = savedAvail();
+    var a = availDraft || saved;
+    if (!availDraft) availDraft = { windows: a.windows.map(function (w) { return { day: w.day, from: to24(w.from), to: to24(w.to) }; }), blocked: (a.blocked || []).slice() };
+    var d = availDraft;
+    var rows = d.windows.map(function (w, i) {
+      return '<tr><td><select data-avday="' + i + '" aria-label="Day">' + DAYS.map(function (x) {
+          return '<option' + (String(w.day).toLowerCase() === x.toLowerCase() ? " selected" : "") + ">" + x + "</option>"; }).join("") + "</select></td>" +
+        '<td><input type="time" data-avfrom="' + i + '" value="' + esc(w.from) + '" aria-label="From"></td>' +
+        '<td><input type="time" data-avto="' + i + '" value="' + esc(w.to) + '" aria-label="To"></td>' +
+        '<td><button class="as-ic" type="button" data-avdel="' + i + '" aria-label="Remove this window" title="Remove">' +
+        '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></td></tr>';
+    }).join("");
+    var stamp = avail && avail.updatedAt ? "Last saved " + esc(day(avail.updatedAt)) + (avail.by ? " by " + esc(avail.by) : "") + "." :
+      (saved.from === "MISMO" ? "These are the times MISMO has on record for you. Change them here whenever they change." :
+       "No times saved yet, so companies are asked to offer times for you to confirm. Add your windows and they can book directly.");
     return '<div class="asb-panel"><div class="phead"><div><h2>Your Availability</h2>' +
-      '<p class="psub">What MISMO has recorded as the times your firm takes demonstrations. ' +
-      "Tell MISMO if this is wrong \u2014 it is what companies are offered.</p></div></div>" +
-      body + "</div>";
+      '<p class="psub">The weekly windows companies can book on their own booking page, in Eastern Time. ' +
+      "Each window takes one session, and a booked time is taken off for everyone else. MISMO holidays are left out " +
+      "automatically. " + stamp + "</p></div></div>" +
+      '<table class="av"><thead><tr><th>Day</th><th>From</th><th>To</th><th></th></tr></thead><tbody>' +
+      (rows || '<tr><td colspan="4" class="none">No windows yet.</td></tr>') + "</tbody></table>" +
+      '<button class="as-go ghost" type="button" data-avadd="1" style="margin:0 8px 12px 0">Add a Window</button>' +
+      '<div class="as-find"><div class="as-f"><label for="av-blocked">Days You Are Not Available</label>' +
+      '<textarea id="av-blocked" style="min-height:60px" placeholder="2026-11-24, 2026-12-22">' + esc((d.blocked || []).join(", ")) + "</textarea></div></div>" +
+      '<button class="as-go" type="button" data-avsave="1">Save Your Availability</button>' +
+      '<span class="as-say" id="av-say"></span></div>';
+  }
+  function readAvailForm() {
+    if (!availDraft) return;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-avday]"), function (x) { availDraft.windows[+x.getAttribute("data-avday")].day = x.value; });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-avfrom]"), function (x) { availDraft.windows[+x.getAttribute("data-avfrom")].from = x.value; });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-avto]"), function (x) { availDraft.windows[+x.getAttribute("data-avto")].to = x.value; });
+    var b = el("av-blocked");
+    if (b) availDraft.blocked = b.value.split(/[\s,;]+/).map(function (x) { return x.trim(); }).filter(function (x) { return /^\d{4}-\d{2}-\d{2}$/.test(x); });
+  }
+  function saveAvail() {
+    readAvailForm();
+    var say = el("av-say");
+    var bad = availDraft.windows.filter(function (w) { return !w.from || !w.to || w.to <= w.from; });
+    if (bad.length) { say.className = "as-say bad"; say.textContent = "Each window needs a start and a later end."; return; }
+    var s = R.session() || {};
+    var doc = { kind: "assessor-availability", version: 1, firm: book.firm, timezone: "ET",
+      windows: availDraft.windows.map(function (w) { return { day: w.day, from: w.from, to: w.to }; }),
+      blocked: availDraft.blocked, updatedAt: new Date().toISOString(), by: s.name || s.email || "" };
+    say.className = "as-say"; say.textContent = "Saving…";
+    Promise.resolve(R.update(current.key, "notify/assessment/availability.json", function () { return doc; },
+      "Availability from " + (book.firm || ""), doc, 3)).then(function () {
+      avail = doc; availDraft = null; paint();
+      var s2 = el("av-say"); if (s2) { s2.className = "as-say ok"; s2.textContent = "Saved. Booking pages show these times within half an hour."; }
+    })["catch"](function (err) { say.className = "as-say bad"; say.textContent = (err && err.message) || "That did not save."; });
   }
 
   function cannotSee() {
@@ -926,6 +1018,99 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return out;
   }
 
+  function stepsOf(row) {
+    return ((steps && steps.entries) || []).filter(function (x) { return String(x.row) === String(row); })
+      .sort(function (a, b) { return String(b.at).localeCompare(String(a.at)); });
+  }
+  function outcomeOf(id) { return answers && answers.steps ? answers.steps[id] : null; }
+  function stepLabel(to) {
+    for (var k in STEPS) for (var i = 0; i < STEPS[k].length; i++) if (STEPS[k][i].to === to) return STEPS[k][i].t;
+    return to;
+  }
+  function stepsBody(e) {
+    var past = stepsOf(e.row).slice(0, 6);
+    var waiting = past.filter(function (x) { return !outcomeOf(x.id); })[0];
+    var out = past.map(function (x) {
+      var o = outcomeOf(x.id);
+      var tone = !o ? "cool" : o.status === "applied" ? "good" : "bad";
+      var said = !o ? "Sent to MISMO" : o.status === "applied" ? "On the board" : "Not applied";
+      return '<div class="as-one"><span class="as-tag ' + tone + '">' + said + "</span> " +
+        '<span class="as-when">' + esc(stepLabel(x.to)) + " · " + esc(day(x.at) || "") + (x.by ? " · " + esc(x.by) : "") + "</span>" +
+        (o && o.status === "refused" ? "<p>" + esc(o.why || "") + "</p>" : "") +
+        (x.note ? "<p>" + esc(x.note) + "</p>" : "") + "</div>";
+    }).join("");
+    if (waiting) {
+      return out + '<p class="psub" style="margin:8px 0 0">Your last step is on its way to MISMO\'s board, which takes up to half an hour. ' +
+        "You can record the next one once it has arrived.</p>";
+    }
+    var can = STEPS[e.state] || [];
+    if (!can.length) {
+      return out + '<p class="psub" style="margin:8px 0 0">Nothing for you to record at this stage' +
+        (e.waiting && e.waiting !== "Assessor" ? " — it is with " + esc(e.waiting) + "." : ".") + "</p>";
+    }
+    return out + can.map(function (st, i) {
+      var id = e.row + "-" + i;
+      var f = '<div class="as-find" style="border-top:1px solid var(--rule,var(--border));padding-top:12px;margin-top:12px">' +
+        '<div style="font-family:var(--display);font-weight:700;font-size:14px;margin:0 0 4px">' + esc(st.t) + "</div>" +
+        (st.n ? '<p class="psub" style="margin:0 0 10px">' + esc(st.n) + "</p>" : "");
+      if (st.needs === "date") {
+        f += '<div class="as-f" style="display:flex;gap:10px;flex-wrap:wrap"><div><label for="sd-' + id + '">Date</label>' +
+          '<input type="date" id="sd-' + id + '"></div><div><label for="sh-' + id + '">Time (Eastern)</label>' +
+          '<input type="time" id="sh-' + id + '"></div></div>';
+      }
+      if (st.needs === "result") {
+        f += '<div class="as-f"><label>Result</label>' +
+          '<label style="text-transform:none;letter-spacing:0;font-family:var(--display);font-size:13px;display:inline-flex;gap:6px;margin-right:16px">' +
+          '<input type="radio" name="sr-' + id + '" value="no"> No findings</label>' +
+          '<label style="text-transform:none;letter-spacing:0;font-family:var(--display);font-size:13px;display:inline-flex;gap:6px">' +
+          '<input type="radio" name="sr-' + id + '" value="yes"> Findings</label></div>';
+      }
+      if (st.needs !== "date") {
+        f += '<div class="as-f"><label for="sn-' + id + '">' + (st.needs === "result" ? "Summary for MISMO" : st.needs === "optional" ? "Note (optional)" : "Note") + "</label>" +
+          '<textarea id="sn-' + id + '" style="min-height:70px"></textarea></div>';
+      }
+      return f + '<button class="as-go" type="button" data-step="' + id + '">Record This Step</button>' +
+        '<span class="as-say" id="ss-' + id + '"></span></div>';
+    }).join("");
+  }
+  function recordStep(id) {
+    var parts = String(id).split("-"), i = +parts.pop(), row = parts.join("-");
+    var e = byRow(row); if (!e) return;
+    var st = (STEPS[e.state] || [])[i]; if (!st) return;
+    var say = el("ss-" + id), btn = document.querySelector('[data-step="' + id + '"]');
+    function bad(m) { say.className = "as-say bad"; say.textContent = m; }
+    var note = el("sn-" + id) ? el("sn-" + id).value.trim() : "";
+    var entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), row: e.row, org: e.org, program: e.program,
+      from: e.state, to: st.to, note: note, at: new Date().toISOString() };
+    if (st.needs === "date") {
+      entry.demoOn = el("sd-" + id).value; entry.demoTime = el("sh-" + id).value || null;
+      if (!entry.demoOn) return bad("Enter the date.");
+      if (!entry.demoTime) return bad("Enter the time.");
+    }
+    if (st.needs === "result") {
+      var r = document.querySelector('input[name="sr-' + id + '"]:checked');
+      if (!r) return bad("Choose No findings or Findings.");
+      entry.findings = r.value === "yes";
+      if (!note) return bad("Write a short summary for MISMO.");
+    }
+    if (st.needs === "note" && !note) return bad("Write a short note.");
+    var s = R.session() || {};
+    entry.by = s.name || s.email || ""; entry.email = s.email || "";
+    if (btn) btn.disabled = true;
+    say.className = "as-say"; say.textContent = "Saving…";
+    var fresh = { kind: "assessor-steps", version: 1, firm: book.firm, entries: [] };
+    Promise.resolve(R.update(current.key, "notify/assessment/moves.json", function (doc) {
+      var d = doc && doc.entries ? doc : fresh;
+      d.entries = (d.entries || []).concat([entry]);
+      return d;
+    }, stepLabel(st.to) + " - " + (e.org || ""), fresh, 3)).then(function () {
+      steps = steps && steps.entries ? steps : { entries: [] };
+      steps.entries = steps.entries.concat([entry]);
+      openSecs.steps = true;
+      drawPanel();
+    })["catch"](function (err) { if (btn) btn.disabled = false; bad((err && err.message) || "That did not save."); });
+  }
+
   function drawPanel() {
     var p = el("as-panel");
     if (openRow == null) { p.className = "as-panel"; p.innerHTML = ""; el("as-scrim").className = "as-scrim"; return; }
@@ -954,6 +1139,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         "</div></div>" +
       '<div class="as-pb">' +
         sec("facts", "Where It Stands", null, facts(e), true) +
+        sec("steps", "Update This Engagement", (STEPS[e.state] || []).length ? "your move" : null, stepsBody(e), true) +
         sec("qa", "What the Applicant Told Us", qn ? qn + " answers" : "none", questionnaire(e)) +
         sec("hist", "Earlier Certifications",
             (Array.isArray(e.history) ? e.history.length : 0) || null, history(e)) +
@@ -1030,29 +1216,31 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "</tbody></table>" +
 
       "<h3>Scheduling the Demonstration</h3>" +
-      '<div class="as-box"><p><b>Today this still runs by email.</b> MISMO offers the company ' +
-      "the times your firm has given it \u2014 those are shown on the board under <b>Your " +
-      "Availability</b> \u2014 and the agreed date appears on the engagement as " +
-      "<b>Demonstration</b>. The slot picker described below is agreed in MISMO's blueprint " +
-      "but is not in this portal yet.</p></div>" +
-      "<p>How it is designed to work once it is built:</p>" +
+      '<div class="as-box"><p><b>Companies book their own time.</b> When a company has paid, ' +
+      "its welcome email links to a private booking page listing the open times from <b>Your " +
+      "Availability</b>. It picks one and names who is coming, and the engagement moves to " +
+      "<b>Demo Scheduled</b> with the date and time. You get the confirmation email with the " +
+      "attendees, and you send the calendar invitation and video link.</p></div>" +
       "<ul>" +
-      "<li>Your firm publishes <b>availability</b> - open slots, generated from a recurring " +
-      "pattern you set once rather than entered one at a time.</li>" +
-      "<li>MISMO's welcome email sends the company a <b>picker</b> showing only your open " +
-      "slots, with the expected length already set: <b>90 minutes for an initial " +
-      "certification, 60 for a renewal</b>.</li>" +
-      "<li>The company picks one. That creates a <b>demonstration request</b> and puts a task " +
-      "on your board.</li>" +
-      "<li>You <b>accept</b>, which books the slot and sends calendar invitations to everyone, " +
-      "or you <b>ask to reschedule</b>, which releases the slot and sends the company back to " +
-      "the picker. Every request is kept, so the history of a rescheduled demonstration is " +
-      "visible rather than overwritten.</li>" +
-      "<li>MISMO is warned when your open slots run low, so you are not the one chasing it.</li>" +
+      "<li><b>Your Availability</b> is the weekly windows you take sessions in, in Eastern Time. " +
+      "Each window takes one session; a long window is cut into back-to-back sessions (90 minutes " +
+      "for a first certification, 60 for a renewal). Add the days you are away under <b>Days You " +
+      "Are Not Available</b>. MISMO holidays are left out for you.</li>" +
+      "<li>Times are offered from two working days ahead to six weeks out. A booked time is taken " +
+      "off every other company's page at once.</li>" +
+      "<li>If your firm has no windows saved, the company offers up to three times instead, and " +
+      "you confirm one under <b>Update This Engagement</b>.</li>" +
+      "<li>If a booked time no longer works, use <b>It Needs a New Date</b>. The company's page " +
+      "reopens and it is asked to pick again.</li>" +
       "</ul>" +
-      "<p>Calendar invitations are sent as ordinary <b>.ics</b> attachments. MISMO deliberately " +
-      "decided not to connect to your firm's own calendar system, so nothing here depends on " +
-      "which mail system you use.</p>" +
+
+      "<h3>Recording Each Step</h3>" +
+      "<p>Open an engagement and use <b>Update This Engagement</b>. It shows only the steps that " +
+      "are yours from where the engagement stands: the demonstration done, the artifacts arrived, " +
+      "your preliminary result, an answer to MISMO's question, remediation evidence reviewed. " +
+      "Record the step and MISMO's board moves within half an hour, and whoever is next is told " +
+      "automatically. Each step shows <b>Sent to MISMO</b> until it arrives, then <b>On the " +
+      "board</b>. If the engagement had already moved on, it shows <b>Not applied</b> and says why.</p>" +
 
       "<h3>Recording What You Find</h3>" +
       "<p>Open an engagement and use the <b>Findings</b> section at the foot of the panel. " +
@@ -1184,7 +1372,11 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     if (t.closest("#as-wide")) { wide = !wide; drawPanel(); return; }
     if (t.closest("#as-shut") || t.closest("#as-scrim")) { shut(); return; }
-    if ((c = t.closest("[data-rec]"))) { record(c.getAttribute("data-rec")); }
+    if ((c = t.closest("[data-rec]"))) { record(c.getAttribute("data-rec")); return; }
+    if ((c = t.closest("[data-step]"))) { recordStep(c.getAttribute("data-step")); return; }
+    if ((c = t.closest("[data-avadd]"))) { readAvailForm(); availDraft.windows.push({ day: "Monday", from: "10:00", to: "11:30" }); paint(); return; }
+    if ((c = t.closest("[data-avdel]"))) { readAvailForm(); availDraft.windows.splice(+c.getAttribute("data-avdel"), 1); paint(); return; }
+    if ((c = t.closest("[data-avsave]"))) { saveAvail(); return; }
   });
 
   document.addEventListener("keydown", function (e) {

@@ -277,7 +277,7 @@
         if (sawUnknown) throw (unkErr || lastErr);
         if (sawForbidden) {
           var ne = fail(403, { error: 'NO_SERVICE_ORDERS',
-            message: 'This account has no service orders on it.' });
+            message: (CFG.projects || []).join(' ').indexOf('as-') >= 0 ? 'This account has no assessor access. Please email certifications@mismo.org.' : 'This account has no service orders on it.' });
           ne.noServiceOrders = true;
           throw ne;
         }
