@@ -776,6 +776,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       '<button class="as-go ghost" type="button" data-avadd="1" style="margin:0 8px 12px 0">Add a Window</button>' +
       '<div class="as-find"><div class="as-f"><label for="av-blocked">Days You Are Not Available</label>' +
       '<textarea id="av-blocked" style="min-height:60px" placeholder="2026-11-24, 2026-12-22">' + esc((d.blocked || []).join(", ")) + "</textarea></div></div>" +
+      (book.scheduling && book.scheduling.reviewLink ? '<p class="psub" style="margin:0 0 12px">Your published calendar: <a href="' +
+        esc(book.scheduling.reviewLink) + '" target="_blank" rel="noopener noreferrer">open it</a>. Companies are shown it to see when you are free ' +
+        "(they are asked not to book on it) and offer you a time, which you confirm under Update This Engagement. Add windows above and they can book directly instead.</p>" : "") +
       '<button class="as-go" type="button" data-avsave="1">Save Your Availability</button>' +
       '<span class="as-say" id="av-say"></span></div>';
   }
