@@ -564,6 +564,19 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return FIRMS.filter(function (f) { return !!access[f.key]; });
   }
 
+  /* May this person record steps, findings and availability for the firm on screen? Edit
+     (staff) or admin access to that firm's key, or a MISMO platform administrator. Someone given
+     View - MISMO's VP, say, watching all three firms - sees everything and records nothing: a
+     step recorded here is real, it moves the certification and sends the next email. */
+  function canEditFirm() {
+    var s = R.session() || {};
+    if (s.platformAdmin) return true;
+    var r = (s.access || {})[current && current.key];
+    return r === "admin" || r === "staff" || r === "facilitator";
+  }
+  var VIEW_NOTE = '<p class="psub" style="margin:8px 0 0">View only. You can see everything here; recording ' +
+    "steps, findings and availability is for the firm's own assessors.</p>";
+
   function loadFirm(firm) {
     current = firm;
     book = null;
@@ -753,6 +766,16 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   function availability() {
     if (!book || book.inHouse) return "";
     var saved = savedAvail();
+    if (!canEditFirm()) {
+      var list = (saved.windows || []).map(function (w) { return "<tr><td>" + esc(w.day) + "</td><td>" + esc(w.from) + "</td><td>" + esc(w.to) + "</td></tr>"; }).join("");
+      return '<div class="asb-panel"><div class="phead"><div><h2>Availability</h2>' +
+        '<p class="psub">The weekly windows companies can book, in Eastern Time' +
+        (saved.from === "you" ? ", as the firm saved them" : saved.from === "MISMO" ? ", as MISMO has them on record" : "") + ".</p></div></div>" +
+        '<table class="av"><thead><tr><th>Day</th><th>From</th><th>To</th></tr></thead><tbody>' +
+        (list || '<tr><td colspan="3" class="none">No windows: companies offer times for the firm to confirm.</td></tr>') + "</tbody></table>" +
+        ((saved.blocked || []).length ? '<p class="psub">Not available: ' + esc(saved.blocked.join(", ")) + "</p>" : "") +
+        VIEW_NOTE + "</div>";
+    }
     var a = availDraft || saved;
     if (!availDraft) availDraft = { windows: a.windows.map(function (w) { return { day: w.day, from: to24(w.from), to: to24(w.to) }; }), blocked: (a.blocked || []).slice() };
     var d = availDraft;
@@ -1007,6 +1030,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
           "<p>" + esc(f.text || "") + "</p></div>";
       }).join("");
     }
+    if (!canEditFirm()) return (out || '<p class="psub" style="margin:0">No findings recorded yet.</p>') + VIEW_NOTE;
     out += '<div class="as-find">' +
       '<div class="as-f"><label for="fo-' + e.row + '">Outcome</label>' +
       '<select id="fo-' + e.row + '">' +
@@ -1047,6 +1071,10 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         "You can record the next one once it has arrived.</p>";
     }
     var can = STEPS[e.state] || [];
+    if (can.length && !canEditFirm()) {
+      return out + '<p class="psub" style="margin:8px 0 0">Next from the assessor: ' +
+        esc(can.map(function (st) { return st.t; }).join(" or ")) + ".</p>" + VIEW_NOTE;
+    }
     if (!can.length) {
       return out + '<p class="psub" style="margin:8px 0 0">Nothing for you to record at this stage' +
         (e.waiting && e.waiting !== "Assessor" ? " — it is with " + esc(e.waiting) + "." : ".") + "</p>";
@@ -1375,6 +1403,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     if (t.closest("#as-wide")) { wide = !wide; drawPanel(); return; }
     if (t.closest("#as-shut") || t.closest("#as-scrim")) { shut(); return; }
+    if ((t.closest("[data-rec]") || t.closest("[data-step]") || t.closest("[data-avadd]") || t.closest("[data-avdel]") || t.closest("[data-avsave]")) && !canEditFirm()) return;
     if ((c = t.closest("[data-rec]"))) { record(c.getAttribute("data-rec")); return; }
     if ((c = t.closest("[data-step]"))) { recordStep(c.getAttribute("data-step")); return; }
     if ((c = t.closest("[data-avadd]"))) { readAvailForm(); availDraft.windows.push({ day: "Monday", from: "10:00", to: "11:30" }); paint(); return; }
