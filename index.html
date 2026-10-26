@@ -55,7 +55,10 @@
 .asb-say{font-size:18px;font-weight:600;letter-spacing:-.01em;line-height:1.35;color:#fff}
 .asb-say em{font-style:normal}
 .asb-say em.hl-late{color:#ffcf73}
-.hl-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.hl-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.as-sub{margin:22px 0 10px;padding-top:16px;border-top:1px solid var(--border)}
+.as-sub h3{margin:0 0 4px;font-size:15px;font-weight:600;color:var(--ink)}
+.as-sub .psub{margin:0}
 @media (max-width:1100px){.hl-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:520px){.hl-tiles{grid-template-columns:1fr}}
 .hl-tile{background:rgba(255,255,255,.07);border:1px solid rgba(116,191,235,.28);
@@ -634,10 +637,21 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   /* Approved and with MISMO's licensing step. It stays on the board only while the
      firm still has to invoice for it. */
   function showToFirm(e) { return !e.done || e.assessorFee == null; }
+  /* Already worked by this firm: the demonstration or review has happened, or it has scored or
+     recorded findings against it. When one of these is waiting on somebody else it stays in the
+     firm's To Do (it is the firm's engagement, in flight); Coming to You is only for engagements
+     the firm has not touched yet (Jonna, 26 Oct 2026). */
+  var WORKED = ["AwaitingArtifacts", "ArtifactReview", "PrelimResultsSubmitted", "PrelimQueryOpen",
+    "RemediationOpen", "RemediationEscalated", "RemediationSubmitted", "RemediationQueryOpen",
+    "AppealOpen", "ScopeReviewVp", "ScopeReviewCompany", "ApprovedPendingLicense", "LicenseSent"];
+  function worked(e) {
+    return WORKED.indexOf(e.state) >= 0 || !!e.done || !!(e.prelim && e.prelim.scored) || countFindings(e.row) > 0;
+  }
 
   function em(n, late) { return "<em" + (late ? ' class="hl-late"' : "") + ">" + n + "</em>"; }
 
-  function headline(mine, withMe, others, blocked) {
+  function headline(mine, withMe, others, blocked, inFlight) {
+    inFlight = inFlight || [];
     var invoiced = mine.filter(function (e) { return e.assessorFee != null; });
     var feeTotal = invoiced.reduce(function (t, e) { return t + (e.assessorFee || 0); }, 0);
     var name = esc((book && book.firm) || (current && current.slug) || "your firm");
@@ -649,10 +663,13 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     say += ", out of " + em(mine.length) + " on the board. " +
       (blocked.length
         ? em(blocked.length, true) + " cannot start until MISMO sends the certification script."
-        : others.length
-          ? em(others.length) + " " + (others.length === 1 ? "is" : "are") +
-            " coming once somebody else moves first."
-          : "Nothing else is queued behind them.");
+        : (inFlight.length
+          ? em(inFlight.length) + " you have worked " + (inFlight.length === 1 ? "is" : "are") +
+            " waiting on somebody else" + (others.length ? ", and " : ". ")
+          : "") +
+          (others.length
+            ? em(others.length) + " more " + (others.length === 1 ? "is" : "are") + " coming to you, not started yet."
+            : inFlight.length ? "Nothing new is coming yet." : "Nothing else is queued behind them."));
 
     function tile(n, k, s, warn) {
       return '<div class="hl-tile' + (warn ? " warn" : "") + '"><b>' + n + "</b>" +
@@ -667,9 +684,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         '<div class="asb-say">' + say + "</div>" +
         '<div class="hl-tiles">' +
           tile(withMe.length, "With You", withMe.length ? "your move" : "all clear", !!withMe.length) +
-          tile(others.length, "Coming to You", "waiting on somebody else") +
-          tile(blocked.length, "Waiting on MISMO",
-               blocked.length ? "script not sent" : "nothing blocked", !!blocked.length) +
+          tile(inFlight.length, "In Your Queue", "waiting on somebody else") +
+          tile(others.length, "Coming to You", "not started yet") +
+          (blocked.length ? tile(blocked.length, "Waiting on MISMO", "script not sent", true) : "") +
           tile(money(feeTotal) || "$0", "Invoiced",
                "across " + invoiced.length + " of " + mine.length + " engagements") +
         "</div>" +
@@ -857,11 +874,13 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
 
     var withMe = all.filter(isMine);
-    var others = all.filter(function (e) { return !isMine(e); }).filter(showToFirm);
     var blocked = all.filter(function (e) { return !!e.scriptOutstanding; });
+    var notMine = all.filter(function (e) { return !isMine(e) && !e.scriptOutstanding; }).filter(showToFirm);
+    var inFlight = notMine.filter(worked);
+    var others = notMine.filter(function (e) { return !worked(e); });
     var progs = (book.programs || []).join(", ");
 
-    var out = headline(all, withMe, others, blocked);
+    var out = headline(all, withMe, others, blocked, inFlight);
 
     out += '<div class="asb-panel"><div class="phead"><div><h2>To Do</h2>' +
       '<p class="psub">Engagements where the next move is yours.' +
@@ -869,7 +888,12 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       (book.inHouse ? " This is MISMO’s own audit team, working the same portal as an " +
         "outside firm." : "") +
       "</p></div></div>" +
-      engTable(withMe, "Nothing is waiting on you right now.") + "</div>";
+      engTable(withMe, "Nothing is waiting on you right now.") +
+      (inFlight.length
+        ? '<div class="as-sub"><h3>In Your Queue, Waiting on Someone Else</h3>' +
+          '<p class="psub">You have already worked these. They come back to you when the company, ' +
+          "MISMO or the VP has moved.</p></div>" + engTable(inFlight, "")
+        : "") + "</div>";
 
     if (blocked.length) {
       out += '<div class="asb-panel"><div class="phead"><div><h2>Waiting on MISMO</h2>' +
@@ -880,7 +904,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (others.length) {
       out += '<div class="asb-panel"><div class="phead"><div><h2>Coming to You</h2>' +
         '<p class="psub">Assigned to ' + esc(book.firm || "your firm") + ", but waiting on " +
-        "somebody else first. Nothing to do on these yet.</p></div></div>" +
+        "somebody else first, and not started yet. Nothing to do on these yet.</p></div></div>" +
         comingTable(others) + "</div>";
     }
 
@@ -948,7 +972,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     add("Demonstration", day(e.demoOn));
     var cs = e.certificationScript || {};
     add("Certification Script", cs.sent
-      ? ("Sent " + (day(cs.sentOn) || ""))
+      ? (cs.file ? "Ready below \u2014 prepared " + (day(cs.sentOn) || "") : "Sent " + (day(cs.sentOn) || ""))
       : (e.scriptOutstanding ? "Not sent yet \u2014 this cannot start" : null));
     var p = e.prelim || {};
     add("Scored", p.total
@@ -958,6 +982,19 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     add("Awaiting an Artifact", p.total && p.scored
       ? ((p.waitingOnArtifact || 0) + " item" + (p.waitingOnArtifact === 1 ? "" : "s")) : null);
     var out = '<div class="as-grid">' + bits.join("") + "</div>";
+    /* Since 26 Oct 2026 MISMO's system prepares the certification script itself once the company
+       has paid, with the company's own answers in the Provider Response column, and puts it here. */
+    if (cs.file) {
+      out += '<div class="as-script"><p class="as-note" style="margin-top:14px">' +
+        "The certification script for this " + (e.kind === "renewal" ? "renewal" : "certification") +
+        ", prepared by MISMO on " + esc(day(cs.sentOn) || "") +
+        (cs.of ? ", with " + esc(cs.filled || 0) + " of " + esc(cs.of) + " of the company\u2019s answers filled in" +
+          (cs.filled < cs.of ? " (the rest are marked to ask at the demonstration)" : "") : "") +
+        ". Score it in the Pass/Fail column and send the completed workbook to " +
+        '<a href="mailto:certifications@mismo.org">certifications@mismo.org</a>.</p>' +
+        '<button class="as-go ghost" type="button" data-scriptdl="' + esc(e.row) + '" style="margin-top:10px">' +
+        "Download Certification Script</button></div>";
+    }
     if (e.assessorFee == null) {
       out += '<p class="as-note">MISMO has not recorded a fee against this engagement yet. ' +
         "That is a gap in MISMO's records, not a statement that the work is unpaid.</p>";
@@ -1384,11 +1421,35 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   }
 
   /* one delegated listener, so repainting never loses the wiring */
+  /* The certification script workbook sits in the firm's own repository beside its engagements
+     file, so it is read with the firm's own key, like everything else on this page. */
+  function downloadScript(btn) {
+    var row = btn.getAttribute("data-scriptdl");
+    var e = list().filter(function (x) { return String(x.row) === String(row); })[0];
+    var cs = e && e.certificationScript;
+    if (!cs || !cs.file || !current) return;
+    var label = btn.textContent;
+    btn.disabled = true; btn.textContent = "Fetching\u2026";
+    R.readRaw(current.key, cs.file).then(function (r) {
+      var bin = atob(r.base64), bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      var blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = (e.org + " " + e.program + " Certification Script.xlsx").replace(/[\\/:*?"<>|]+/g, " ");
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    }).catch(function () {
+      alert("The certification script could not be fetched just now. Try again in a minute, or email certifications@mismo.org.");
+    }).then(function () { btn.disabled = false; btn.textContent = label; });
+  }
+
   document.addEventListener("click", function (ev) {
     var t = ev.target;
     if (!t || !t.closest) return;
     var c;
     if ((c = t.closest("[data-open]"))) { open(c.getAttribute("data-open")); return; }
+    if ((c = t.closest("[data-scriptdl]"))) { downloadScript(c); return; }
     if ((c = t.closest("[data-sectog]"))) {
       var id = c.getAttribute("data-sectog");
       openSecs[id] = !openSecs[id];
