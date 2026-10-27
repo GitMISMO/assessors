@@ -1087,19 +1087,66 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       .sort(function (a, b) { return String(b.at).localeCompare(String(a.at)); });
   }
   function outcomeOf(id) { return answers && answers.steps ? answers.steps[id] : null; }
-  function stepLabel(to) {
+  function stepLabel(to, x) {
+    if (x && x.kind === "note") return "Progress Note";
     for (var k in STEPS) for (var i = 0; i < STEPS[k].length; i++) if (STEPS[k][i].to === to) return STEPS[k][i].t;
     return to;
   }
+  /* A progress note (27 Oct 2026): for work that is going on without a stage changing -
+     remediation calls with the company, say. It changes nothing on MISMO's board except that
+     MISMO can see it, and the engagement no longer reads as gone quiet. */
+  function noteForm(e) {
+    if (!canEditFirm()) return "";
+    var id = "pn-" + e.row;
+    return '<div class="as-find" style="border-top:1px solid var(--rule,var(--border));padding-top:12px;margin-top:12px">' +
+      '<div style="font-family:var(--display);font-weight:700;font-size:14px;margin:0 0 4px">Add a Progress Note</div>' +
+      '<p class="psub" style="margin:0 0 10px">For work going on without a step to record: a call with the company, ' +
+      "remediation under review, anything MISMO should know. The stage stays where it is; MISMO sees the note, and the " +
+      "engagement is not flagged as gone quiet.</p>" +
+      '<div class="as-f"><label for="' + id + '-t">Note</label><textarea id="' + id + '-t" style="min-height:70px" ' +
+      'placeholder="e.g. Call with the company on Thursday to review the remaining remediations; this may be the last one."></textarea></div>' +
+      '<div class="as-f"><label for="' + id + '-d">Next Contact (optional)</label><input type="date" id="' + id + '-d"></div>' +
+      '<button class="as-go" type="button" data-pnote="' + esc(String(e.row)) + '">Save the Note</button>' +
+      '<span class="as-say" id="' + id + '-s"></span></div>';
+  }
+  function recordNote(row) {
+    var e = byRow(row); if (!e) return;
+    var id = "pn-" + e.row, say = el(id + "-s"), btn = document.querySelector('[data-pnote="' + String(e.row) + '"]');
+    function bad(m) { say.className = "as-say bad"; say.textContent = m; }
+    var note = el(id + "-t") ? el(id + "-t").value.trim() : "";
+    var nextOn = el(id + "-d") ? el(id + "-d").value : "";
+    if (!note) return bad("Write the note first.");
+    var s = R.session() || {};
+    var entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), kind: "note", row: e.row, org: e.org,
+      program: e.program, from: e.state, to: null, note: note, nextOn: nextOn || null, at: new Date().toISOString(),
+      by: s.name || s.email || "", email: s.email || "" };
+    if (btn) btn.disabled = true;
+    say.className = "as-say"; say.textContent = "Saving…";
+    var fresh = { kind: "assessor-steps", version: 1, firm: book.firm, entries: [] };
+    Promise.resolve(R.update(current.key, "notify/assessment/moves.json", function (doc) {
+      var d = doc && doc.entries ? doc : fresh;
+      d.entries = (d.entries || []).concat([entry]);
+      return d;
+    }, "Progress note - " + (e.org || ""), fresh, 3)).then(function () {
+      steps = steps && steps.entries ? steps : { entries: [] };
+      steps.entries = steps.entries.concat([entry]);
+      openSecs.steps = true;
+      drawPanel();
+    })["catch"](function (err) { if (btn) btn.disabled = false; bad((err && err.message) || "That did not save."); });
+  }
   function stepsBody(e) {
+    return stepsCore(e) + noteForm(e);
+  }
+  function stepsCore(e) {
     var past = stepsOf(e.row).slice(0, 6);
-    var waiting = past.filter(function (x) { return !outcomeOf(x.id); })[0];
+    var waiting = past.filter(function (x) { return x.kind !== "note" && !outcomeOf(x.id); })[0];
     var out = past.map(function (x) {
       var o = outcomeOf(x.id);
       var tone = !o ? "cool" : o.status === "applied" ? "good" : "bad";
-      var said = !o ? "Sent to MISMO" : o.status === "applied" ? "On the board" : "Not applied";
+      var said = !o ? "Sent to MISMO" : o.status === "applied" ? (x.kind === "note" ? "MISMO has it" : "On the board") : "Not applied";
       return '<div class="as-one"><span class="as-tag ' + tone + '">' + said + "</span> " +
-        '<span class="as-when">' + esc(stepLabel(x.to)) + " · " + esc(day(x.at) || "") + (x.by ? " · " + esc(x.by) : "") + "</span>" +
+        '<span class="as-when">' + esc(stepLabel(x.to, x)) + " · " + esc(day(x.at) || "") + (x.by ? " · " + esc(x.by) : "") +
+        (x.nextOn ? " · next contact " + esc(day(x.nextOn) || x.nextOn) : "") + "</span>" +
         (o && o.status === "refused" ? "<p>" + esc(o.why || "") + "</p>" : "") +
         (x.note ? "<p>" + esc(x.note) + "</p>" : "") + "</div>";
     }).join("");
@@ -1464,9 +1511,10 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     if (t.closest("#as-wide")) { wide = !wide; drawPanel(); return; }
     if (t.closest("#as-shut") || t.closest("#as-scrim")) { shut(); return; }
-    if ((t.closest("[data-rec]") || t.closest("[data-step]") || t.closest("[data-avadd]") || t.closest("[data-avdel]") || t.closest("[data-avsave]")) && !canEditFirm()) return;
+    if ((t.closest("[data-rec]") || t.closest("[data-step]") || t.closest("[data-pnote]") || t.closest("[data-avadd]") || t.closest("[data-avdel]") || t.closest("[data-avsave]")) && !canEditFirm()) return;
     if ((c = t.closest("[data-rec]"))) { record(c.getAttribute("data-rec")); return; }
     if ((c = t.closest("[data-step]"))) { recordStep(c.getAttribute("data-step")); return; }
+    if ((c = t.closest("[data-pnote]"))) { recordNote(c.getAttribute("data-pnote")); return; }
     if ((c = t.closest("[data-avadd]"))) { readAvailForm(); availDraft.windows.push({ day: "Monday", from: "10:00", to: "11:30" }); paint(); return; }
     if ((c = t.closest("[data-avdel]"))) { readAvailForm(); availDraft.windows.splice(+c.getAttribute("data-avdel"), 1); paint(); return; }
     if ((c = t.closest("[data-avsave]"))) { saveAvail(); return; }
