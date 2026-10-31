@@ -478,6 +478,7 @@ body.as-noshell .railscrim{display:none}
 .va-card b{font-size:16px}.va-card span{font-size:12.5px;font-weight:700;color:var(--navy-mid)}
 :root[data-theme="dark"] .tag.cal,:root[data-theme="dark"] .mv-go,:root[data-theme="dark"] .ag-when,:root[data-theme="dark"] .cyc-open,:root[data-theme="dark"] .va-card span{color:var(--sky)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.cal,:root:not([data-theme="light"]) .mv-go,:root:not([data-theme="light"]) .ag-when,:root:not([data-theme="light"]) .cyc-open,:root:not([data-theme="light"]) .va-card span{color:var(--sky)}}
+.dl.opening{opacity:.6;cursor:progress}
 </style>
 </head>
 <body>
@@ -1393,13 +1394,40 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (d && d.macts) n += d.macts.length;
     return n;
   }
+  function mDoc(m) { return { k: "macts", p: String(m.path || "").replace(/^\/sites\/MISMOeMortgageCertification/, ""), n: m.name }; }
+  /* Opening a document (31 Oct 2026): the file comes through the same flow as uploads, which checks the
+     signed-in assessor's firm is assigned to that company, so nobody needs to be in the MISMO
+     Certifications Teams team. If the flow cannot hand it over, the SharePoint link is the fallback. */
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest && ev.target.closest("a.dl[data-doc]");
+    if (!a || !UPLOAD_URL || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+    var doc; try { doc = JSON.parse(a.getAttribute("data-doc")); } catch (e0) { return; }
+    ev.preventDefault();
+    var s = R.session() || {}, href = a.getAttribute("href"), name = doc.n || "document";
+    var viewable = /\.(pdf|png|jpe?g|gif|txt)$/i.test(name);
+    var w = viewable ? window.open("", "_blank") : null;
+    if (w) { try { w.document.title = name; w.document.body.style.font = "15px Arial,sans-serif"; w.document.body.textContent = "Opening " + name + "\u2026"; } catch (e1) {} }
+    a.classList.add("opening");
+    var body = { mode: "open", token: s.token || "", project: current.key, kind: doc.k, name: name };
+    if (doc.k === "macts") body.path = doc.p; else { body.folder = doc.f; body.cycle = doc.c || ""; body.org = doc.o || ""; }
+    fetch(UPLOAD_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: JSON.stringify(body) })
+      .then(function (r) { if (!r.ok) throw new Error("status " + r.status); return r.blob(); })
+      .then(function (b) {
+        var url = URL.createObjectURL(b);
+        if (w) w.location.href = url;
+        else { var x = document.createElement("a"); x.href = url; x.download = name; document.body.appendChild(x); x.click(); x.remove(); }
+        setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+      })
+      .catch(function () { if (w) w.location.href = href; else window.open(href, "_blank", "noopener"); })
+      .then(function () { a.classList.remove("opening"); });
+  });
   function mUrl(d, m) {
     var full = String(d.mactsBase || "https://mortgagebankersassociation.sharepoint.com") + m.path;
     var u = full.split("/").map(function (seg, i) { return i < 3 ? seg : encodeURIComponent(seg); }).join("/");
     return /\.(docx?|xlsx?|pptx?)$/i.test(m.name || "") ? u + "?web=1" : u;
   }
-  function fileRow(href, name, meta) {
-    return '<a class="dl" href="' + esc(href) + '" target="_blank" rel="noopener">' + fileIcon(name) +
+  function fileRow(href, name, meta, doc) {
+    return '<a class="dl" href="' + esc(href) + '" target="_blank" rel="noopener"' + (doc ? " data-doc='" + esc(JSON.stringify(doc)) + "'" : "") + ">" + fileIcon(name) +
       '<span class="dl-n">' + esc(name) + "</span>" + (meta ? '<span class="dl-m">' + meta + "</span>" : "") + "</a>";
   }
   function documents(e) {
@@ -1410,14 +1438,14 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var ups = upsFor(e);
     var here = [];
     ups.forEach(function (u) { here.push(fileRow(u.url || spUrl(SITE_DOCS, u.folder + "/" + u.cycle, u.name), u.name,
-      "Added " + esc(day(u.at) || "") + (u.by ? " by " + esc(u.by) : ""))); });
+      "Added " + esc(day(u.at) || "") + (u.by ? " by " + esc(u.by) : ""), { k: "lib", f: u.folder, c: u.cycle, n: u.name, o: e.org })); });
     mineCyc.forEach(function (c) {
-      c.files.forEach(function (f) { here.push(fileRow(spUrl(d.base, folder + "/" + c.name, f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : "")); });
+      c.files.forEach(function (f) { here.push(fileRow(spUrl(d.base, folder + "/" + c.name, f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : "", { k: "lib", f: folder, c: c.name, n: f[0], o: e.org })); });
     });
     /* the same company's documents from the MACTS record (applications, questionnaires, reports),
        31 Oct 2026: Jonna asked that every assessor has its engagements' past documents, organized */
     var macts = (d.macts || []).slice(), mineM = macts.filter(function (m) { return isThisCycle(e, m.cycle); });
-    mineM.forEach(function (m) { here.push(fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS"))); });
+    mineM.forEach(function (m) { here.push(fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS"), mDoc(m))); });
     macts = macts.filter(function (m) { return mineM.indexOf(m) < 0; });
     var out = '<div class="cyc now"><div class="cyc-h"><b>This ' + (e.kind === "renewal" ? "Renewal" : "Certification") + "</b><span>" + esc(cyc.replace(/\s*-\s*/, " ")) + "</span>" +
       '<a class="cyc-open" href="' + esc(spUrl(SITE_DOCS, folder + "/" + cyc)) + '" target="_blank" rel="noopener">Open the folder</a></div>' +
@@ -1445,8 +1473,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         return '<div class="cyc"><div class="cyc-h"><b>' + esc(g.title) + "</b><span>" + n + (n === 1 ? " file" : " files") + "</span>" +
           (c0 ? '<a class="cyc-open" href="' + esc(spUrl(d.base, folder + (c0.name ? "/" + c0.name : ""))) + '" target="_blank" rel="noopener">Open the folder</a>' : "") +
           '</div><div class="dls">' +
-          g.sp.map(function (c) { return c.files.map(function (f) { return fileRow(spUrl(d.base, folder + (c.name ? "/" + c.name : ""), f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : ""); }).join(""); }).join("") +
-          g.m.map(function (m) { return fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS")); }).join("") +
+          g.sp.map(function (c) { return c.files.map(function (f) { return fileRow(spUrl(d.base, folder + (c.name ? "/" + c.name : ""), f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : "", { k: "lib", f: folder, c: c.name || "", n: f[0], o: e.org }); }).join(""); }).join("") +
+          g.m.map(function (m) { return fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS"), mDoc(m)); }).join("") +
           "</div></div>";
       }).join("");
     }
