@@ -281,6 +281,202 @@ table.av select, table.av input{font:inherit;font-size:13px;padding:5px 7px;bord
 body.as-noshell{padding-left:0}
 body.as-noshell .hqtop{margin-left:0;width:100%}
 body.as-noshell .railscrim{display:none}
+
+/* ══ The 31 Oct 2026 portal (Jonna: "10x ... wowing, very cool visually and engaging, organized,
+   easy to understand the process, intuitive"). Squared shapes, figure boxes first, one page per
+   tab, nothing folded away. ══════════════════════════════════════════════════════════════════ */
+.as-wrap{padding:26px 30px 90px;max-width:1280px}
+.hq nav button[hidden]{display:none}
+.mono{width:38px;height:38px;flex:0 0 38px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;font-size:14px;letter-spacing:.02em;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:3px;background:var(--surface-3);color:var(--ink-2);white-space:nowrap}
+.tag.soft{background:transparent;border:1px solid var(--border);color:var(--ink-3)}
+.tag.cal{background:rgba(116,191,235,.18);color:var(--navy-mid)}
+.fine{font-size:12.5px;color:var(--ink-3);line-height:1.55;margin:10px 0}
+.calm{border:1px dashed var(--border-strong);border-radius:8px;padding:22px;text-align:center;color:var(--ink-2);font-size:13.5px;background:var(--surface-2)}
+.calm b{color:var(--ink)}
+
+/* the hero */
+.hx{position:relative;overflow:hidden;border-radius:10px;padding:28px 28px 24px;margin-bottom:26px;color:#fff;
+  background:radial-gradient(1200px 300px at 100% -20%,rgba(116,191,235,.35),transparent 60%),
+    radial-gradient(600px 260px at -10% 120%,rgba(116,191,235,.18),transparent 60%),
+    linear-gradient(135deg,var(--navy-deep,#06202f) 0%,var(--navy,#0d314c) 55%,var(--navy-mid,#14486e) 100%);
+  box-shadow:0 10px 30px rgba(6,32,47,.25)}
+.hx:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;
+  background-image:linear-gradient(rgba(255,255,255,.9) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.9) 1px,transparent 1px);
+  background-size:28px 28px;mask-image:linear-gradient(90deg,transparent,#000 60%)}
+.hx-top{position:relative;z-index:1}
+.hx-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sky)}
+.hx-name{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.02em;margin:6px 0 8px;color:#fff}
+.hx-say{font-size:16.5px;line-height:1.5;color:rgba(255,255,255,.88);margin:0 0 20px;max-width:900px}
+.hx-say em{font-style:normal;color:var(--sky);font-weight:700}
+.hx-say em.hl-late{color:#ffcf73}
+.hx-tiles{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.hx-tile{text-align:left;background:rgba(255,255,255,.07);border:1px solid rgba(116,191,235,.3);border-radius:8px;padding:14px 16px;
+  color:#fff;font:inherit;cursor:pointer;transition:transform .15s ease,background .15s ease,border-color .15s ease}
+.hx-tile:hover{background:rgba(255,255,255,.13);border-color:var(--sky);transform:translateY(-2px)}
+.hx-tile b{display:block;font-size:30px;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.hx-tile span{display:block;font-size:12.5px;color:var(--sky);margin-top:4px;font-weight:600}
+.hx-tile small{display:block;font-size:11.5px;color:rgba(255,255,255,.62);margin-top:2px}
+.hx-tile.warn b{color:#ffcf73}
+.hx-tile.next b{font-size:22px;padding-top:6px}
+@media(max-width:900px){.hx-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.hx-name{font-size:24px}}
+
+/* sections of a page */
+.ov-sec{margin:0 0 30px}
+.ov-h{margin:0 0 12px}
+.ov-h h2,.pg-h h1{font-size:19px;font-weight:700;letter-spacing:-.012em;color:var(--ink);margin:0}
+.pg-h h1{font-size:24px}
+.ov-h p,.pg-h p{font-size:13px;color:var(--ink-3);margin:4px 0 0;line-height:1.5;max-width:900px}
+.pg-h{margin:0 0 18px}
+
+/* the next moves */
+.moves{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.move{display:flex;flex-direction:column;gap:12px;text-align:left;background:var(--surface);border:1px solid var(--border);
+  border-left:4px solid #e0a83c;border-radius:8px;padding:16px;font:inherit;color:var(--ink);cursor:pointer;
+  box-shadow:0 1px 2px rgba(6,32,47,.05);transition:transform .15s ease,box-shadow .15s ease}
+.move:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(6,32,47,.12)}
+.mv-top{display:flex;gap:11px;align-items:center}
+.mv-id{min-width:0}.mv-id b{display:block;font-size:15px}.mv-id i{display:block;font-style:normal;font-size:12px;color:var(--ink-3);margin-top:1px}
+.mv-k{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--warn)}
+.mv-do b{display:block;font-size:15px;margin-top:2px}
+.mv-foot{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.mv-go{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:700;color:var(--navy-mid)}
+.mv-go svg,.er-go svg{width:14px;height:14px}
+
+/* the journey: stepper, mini stepper, map, bar */
+.jstep{display:flex;gap:0;margin:4px 0 16px}
+.js{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;min-width:0}
+.js:before{content:"";position:absolute;top:13px;left:-50%;right:50%;height:3px;background:var(--border)}
+.js:first-child:before{display:none}
+.js.past:before,.js.now:before{background:var(--good)}
+.jd{position:relative;z-index:1;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;background:var(--surface-3);color:var(--ink-3);border:2px solid var(--border)}
+.js.past .jd{background:var(--good);border-color:var(--good);color:#fff}
+.js.now .jd{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 0 0 4px rgba(116,191,235,.35)}
+.js.now.mine .jd{background:#e0a83c;border-color:#e0a83c;color:#2a1d05;box-shadow:0 0 0 4px rgba(224,168,60,.3)}
+.js b{font-size:11px;font-weight:600;color:var(--ink-3);line-height:1.25}
+.js.now b{color:var(--ink)}
+.jstep.mini{margin:0}.jstep.mini .jd{width:16px;height:16px;font-size:0;border-width:2px;border-radius:4px}
+.jstep.mini .js:before{top:7px;height:2px}.jstep.mini b{display:none}
+.jstep.mini .js.now b{display:block;font-size:10.5px;white-space:nowrap}
+.jmap{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:4px}
+.jm{flex:1 1 0;min-width:118px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:var(--surface);
+  border:1px solid var(--border);border-radius:8px;padding:14px 13px;font:inherit;color:var(--ink);cursor:pointer;transition:border-color .15s,transform .15s}
+.jm:hover{border-color:var(--sky);transform:translateY(-2px)}
+.jm.you{border-top:3px solid var(--sky)}
+.jm.hot{border-top-color:#e0a83c;box-shadow:0 0 0 1px rgba(224,168,60,.35) inset}
+.jm-n{font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.jm-t{font-size:13px;font-weight:700;margin-top:6px}
+.jm-w{font-size:11px;color:var(--ink-3);line-height:1.35}
+.jm-me{font-size:10.5px;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.jm-arrow{flex:0 0 14px;align-self:center;height:2px;background:var(--border-strong);position:relative}
+.jm-arrow:after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--border-strong)}
+.jb{display:flex;gap:3px;width:100%}
+.jb i{flex:1;height:6px;border-radius:2px;background:var(--surface-3)}
+.jb i.past{background:var(--good)}
+.jb i.now{background:var(--navy-mid)}
+.jb i.now.mine{background:#e0a83c}
+
+/* coming up */
+.agenda{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.ag{display:flex;align-items:center;gap:13px;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;font:inherit;color:var(--ink);cursor:pointer}
+.ag:hover{border-color:var(--sky)}
+.dtile{flex:0 0 54px;display:flex;flex-direction:column;align-items:center;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.dtile i{font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;width:100%;text-align:center;padding:2px 0}
+.dtile i:first-child{background:var(--navy);color:#fff}
+.dtile b{font-size:20px;line-height:1.2;font-weight:700}
+.ag-id{min-width:0;flex:1}.ag-id b{display:block;font-size:14px}.ag-id i{display:block;font-style:normal;font-size:12px;color:var(--ink-3)}
+.ag-when{font-size:12px;font-weight:700;color:var(--navy-mid);white-space:nowrap}
+
+/* engagements */
+.toolbar{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:center;margin:0 0 18px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;padding:7px 12px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--ink-2);cursor:pointer}
+.seg button b{font-variant-numeric:tabular-nums;color:var(--ink);margin-left:3px}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.seg button.on b{color:#fff}
+.find{font:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border-strong);border-radius:5px;background:var(--surface);color:var(--ink);width:260px;max-width:100%}
+.grp{margin:0 0 24px}
+.grp-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:0 0 8px;border-bottom:2px solid var(--border);margin-bottom:8px}
+.grp-h b{font-size:15px}
+.grp-h span{font-size:12px;font-weight:700;background:var(--surface-3);border-radius:3px;padding:1px 7px;color:var(--ink-2)}
+.grp-h i{font-style:normal;font-size:12.5px;color:var(--ink-3)}
+.grp-h.you{border-bottom-color:#e0a83c}.grp-h.mismo{border-bottom-color:var(--bad)}.grp-h.queue{border-bottom-color:var(--sky)}
+.ers{display:flex;flex-direction:column;gap:8px}
+.er{display:grid;grid-template-columns:38px minmax(0,1.5fr) minmax(0,.9fr) minmax(0,1.4fr) minmax(0,1.4fr) 18px;gap:14px;align-items:center;
+  text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font:inherit;color:var(--ink);cursor:pointer;
+  transition:border-color .15s,box-shadow .15s}
+.er:hover{border-color:var(--sky);box-shadow:0 6px 16px rgba(6,32,47,.08)}
+.er.mine{border-left:4px solid #e0a83c}
+.er-id b{display:block;font-size:14px}.er-id i,.er-jr i,.er-st i{display:block;font-style:normal;font-size:11.5px;color:var(--ink-3);margin-top:3px;overflow-wrap:anywhere}
+.er-pg{display:flex;gap:5px;flex-wrap:wrap}
+.er-st b{display:block;font-size:13px}
+.er-st.you b{color:var(--warn)}.er-st.bad b{color:var(--bad)}
+.er-go{color:var(--ink-3)}
+@media(max-width:900px){.er{grid-template-columns:38px 1fr 18px}.er-pg,.er-jr,.er-st{grid-column:2 / 3}}
+
+/* schedule */
+.wk{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:0 0 6px}
+.wk-d{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;min-height:110px;display:flex;flex-direction:column;gap:7px}
+.wk-d>b{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.wk-w{display:block;background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:#fff;border-radius:5px;padding:8px 10px;font-weight:700;font-size:14px}
+.wk-w i{display:block;font-style:normal;font-weight:500;font-size:11.5px;color:var(--sky)}
+.wk-off{font-size:12px;color:var(--ink-3)}
+@media(max-width:760px){.wk{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.aved{margin-top:18px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px}
+.aved h3{margin:0 0 12px;font-size:15px}
+.avr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+.avr select,.avr input{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:5px;background:var(--surface);color:var(--ink)}
+.avr span{font-size:12.5px;color:var(--ink-3)}
+
+/* the panel */
+.as-ph{align-items:center}
+.ptabs{display:flex;gap:2px;padding:0 16px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;flex:0 0 auto}
+.ptabs button{font:inherit;font-size:13px;font-weight:600;color:var(--ink-3);background:none;border:0;border-bottom:3px solid transparent;padding:11px 10px;cursor:pointer;white-space:nowrap}
+.ptabs button b{font-size:11px;background:var(--surface-3);color:var(--ink-2);border-radius:3px;padding:1px 6px;margin-left:3px}
+.ptabs button.on{color:var(--ink);border-bottom-color:var(--sky)}
+.as-pb{padding:18px 20px 70px}
+.nextbox{border-radius:8px;padding:14px 16px;margin:0 0 16px;background:rgba(224,168,60,.12);border:1px solid rgba(224,168,60,.45)}
+.nextbox b{display:block;font-size:17px;margin-top:3px;color:var(--ink)}
+.nextbox i{display:block;font-style:normal;font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.nextbox.calmbox{background:var(--surface);border-color:var(--border)}
+.nextbox.calmbox .mv-k{color:var(--ink-3)}
+.as-sec.always{border-bottom:0}
+
+/* documents */
+.cyc{border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:14px;margin:0 0 12px}
+.cyc.now{border:2px solid var(--sky);box-shadow:0 6px 18px rgba(116,191,235,.18)}
+.cyc-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+.cyc-h b{font-size:15px}.cyc-h span{font-size:12px;color:var(--ink-3);font-weight:600}
+.cyc-open{margin-left:auto;font-size:12px;font-weight:600;color:var(--navy-mid)}
+.cyc-sub{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 8px}
+.dls{display:flex;flex-direction:column;gap:2px}
+.dl{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:5px;text-decoration:none;color:var(--ink)}
+.dl:hover{background:var(--surface-2)}
+.dl-n{flex:1;min-width:0;font-size:13px;overflow-wrap:anywhere}
+.dl-m{font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.fi{flex:0 0 34px;height:22px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.03em;display:flex;align-items:center;justify-content:center;color:#fff;background:#6c899f}
+.fi-pdf{background:#b3372c}.fi-xls{background:#0f7b5c}.fi-doc{background:#2b5797}.fi-vid{background:#7a4fb3}.fi-img{background:#b5651d}.fi-msg{background:#14486e}
+.drop{margin-top:12px;border:2px dashed var(--border-strong);border-radius:8px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:var(--surface-2)}
+.drop svg{width:26px;height:26px;fill:none;stroke:var(--navy-mid);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.drop b{font-size:14px}.drop span{font-size:12px;color:var(--ink-3)}
+.drop.over{border-color:var(--sky);background:rgba(116,191,235,.12)}
+.upsay{font-size:12.5px;margin-top:8px;color:var(--ink-2)}.upsay.ok{color:var(--good)}.upsay.bad{color:var(--bad)}
+
+/* view as */
+.vabar{position:sticky;top:0;z-index:40;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 30px;background:#5B3FA6;color:#fff}
+.va-l{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#d9cdf7}
+.va-c{font-weight:700;font-size:14px}.va-r{font-size:12.5px;color:#e6defb}
+.va-ro{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:#ffcf73;color:#2a1d05;border-radius:3px;padding:3px 9px}
+.va-out{font:inherit;font-size:12.5px;font-weight:700;background:#fff;color:#3F2A7A;border:0;border-radius:5px;padding:6px 12px;cursor:pointer}
+.vas{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.va-card{display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;text-decoration:none;color:var(--ink)}
+.va-card:hover{border-color:var(--sky)}
+.va-card b{font-size:16px}.va-card span{font-size:12.5px;font-weight:700;color:var(--navy-mid)}
+:root[data-theme="dark"] .tag.cal,:root[data-theme="dark"] .mv-go,:root[data-theme="dark"] .ag-when,:root[data-theme="dark"] .cyc-open,:root[data-theme="dark"] .va-card span{color:var(--sky)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.cal,:root:not([data-theme="light"]) .mv-go,:root:not([data-theme="light"]) .ag-when,:root:not([data-theme="light"]) .cyc-open,:root:not([data-theme="light"]) .va-card span{color:var(--sky)}}
 </style>
 </head>
 <body>
@@ -358,15 +554,24 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   </div>
 
   <nav aria-label="Assessor Portal">
-    <button type="button" data-hq="open" aria-current="page" title="Engagements">
+    <button type="button" data-hq="home" aria-current="page" title="Overview">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg>
+      <span>Overview</span></button>
+    <button type="button" data-hq="open" title="Engagements">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
       <span>Engagements</span></button>
-    <button type="button" data-hq="found" title="Findings Recorded">
+    <button type="button" data-hq="sched" title="Your Schedule">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+      <span>Your Schedule</span></button>
+    <button type="button" data-hq="found" title="Findings">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
-      <span>Findings Recorded</span></button>
+      <span>Findings</span></button>
     <button type="button" data-hq="help" title="Help">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 114.3 2c-.9.7-1.9 1.2-1.9 2.4M12 17.2h.01"/></svg>
       <span>Help</span></button>
+    <button type="button" data-hq="viewas" id="nav-viewas" title="View As" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span>View As</span></button>
   </nav>
 
   <div class="railsum" id="as-pickwrap" hidden>
@@ -415,7 +620,13 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 (function () {
   "use strict";
 
-  var R = window.MISMO_RELAY;
+  /* In View As every save is refused here, at the relay boundary, so the whole screen is read-only by
+     construction - the same guard Service Orders and Agreements uses. */
+  var R0 = window.MISMO_RELAY, R = {};
+  Object.keys(R0).forEach(function (k) { R[k] = R0[k]; });
+  function refuse() { var e = new Error("Nothing saves while you are viewing as " + ((book && book.firm) || "a firm") + "."); e.readOnly = true; return Promise.reject(e); }
+  R.update = function () { return VIEWAS ? refuse() : R0.update.apply(R0, arguments); };
+  R.commit = function () { return VIEWAS ? refuse() : R0.commit.apply(R0, arguments); };
 
   /* The three firms with a portal. A person sees a firm only if their account
      holds that firm's key - the list here just says which keys mean "assessor".
@@ -470,7 +681,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   var openSecs = { find: true };  /* which panel sections are open */
   var openQ = {};       /* which questionnaire sections are open */
   var wide = false;
-  var pane = "open";
+  var pane = "home";
 
   /* ---- small helpers ------------------------------------------------------ */
   function esc(s) {
@@ -577,6 +788,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
      View - MISMO's VP, say, watching all three firms - sees everything and records nothing: a
      step recorded here is real, it moves the certification and sends the next email. */
   function canEditFirm() {
+    if (VIEWAS) return true;   /* drawn as the firm's own assessors see it; the saves are refused above */
     var s = R.session() || {};
     if (s.platformAdmin) return true;
     var r = (s.access || {})[current && current.key];
@@ -589,7 +801,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     current = firm;
     book = null;
     findings = {};
-    steps = null; answers = null; avail = null; availDraft = null;
+    steps = null; answers = null; avail = null; availDraft = null; uploads = null;
     shut();
     paint();
     return R.read(firm.key, "engagements/" + firm.slug + ".json")
@@ -607,8 +819,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var k = current.key;
     function grab(p) { return R.readOr(k, p, null).then(function (r) { return r && r.data !== undefined ? r.data : r; })["catch"](function () { return null; }); }
     return Promise.all([grab("notify/assessment/moves.json"), grab("engagements/" + current.slug + "-inbox.json"),
-      grab("notify/assessment/availability.json")]).then(function (x) {
-      steps = x[0]; answers = x[1]; avail = x[2];
+      grab("notify/assessment/availability.json"), grab("documents/uploads.json")]).then(function (x) {
+      steps = x[0]; answers = x[1]; avail = x[2]; uploads = x[3];
       paint();
     });
   }
@@ -660,122 +872,238 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 
   function em(n, late) { return "<em" + (late ? ' class="hl-late"' : "") + ">" + n + "</em>"; }
 
-  function headline(mine, withMe, others, blocked, inFlight, everything) {
-    inFlight = inFlight || [];
-    var invoiced = (everything || mine).filter(function (e) { return e.assessorFee != null; });
-    var feeTotal = invoiced.reduce(function (t, e) { return t + (e.assessorFee || 0); }, 0);
-    var name = esc((book && book.firm) || (current && current.slug) || "your firm");
-
-    var say = withMe.length
-      ? em(withMe.length, true) + " engagement" + (withMe.length === 1 ? " is" : "s are") +
-        " waiting on " + name + " right now"
-      : "Nothing is waiting on " + name + " right now";
-    say += ", out of " + em(mine.length) + " on the board. " +
-      (blocked.length
-        ? em(blocked.length, true) + " cannot start until MISMO sends the certification script."
-        : (inFlight.length
-          ? em(inFlight.length) + " you have worked " + (inFlight.length === 1 ? "is" : "are") +
-            " waiting on somebody else" + (others.length ? ", and " : ". ")
-          : "") +
-          (others.length
-            ? em(others.length) + " more " + (others.length === 1 ? "is" : "are") + " coming to you, not started yet."
-            : inFlight.length ? "Nothing new is coming yet." : "Nothing else is queued behind them."));
-
-    function tile(n, k, s, warn) {
-      return '<div class="hl-tile' + (warn ? " warn" : "") + '"><b>' + n + "</b>" +
-        "<span>" + esc(k) + "</span><small>" + esc(s) + "</small></div>";
-    }
-    return '<div class="asb-head">' +
-      '<div class="hl-date">' +
-        esc((book && book.legalName) || (book && book.firm) || "") +
-        ((book && book.inHouse) ? " · MISMO’s own audit team" : " · Assessor Portal") +
-      "</div>" +
-      '<div class="hl-body">' +
-        '<div class="asb-say">' + say + "</div>" +
-        '<div class="hl-tiles">' +
-          tile(withMe.length, "With You", withMe.length ? "your move" : "all clear", !!withMe.length) +
-          tile(inFlight.length, "In Your Queue", "waiting on somebody else") +
-          tile(others.length, "Coming to You", "not started yet") +
-          (blocked.length ? tile(blocked.length, "Waiting on MISMO", "script not sent", true) : "") +
-          tile(money(feeTotal) || "$0", "Invoiced",
-               "across " + invoiced.length + " engagement" + (invoiced.length === 1 ? "" : "s")) +
-        "</div>" +
-      "</div></div>";
+  /* ---- the certification journey (31 Oct 2026, Jonna: "information is organized and it's easy to
+     understand the process") --------------------------------------------------------------------
+     Seven stops every engagement passes through, the same on every screen: the Overview strip, the
+     progress bar on each engagement row, and the stepper at the top of an engagement. who says whose
+     move each stop usually is; you marks the stops where the firm acts. */
+  var JOURNEY = [
+    { k: "apply",  t: "Application",   who: "Company & MISMO", you: false,
+      s: ["Draft", "DocumentsRequested", "AgreementSent", "RenewalPrep", "RenewalNoticed", "UpdatesUnderReview",
+          "AttestationSent", "ScopeReviewAssessor", "ScopeReviewVp", "ScopeReviewCompany", "AwaitingPayment"] },
+    { k: "book",   t: "Booking",       who: "Company picks, you confirm", you: true,
+      s: ["AwaitingDemoSelection", "AwaitingReviewSelection", "PreAssessmentDiscussion", "DemoProposed"] },
+    { k: "demo",   t: "Demonstration", who: "You", you: true, s: ["DemoScheduled", "ReviewScheduled"] },
+    { k: "evid",   t: "Evidence",      who: "Company sends, you review", you: true, s: ["AwaitingArtifacts", "ArtifactReview"] },
+    { k: "result", t: "Results",       who: "You submit, MISMO decides", you: true, s: ["PrelimResultsSubmitted", "PrelimQueryOpen", "AppealOpen"] },
+    { k: "fix",    t: "Remediation",   who: "Company fixes, you verify", you: true,
+      s: ["RemediationOpen", "RemediationEscalated", "RemediationSubmitted", "RemediationQueryOpen"] },
+    { k: "done",   t: "Certified",     who: "MISMO", you: false, s: ["ApprovedPendingLicense", "LicenseSent", "Certified"] }
+  ];
+  function stopOf(e) {
+    for (var i = 0; i < JOURNEY.length; i++) if (JOURNEY[i].s.indexOf(e.state) >= 0) return i;
+    return 0;
+  }
+  function journeyBar(e) {
+    var at = stopOf(e);
+    return '<span class="jb" aria-label="' + esc(JOURNEY[at].t) + ', step ' + (at + 1) + ' of ' + JOURNEY.length + '">' +
+      JOURNEY.map(function (j, i) {
+        return '<i class="' + (i < at ? "past" : i === at ? (isMine(e) ? "now mine" : "now") : "") + '" title="' + esc(j.t) + '"></i>';
+      }).join("") + "</span>";
+  }
+  function stepper(e) {
+    var at = stopOf(e);
+    return '<div class="jstep">' + JOURNEY.map(function (j, i) {
+      return '<div class="js ' + (i < at ? "past" : i === at ? (isMine(e) ? "now mine" : "now") : "next") + '">' +
+        '<span class="jd">' + (i < at ? "&#10003;" : (i + 1)) + "</span><b>" + esc(j.t) + "</b></div>";
+    }).join("") + "</div>";
   }
 
-  /* One row. The Scored column is this firm's progress through MISMO's certification
-     script for that program: how many of its questions have an answer recorded. */
+  /* A company's initials on a coloured square, so the lists can be scanned by eye. */
+  var MONO = ["#14486e", "#0f7b5c", "#7a4fb3", "#b5651d", "#1f6f8b", "#a23e5c", "#4c6a1e", "#3d5a99"];
+  function mono(name) {
+    var w = String(name || "?").replace(/[^A-Za-z0-9 ]/g, " ").trim().split(/\s+/).filter(Boolean);
+    var t = (w.length > 1 ? w[0][0] + w[1][0] : (w[0] || "?").slice(0, 1)).toUpperCase();
+    var h = 0; for (var i = 0; i < String(name).length; i++) h = (h * 31 + String(name).charCodeAt(i)) >>> 0;
+    return '<span class="mono" style="background:' + MONO[h % MONO.length] + '">' + esc(t) + "</span>";
+  }
+  function nextStepText(e) {
+    var can = STEPS[e.state] || [];
+    if (isMine(e) && can.length) return can.map(function (s) { return s.t; }).join(" or ");
+    if (isMine(e)) return "Your move";
+    return "";
+  }
+  function waitingText(e) {
+    if (isMine(e)) return "Your move";
+    if (e.scriptOutstanding) return "Waiting on MISMO: certification script";
+    var w = String(e.waiting || "");
+    if (!w) return e.stateLabel || "";
+    return "With " + w.replace("Company + President", "the company").replace("MISMO + Company", "the company and MISMO")
+      .replace(/^Company$/, "the company").replace(/^MISMO$/, "MISMO");
+  }
+  function todayIso() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  function demoDay(e) { return e.demoOn ? String(e.demoOn).slice(0, 10) : null; }
+  function dateTile(iso, time) {
+    var m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return "";
+    var d = new Date(+m[1], +m[2] - 1, +m[3]);
+    return '<span class="dtile"><i>' + d.toLocaleDateString("en-US", { weekday: "short" }) + "</i><b>" + d.getDate() +
+      "</b><i>" + d.toLocaleDateString("en-US", { month: "short" }) + "</i></span>";
+  }
+  function daysUntil(iso) {
+    var m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return null;
+    var a = new Date(+m[1], +m[2] - 1, +m[3]), t = new Date(); t.setHours(0, 0, 0, 0);
+    return Math.round((a - t) / 864e5);
+  }
+  function whenWords(n) { return n == null ? "" : n === 0 ? "Today" : n === 1 ? "Tomorrow" : n > 1 ? "In " + n + " days" : -n + " days ago"; }
+
+  /* Who is where, worked out once per paint. */
+  function sortAZ(a, b) { return String(a.org).localeCompare(String(b.org)) || String(a.program).localeCompare(String(b.program)); }
+  function board() {
+    var all = list();
+    var withMe = all.filter(isMine);
+    var blocked = all.filter(function (e) { return !!e.scriptOutstanding && !isMine(e); });
+    var notMine = all.filter(function (e) { return !isMine(e) && !e.scriptOutstanding; }).filter(showToFirm);
+    var inFlight = notMine.filter(function (e) { return worked(e) && (!closed(e) || (e.assessorFee == null && (e.done || countFindings(e.row) > 0 || (e.prelim && e.prelim.scored)))); });
+    var others = notMine.filter(function (e) { return !worked(e) && !closed(e); });
+    [withMe, blocked, inFlight, others].forEach(function (l) { l.sort(sortAZ); });
+    return { all: all, withMe: withMe, blocked: blocked, inFlight: inFlight, others: others,
+      shown: withMe.concat(blocked, inFlight, others) };
+  }
+  function greeting() {
+    var h = new Date().getHours();
+    return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+  }
+
+  /* ---- Overview ----------------------------------------------------------- */
+  function paneHome() {
+    if (!book) return '<div class="as-empty">Loading your engagements…</div>';
+    if (book.error) return '<div class="as-bad">Your engagements could not be loaded. ' + esc(book.error) + "</div>";
+    var B = board(), t = todayIso();
+    var demos = B.shown.filter(function (e) { return demoDay(e) && demoDay(e) >= t; })
+      .sort(function (a, b) { return String(a.demoOn).localeCompare(String(b.demoOn)); });
+    var next = demos[0];
+    var name = esc((book && book.legalName) || (book && book.firm) || "your firm");
+    var say = B.withMe.length
+      ? em(B.withMe.length, true) + (B.withMe.length === 1 ? " engagement needs" : " engagements need") + " you right now"
+      : "You are all caught up";
+    say += (B.shown.length ? ", out of " + em(B.shown.length) + " on your board." : ".") +
+      (next ? " Your next demonstration is " + esc(next.org) + ", " + esc(whenWords(daysUntil(demoDay(next))).toLowerCase()) + "." : "");
+    function tile(n, k, s, warn, go) {
+      return '<button class="hx-tile' + (warn ? " warn" : "") + '" type="button" data-go="' + go + '"><b>' + n + "</b><span>" + esc(k) +
+        "</span><small>" + esc(s) + "</small></button>";
+    }
+    var out = '<section class="hx">' +
+      '<div class="hx-top"><span class="hx-eyebrow">' + esc(greeting()) + " · " + esc(new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })) + "</span>" +
+      '<h1 class="hx-name">' + name + "</h1>" +
+      '<p class="hx-say">' + say + "</p></div>" +
+      '<div class="hx-tiles">' +
+        tile(B.withMe.length, "With You", B.withMe.length ? "your move" : "all clear", !!B.withMe.length, "open:you") +
+        tile(B.inFlight.length, "In Your Queue", "worked, waiting on others", false, "open:queue") +
+        tile(B.others.length, "Coming to You", "not started yet", false, "open:coming") +
+        (next
+          ? '<button class="hx-tile next" type="button" data-open="' + esc(next.row) + '"><b>' + esc(whenWords(daysUntil(demoDay(next)))) +
+            "</b><span>Next Demonstration</span><small>" + esc(next.org) + " · " + esc(day(next.demoOn) || "") + "</small></button>"
+          : tile(demos.length, "Demonstrations Booked", "none coming up", false, "sched")) +
+      "</div></section>";
+
+    /* What needs you, as cards with the step written on them */
+    out += '<section class="ov-sec"><div class="ov-h"><h2>Your Next Moves</h2>' +
+      '<p>Everything waiting on ' + esc(book.firm || "you") + ', with the step to take. Open one to record it.</p></div>';
+    if (B.withMe.length) {
+      out += '<div class="moves">' + B.withMe.map(function (e) {
+        return '<button class="move" type="button" data-open="' + esc(e.row) + '">' +
+          '<span class="mv-top">' + mono(e.org) + '<span class="mv-id"><b>' + esc(e.org) + "</b><i>" + esc(e.program || "") +
+            " · " + esc(kindLabel(e)) + (e.product ? " · " + esc(e.product) : "") + "</i></span></span>" +
+          stepper(e).replace('class="jstep"', 'class="jstep mini"') +
+          '<span class="mv-do"><span class="mv-k">Next step</span><b>' + esc(nextStepText(e) || e.stateLabel || "") + "</b></span>" +
+          '<span class="mv-foot">' + (e.demoOn ? '<span class="tag cal">' + esc(day(e.demoOn)) + (/T\d/.test(String(e.demoOn)) ? "" : "") + "</span>" : "") +
+            '<span class="tag">' + esc(e.stateLabel || e.state || "") + "</span>" +
+            '<span class="mv-go">Open<svg viewBox="0 0 16 16"><use href="#ico-chev"/></svg></span></span>' +
+          "</button>";
+      }).join("") + "</div>";
+    } else {
+      out += '<div class="calm"><b>Nothing is waiting on you.</b> New work arrives here the moment a company books, ' +
+        "sends its evidence, or MISMO asks you something.</div>";
+    }
+    out += "</section>";
+
+    /* The journey, with this firm's engagements counted at each stop */
+    var counts = JOURNEY.map(function () { return { n: 0, mine: 0 }; });
+    B.shown.forEach(function (e) { var i = stopOf(e); counts[i].n++; if (isMine(e)) counts[i].mine++; });
+    out += '<section class="ov-sec"><div class="ov-h"><h2>The Certification Journey</h2>' +
+      "<p>Every engagement passes through the same seven stops. The highlighted ones are where you act; the numbers are your engagements at each stop. Select a stop to list them.</p></div>" +
+      '<div class="jmap">' + JOURNEY.map(function (j, i) {
+        return '<button class="jm' + (j.you ? " you" : "") + (counts[i].mine ? " hot" : "") + '" type="button" data-go="open:stop' + i + '">' +
+          '<span class="jm-n">' + counts[i].n + "</span>" +
+          '<span class="jm-t">' + esc(j.t) + "</span>" +
+          '<span class="jm-w">' + esc(j.who) + "</span>" +
+          (counts[i].mine ? '<span class="jm-me">' + counts[i].mine + " with you</span>" : "") +
+          "</button>";
+      }).join('<span class="jm-arrow" aria-hidden="true"></span>') + "</div></section>";
+
+    /* Demonstrations coming up */
+    out += '<section class="ov-sec"><div class="ov-h"><h2>Coming Up</h2><p>Booked demonstrations and reviews, soonest first.</p></div>';
+    out += demos.length ? '<div class="agenda">' + demos.slice(0, 6).map(function (e) {
+      return '<button class="ag" type="button" data-open="' + esc(e.row) + '">' + dateTile(e.demoOn) +
+        '<span class="ag-id"><b>' + esc(e.org) + "</b><i>" + esc(e.program || "") + " · " + esc(kindLabel(e)) + "</i></span>" +
+        '<span class="ag-when">' + esc(whenWords(daysUntil(demoDay(e)))) + "</span></button>";
+    }).join("") + "</div>" : '<div class="calm">Nothing booked yet. Companies book from the times on <a href="#" data-go="sched">Your Schedule</a>.</div>';
+    return out + "</section>";
+  }
+
+  /* ---- Engagements --------------------------------------------------------- */
+  var engFilter = "all", engQ = "";
   function engRow(e) {
-    var p = e.prelim || {};
-    var mine = isMine(e);
-    var n = countFindings(e.row);
-    return '<button class="erow' + (mine ? " mine" : "") + '" type="button" data-open="' +
-        esc(e.row) + '">' +
-      '<span class="e-co">' + esc(e.org || "") +
-        (e.product ? '<span class="e-pr">' + esc(e.product) + "</span>" : "") + "</span>" +
-      '<span class="e-pg">' + esc(e.program || "") +
-        '<span class="e-sub">' + esc(kindLabel(e)) + "</span></span>" +
-      '<span class="e-st">' + esc(e.stateLabel || e.state || "") +
-        '<span class="e-sub">' +
-          (e.demoOn ? esc(day(e.demoOn)) : mine ? "with you" : "waiting on " + esc(e.waiting || "")) +
-        "</span></span>" +
-      '<span class="e-sc num">' + (p.total ? (p.scored + " / " + p.total) : "—") +
-        '<span class="e-sub">' + esc(p.total ? (p.label || "") : "no script") + "</span></span>" +
-      '<span class="e-fee num">' + (e.assessorFee != null ? esc(money(e.assessorFee)) : "—") +
-        (e.done && e.assessorFee == null
-          ? '<span class="e-sub bad">not invoiced</span>'
-          : n ? '<span class="e-sub">' + n + " finding" + (n === 1 ? "" : "s") + "</span>" : "") +
-        "</span>" +
-      '<span class="e-go">Open</span>' +
+    var mine = isMine(e), n = countFindings(e.row), d = demoDay(e);
+    if (d && d < todayIso()) d = null;   /* a date that has passed is history, not news */
+    return '<button class="er' + (mine ? " mine" : "") + '" type="button" data-open="' + esc(e.row) + '" data-hay="' +
+        esc(String((e.org || "") + " " + (e.product || "") + " " + (e.program || "")).toLowerCase()) + '">' +
+      mono(e.org) +
+      '<span class="er-id"><b>' + esc(e.org || "") + "</b><i>" + esc(e.product || e.program || "") + "</i></span>" +
+      '<span class="er-pg"><span class="tag">' + esc(e.program || "") + '</span><span class="tag soft">' + esc(kindLabel(e)) + "</span></span>" +
+      '<span class="er-jr">' + journeyBar(e) + "<i>" + esc(JOURNEY[stopOf(e)].t) + " · " + esc(e.stateLabel || "") + "</i></span>" +
+      '<span class="er-st' + (mine ? " you" : e.scriptOutstanding ? " bad" : "") + '"><b>' + esc(mine ? (nextStepText(e) || "Your move") : waitingText(e)) + "</b>" +
+        "<i>" + (d ? esc(day(e.demoOn)) + " · " + esc(whenWords(daysUntil(d))) : e.age != null ? esc(e.age) + " days at this step" : "") +
+        (n ? " · " + n + " finding" + (n === 1 ? "" : "s") : "") + "</i></span>" +
+      '<span class="er-go"><svg viewBox="0 0 16 16"><use href="#ico-chev"/></svg></span>' +
     "</button>";
   }
-
-  function engTable(rows, empty) {
-    if (!rows.length) return '<div class="asb-empty">' + esc(empty) + "</div>";
-    return '<div class="etable"><div class="ehead">' +
-      "<span>Company</span><span>Program</span><span>Stage</span>" +
-      '<span class="num">Scored</span><span class="num">My Fee</span><span></span>' +
-      "</div>" + rows.map(engRow).join("") + "</div>";
+  function paneOpen() {
+    if (!book) return '<div class="as-empty">Loading your engagements…</div>';
+    if (book.error) return '<div class="as-bad">Your engagements could not be loaded. ' + esc(book.error) + "</div>";
+    var B = board();
+    var groups = [
+      ["you", "With You", "The next move is yours.", B.withMe],
+      ["mismo", "Waiting on MISMO", "MISMO still owes you the certification script, so these cannot start yet.", B.blocked],
+      ["queue", "In Your Queue", "You have worked these. They come back to you when the company or MISMO moves.", B.inFlight],
+      ["coming", "Coming to You", "Assigned to you, waiting on the company or MISMO first. Nothing to do yet.", B.others]
+    ];
+    var stop = /^stop(\d)$/.test(engFilter) ? +engFilter.slice(4) : null;
+    var chips = [["all", "All", B.shown.length]].concat(groups.filter(function (g) { return g[3].length; }).map(function (g) { return [g[0], g[1], g[3].length]; }));
+    var out = '<div class="pg-h"><div><h1>Engagements</h1><p>Every certification assigned to ' + esc(book.firm || "your firm") +
+      (book.programs && book.programs.length ? " (" + esc(book.programs.join(", ")) + ")" : "") + ", A to Z. Select one to open it.</p></div></div>" +
+      '<div class="toolbar"><div class="seg">' + chips.map(function (c) {
+        return '<button type="button" class="' + (engFilter === c[0] ? "on" : "") + '" data-ef="' + c[0] + '">' + esc(c[1]) + " <b>" + c[2] + "</b></button>";
+      }).join("") + (stop != null ? '<button type="button" class="on" data-ef="all">' + esc(JOURNEY[stop].t) + " &times;</button>" : "") + "</div>" +
+      '<input type="search" class="find" id="eng-q" placeholder="Find a company" aria-label="Find a company" value="' + esc(engQ) + '"></div>';
+    var body = "";
+    groups.forEach(function (g) {
+      var rows = g[3].filter(function (e) { return stop == null || stopOf(e) === stop; });
+      if (!rows.length) return;
+      if (engFilter !== "all" && stop == null && engFilter !== g[0]) return;
+      body += '<div class="grp"><div class="grp-h ' + g[0] + '"><b>' + esc(g[1]) + "</b><span>" + rows.length + "</span><i>" + esc(g[2]) + "</i></div>" +
+        '<div class="ers">' + rows.map(engRow).join("") + "</div></div>";
+    });
+    return out + (body || '<div class="calm">Nothing here right now.</div>') + '<div class="calm" id="eng-none" hidden>No company matches that search.</div>';
+  }
+  function engFind() {
+    var q = String(engQ || "").trim().toLowerCase(), any = false;
+    Array.prototype.forEach.call(document.querySelectorAll(".er[data-hay]"), function (r) {
+      var hit = !q || r.getAttribute("data-hay").indexOf(q) >= 0; r.hidden = !hit; if (hit) any = true;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".grp"), function (g) {
+      g.hidden = !g.querySelector(".er:not([hidden])");
+    });
+    var n = el("eng-none"); if (n) n.hidden = !(q && !any);
   }
 
-  /* The queued-behind-somebody-else table is narrower on purpose: there is nothing to
-     do on these, so a fee and a score would only be noise. */
-  function comingTable(rows) {
-    return '<div class="etable"><div class="ehead coming">' +
-      "<span>Company</span><span>Program</span><span>Waiting On</span></div>" +
-      rows.map(function (e) {
-        return '<button class="erow coming" type="button" data-open="' + esc(e.row) + '">' +
-          '<span class="e-co">' + esc(e.org || "") +
-            (e.product ? '<span class="e-pr">' + esc(e.product) + "</span>" : "") + "</span>" +
-          '<span class="e-pg">' + esc(e.program || "") +
-            '<span class="e-sub">' + esc(kindLabel(e)) + "</span></span>" +
-          '<span class="e-st">' + (e.done ? "Your invoice" : esc(e.waiting || "")) +
-            '<span class="e-sub' + (e.done ? " bad" : "") + '">' +
-              (e.done ? "Approved — you have not invoiced for it"
-                      : esc(e.stateLabel || e.state || "")) +
-            "</span></span>" +
-        "</button>";
-      }).join("") + "</div>";
-  }
-
-  var CANNOT_SEE = [
-    "Other firms’ engagements",
-    "Companies this firm is not assessing",
-    "What the company was charged",
-    "MISMO’s revenue on any certification",
-    "MISMO’s internal notes and decision threads",
-    "Test-suite keys for runs not issued to this firm",
-    "The price list",
-    "Every other section of the board"
-  ];
-
-  /* How this firm takes demonstration bookings, as MISMO has it recorded. Shown rather
-     than described, because the two firms do it differently and neither does it through
-     this portal yet. */
-  /* Your Availability: the weekly windows companies are offered on their booking page. What
-     the firm saves here wins over what MISMO recorded, and reaches the booking pages within
-     half an hour. A window takes one session; a long one is cut into back-to-back sessions
-     (90 minutes for a first certification, 60 for a renewal). */
+  /* ---- Your Schedule (its own tab, Jonna 31 Oct 2026) ---------------------
+     The weekly windows companies can book on their booking page, the days off, and every
+     demonstration already booked. What the firm saves wins over what MISMO recorded and reaches the
+     booking pages within half an hour. A window takes one session; a long one is cut into
+     back-to-back sessions (90 minutes for a first certification, 60 for a renewal). */
   function to24(t) {
     var m = String(t || "").trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/);
     if (!m) return "";
@@ -784,53 +1112,69 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (m[3] === "am" && h === 12) h = 0;
     return (h < 10 ? "0" : "") + h + ":" + (mi < 10 ? "0" : "") + mi;
   }
+  function to12(t) {
+    var m = String(t || "").match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return String(t || "");
+    var h = +m[1], ap = h >= 12 ? "pm" : "am"; h = h % 12 || 12;
+    return h + (m[2] === "00" ? "" : ":" + m[2]) + ap;
+  }
   function savedAvail() {
     if (avail && Array.isArray(avail.windows)) return { windows: avail.windows, blocked: avail.blocked || [], from: "you" };
     var sc = (book && book.scheduling) || {};
     if (sc.mode === "fixed-windows" && sc.windows) return { windows: sc.windows, blocked: [], from: "MISMO" };
     return { windows: [], blocked: [], from: "nobody" };
   }
-  function availability() {
-    if (!book || book.inHouse) return "";
+  function weekView(windows) {
+    return '<div class="wk">' + DAYS.map(function (dname) {
+      var ws = (windows || []).filter(function (w) { return String(w.day).toLowerCase() === dname.toLowerCase(); })
+        .sort(function (a, b) { return to24(a.from).localeCompare(to24(b.from)); });
+      return '<div class="wk-d"><b>' + dname.slice(0, 3) + "</b>" + (ws.length ? ws.map(function (w) {
+        return '<span class="wk-w">' + esc(to12(to24(w.from))) + "<i>to " + esc(to12(to24(w.to))) + "</i></span>";
+      }).join("") : '<span class="wk-off">No sessions</span>') + "</div>";
+    }).join("") + "</div>";
+  }
+  function paneSchedule() {
+    if (!book) return '<div class="as-empty">Loading…</div>';
+    var B = board(), t = todayIso();
+    var demos = B.shown.filter(function (e) { return demoDay(e) && demoDay(e) >= t; })
+      .sort(function (a, b) { return String(a.demoOn).localeCompare(String(b.demoOn)); });
     var saved = savedAvail();
-    if (!canEditFirm()) {
-      var list = (saved.windows || []).map(function (w) { return "<tr><td>" + esc(w.day) + "</td><td>" + esc(w.from) + "</td><td>" + esc(w.to) + "</td></tr>"; }).join("");
-      return '<div class="asb-panel"><div class="phead"><div><h2>Availability</h2>' +
-        '<p class="psub">The weekly windows companies can book, in Eastern Time' +
-        (saved.from === "you" ? ", as the firm saved them" : saved.from === "MISMO" ? ", as MISMO has them on record" : "") + ".</p></div></div>" +
-        '<table class="av"><thead><tr><th>Day</th><th>From</th><th>To</th></tr></thead><tbody>' +
-        (list || '<tr><td colspan="3" class="none">No windows: companies offer times for the firm to confirm.</td></tr>') + "</tbody></table>" +
-        ((saved.blocked || []).length ? '<p class="psub">Not available: ' + esc(saved.blocked.join(", ")) + "</p>" : "") +
-        VIEW_NOTE + "</div>";
-    }
+    var out = '<div class="pg-h"><div><h1>Your Schedule</h1><p>Your booked demonstrations, and the weekly times companies can book with you, in Eastern Time.</p></div></div>';
+    out += '<section class="ov-sec"><div class="ov-h"><h2>Booked</h2><p>Soonest first. Companies book these themselves from your times below; you send the calendar invitation.</p></div>' +
+      (demos.length ? '<div class="agenda">' + demos.map(function (e) {
+        return '<button class="ag" type="button" data-open="' + esc(e.row) + '">' + dateTile(e.demoOn) +
+          '<span class="ag-id"><b>' + esc(e.org) + "</b><i>" + esc(e.program || "") + " · " + esc(kindLabel(e)) + " · " + esc(e.stateLabel || "") + "</i></span>" +
+          '<span class="ag-when">' + esc(whenWords(daysUntil(demoDay(e)))) + "</span></button>";
+      }).join("") + "</div>" : '<div class="calm">Nothing booked yet.</div>') + "</section>";
+    if (book.inHouse) return out;
     var a = availDraft || saved;
+    var stamp = avail && avail.updatedAt ? "Last saved " + esc(day(avail.updatedAt)) + (avail.by ? " by " + esc(avail.by) : "") + "." :
+      saved.from === "MISMO" ? "These are the times MISMO has on record for you. Change them here whenever they change." :
+      "No times saved yet, so companies offer you times to confirm. Add your windows and they can book directly.";
+    out += '<section class="ov-sec"><div class="ov-h"><h2>Your Weekly Times</h2><p>Each window takes one session, and a booked time is taken off for everyone else. Times are offered from two working days ahead to six weeks out; MISMO holidays are left out for you. ' + stamp + "</p></div>" +
+      weekView(saved.windows);
+    if (!canEditFirm()) {
+      out += ((saved.blocked || []).length ? '<p class="fine">Not available: ' + esc(saved.blocked.map(function (x) { return day(x); }).join(", ")) + "</p>" : "") + "</section>";
+      return out;
+    }
     if (!availDraft) availDraft = { windows: a.windows.map(function (w) { return { day: w.day, from: to24(w.from), to: to24(w.to) }; }), blocked: (a.blocked || []).slice() };
     var d = availDraft;
     var rows = d.windows.map(function (w, i) {
-      return '<tr><td><select data-avday="' + i + '" aria-label="Day">' + DAYS.map(function (x) {
-          return '<option' + (String(w.day).toLowerCase() === x.toLowerCase() ? " selected" : "") + ">" + x + "</option>"; }).join("") + "</select></td>" +
-        '<td><input type="time" data-avfrom="' + i + '" value="' + esc(w.from) + '" aria-label="From"></td>' +
-        '<td><input type="time" data-avto="' + i + '" value="' + esc(w.to) + '" aria-label="To"></td>' +
-        '<td><button class="as-ic" type="button" data-avdel="' + i + '" aria-label="Remove this window" title="Remove">' +
-        '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></td></tr>';
+      return '<div class="avr"><select data-avday="' + i + '" aria-label="Day">' + DAYS.map(function (x) {
+          return '<option' + (String(w.day).toLowerCase() === x.toLowerCase() ? " selected" : "") + ">" + x + "</option>"; }).join("") + "</select>" +
+        '<input type="time" data-avfrom="' + i + '" value="' + esc(w.from) + '" aria-label="From"><span>to</span>' +
+        '<input type="time" data-avto="' + i + '" value="' + esc(w.to) + '" aria-label="To">' +
+        '<button class="as-ic" type="button" data-avdel="' + i + '" aria-label="Remove this window" title="Remove">' +
+        '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>';
     }).join("");
-    var stamp = avail && avail.updatedAt ? "Last saved " + esc(day(avail.updatedAt)) + (avail.by ? " by " + esc(avail.by) : "") + "." :
-      (saved.from === "MISMO" ? "These are the times MISMO has on record for you. Change them here whenever they change." :
-       "No times saved yet, so companies are asked to offer times for you to confirm. Add your windows and they can book directly.");
-    return '<div class="asb-panel"><div class="phead"><div><h2>Your Availability</h2>' +
-      '<p class="psub">The weekly windows companies can book on their own booking page, in Eastern Time. ' +
-      "Each window takes one session, and a booked time is taken off for everyone else. MISMO holidays are left out " +
-      "automatically. " + stamp + "</p></div></div>" +
-      '<table class="av"><thead><tr><th>Day</th><th>From</th><th>To</th><th></th></tr></thead><tbody>' +
-      (rows || '<tr><td colspan="4" class="none">No windows yet.</td></tr>') + "</tbody></table>" +
-      '<button class="as-go ghost" type="button" data-avadd="1" style="margin:0 8px 12px 0">Add a Window</button>' +
-      '<div class="as-find"><div class="as-f"><label for="av-blocked">Days You Are Not Available</label>' +
-      '<textarea id="av-blocked" style="min-height:60px" placeholder="2026-11-24, 2026-12-22">' + esc((d.blocked || []).join(", ")) + "</textarea></div></div>" +
-      (book.scheduling && book.scheduling.reviewLink ? '<p class="psub" style="margin:0 0 12px">Your published calendar: <a href="' +
-        esc(book.scheduling.reviewLink) + '" target="_blank" rel="noopener noreferrer">open it</a>. Companies are shown it to see when you are free ' +
-        "(they are asked not to book on it) and offer you a time, which you confirm under Update This Engagement. Add windows above and they can book directly instead.</p>" : "") +
-      '<button class="as-go" type="button" data-avsave="1">Save Your Availability</button>' +
-      '<span class="as-say" id="av-say"></span></div>';
+    out += '<div class="aved"><h3>Change Your Times</h3>' + (rows || '<p class="fine">No windows yet.</p>') +
+      '<button class="as-go ghost" type="button" data-avadd="1">Add a Window</button>' +
+      '<div class="as-find" style="margin-top:16px"><div class="as-f"><label for="av-blocked">Days You Are Not Available</label>' +
+      '<textarea id="av-blocked" style="min-height:56px" placeholder="2026-11-24, 2026-12-22">' + esc((d.blocked || []).join(", ")) + "</textarea></div></div>" +
+      (book.scheduling && book.scheduling.reviewLink ? '<p class="fine">Your published calendar: <a href="' +
+        esc(book.scheduling.reviewLink) + '" target="_blank" rel="noopener noreferrer">open it</a>. Companies see it to know when you are free and offer you a time, which you confirm on the engagement. Add windows and they can book directly instead.</p>' : "") +
+      '<button class="as-go" type="button" data-avsave="1">Save Your Times</button><span class="as-say" id="av-say"></span></div></section>';
+    return out;
   }
   function readAvailForm() {
     if (!availDraft) return;
@@ -855,72 +1199,6 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       avail = doc; availDraft = null; paint();
       var s2 = el("av-say"); if (s2) { s2.className = "as-say ok"; s2.textContent = "Saved. Booking pages show these times within half an hour."; }
     })["catch"](function (err) { say.className = "as-say bad"; say.textContent = (err && err.message) || "That did not save."; });
-  }
-
-  function cannotSee() {
-    return '<div class="asb-panel"><div class="phead"><div>' +
-      "<h2>What You Cannot See</h2>" +
-      '<p class="psub">Not hidden by leaving it off the screen. None of it is in the file ' +
-      "this page loads, so it cannot be reached by guessing a URL either, and the relay " +
-      "refuses the request as well. Blueprint §5.3.</p></div></div>" +
-      '<div class="prog-facts">' +
-      CANNOT_SEE.map(function (t) { return '<span class="fact no">' + esc(t) + "</span>"; }).join("") +
-      "</div>" +
-      '<p class="psub" style="margin-top:14px;margin-bottom:0">What you do see beyond this ' +
-      "list: the same company’s earlier engagements in the same program, so a renewal can " +
-      "be judged against what was found last time.</p></div>";
-  }
-
-  function paneOpen() {
-    if (!book) return '<div class="as-empty">Loading your engagements…</div>';
-    if (book.error) {
-      return '<div class="as-bad">Your engagements could not be loaded. ' + esc(book.error) + "</div>";
-    }
-    var all = list();
-    if (!all.length) {
-      return '<div class="as-empty">Nothing is assigned to your firm at the moment. When MISMO ' +
-        "assigns a certification to you it appears here the same day.</div>" +
-        availability() + cannotSee();
-    }
-
-    var withMe = all.filter(isMine);
-    var blocked = all.filter(function (e) { return !!e.scriptOutstanding; });
-    var notMine = all.filter(function (e) { return !isMine(e) && !e.scriptOutstanding; }).filter(showToFirm);
-    var inFlight = notMine.filter(function (e) { return worked(e) && (!closed(e) || (e.assessorFee == null && (e.done || countFindings(e.row) > 0 || (e.prelim && e.prelim.scored)))); });
-    var others = notMine.filter(function (e) { return !worked(e) && !closed(e); });
-    var progs = (book.programs || []).join(", ");
-
-    /* "out of N on the board" counts the engagements shown on it, not ones that have left it
-       (Jonna, 31 Oct 2026: Actualize said 4 with 3 on screen). */
-    var out = headline(withMe.concat(blocked, inFlight, others), withMe, others, blocked, inFlight, all);
-
-    out += '<div class="asb-panel"><div class="phead"><div><h2>To Do</h2>' +
-      '<p class="psub">Engagements where the next move is yours.' +
-      (progs ? " " + esc(book.firm || "") + " assesses " + esc(progs) + "." : "") +
-      (book.inHouse ? " This is MISMO’s own audit team, working the same portal as an " +
-        "outside firm." : "") +
-      "</p></div></div>" +
-      engTable(withMe, "Nothing is waiting on you right now.") +
-      (inFlight.length
-        ? '<div class="as-sub"><h3>In Your Queue, Waiting on Someone Else</h3>' +
-          '<p class="psub">You have already worked these. They come back to you when the company, ' +
-          "MISMO or the VP has moved.</p></div>" + engTable(inFlight, "")
-        : "") + "</div>";
-
-    if (blocked.length) {
-      out += '<div class="asb-panel"><div class="phead"><div><h2>Waiting on MISMO</h2>' +
-        '<p class="psub">The certification script has not reached you yet, so these cannot ' +
-        "start.</p></div></div>" + engTable(blocked, "") + "</div>";
-    }
-
-    if (others.length) {
-      out += '<div class="asb-panel"><div class="phead"><div><h2>Coming to You</h2>' +
-        '<p class="psub">Assigned to ' + esc(book.firm || "your firm") + ", but waiting on " +
-        "somebody else first, and not started yet. Nothing to do on these yet.</p></div></div>" +
-        comingTable(others) + "</div>";
-    }
-
-    return out + availability() + cannotSee();
   }
 
   function paneFound() {
@@ -1007,10 +1285,6 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         '<button class="as-go ghost" type="button" data-scriptdl="' + esc(e.row) + '" style="margin-top:10px">' +
         "Download Certification Script</button></div>";
     }
-    if (e.assessorFee == null) {
-      out += '<p class="as-note">MISMO has not recorded a fee against this engagement yet. ' +
-        "That is a gap in MISMO's records, not a statement that the work is unpaid.</p>";
-    }
     if (!(e.prelim && e.prelim.total)) {
       out += '<p class="as-note">MISMO has not authored a certification script for this ' +
         "program and cycle kind yet, so there is nothing to score item by item. The findings " +
@@ -1067,38 +1341,154 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }).join("") + "</div>";
   }
 
-  /* The company's own folder in the MISMO Certifications team's SharePoint (Jonna, 31 Oct 2026):
-     its earlier certification scripts, questionnaires and evidence, one group per cycle, newest
-     first. The names come in this firm's file; each opens in SharePoint, for anyone in the MISMO
-     Certifications team. */
-  function docCount(e) {
+  /* ---- Documents, one area per renewal (Jonna, 31 Oct 2026: "make each organized to each renewal,
+     and each new renewal they can upload documents to it ... we want to get out of the teams channel
+     and work solely in here") -----------------------------------------------------------------------
+     The company's folder in MISMO's certification library holds one folder per cycle (Initial,
+     Renewal - 1, Renewal - 2 ...). The cycle this engagement is for comes first, with an upload box:
+     files dropped there go straight into that cycle's folder in the library, through MISMO's upload
+     flow, and are listed here at once. Earlier cycles follow, newest first, so a renewal can be read
+     against the last one. */
+  var UPLOAD_URL = "";                 /* MISMO Assessor Documents - Upload (Power Automate) */
+  var UPLOAD_MAX = 70 * 1024 * 1024;
+  var SITE_DOCS = "https://mortgagebankersassociation.sharepoint.com/sites/MISMOeMortgageCertification/Shared Documents/";
+  var ROOTS = { RON: "RON Certification/RON Certifications/", eClosing: "eClosing Certification/",
+    eVault: "eVault Certification/Provider Certifications/" };
+  var uploads = null;                  /* documents/uploads.json in the firm's own repository */
+  var upBusy = {};
+  function cycleName(e) {
+    if (e.kind === "renewal") return "Renewal - " + (e.renewalNumber || "");
+    return "Initial";
+  }
+  function isThisCycle(e, name) {
+    var n = String(name || "");
+    if (e.kind === "renewal") { var m = n.match(/renewal\s*-?\s*(\d+)/i); return !!(m && String(+m[1]) === String(e.renewalNumber)); }
+    return /initial/i.test(n) && !/re-?initial/i.test(n);
+  }
+  function folderOf(e) {
     var d = e.documents;
-    if (!d || !d.cycles) return 0;
-    return d.cycles.reduce(function (t, c) { return t + (c.files || []).length; }, 0);
+    if (d && d.folder) return d.folder;
+    var root = ROOTS[e.program] || ("Assessor Documents/" + (e.program || "Other") + "/");
+    return root + String(e.org || "Company").replace(/[\\/:*?"<>|#%]+/g, " ").trim();
   }
   function spUrl(base, path, file) {
-    var full = String(base || "") + path + (file ? "/" + file : "");
+    var full = String(base || SITE_DOCS) + path + (file ? "/" + file : "");
     var u = full.split("/").map(function (seg, i) { return i < 3 ? seg : encodeURIComponent(seg); }).join("/");
     return file && /\.(docx?|xlsx?|pptx?)$/i.test(file) ? u + "?web=1" : u;
   }
+  function fileIcon(name) {
+    var x = (String(name).match(/\.(\w+)$/) || [, ""])[1].toLowerCase();
+    var k = /pdf/.test(x) ? "pdf" : /xlsx?|csv/.test(x) ? "xls" : /docx?/.test(x) ? "doc" : /mp4|mov|m4v|avi|webm/.test(x) ? "vid" :
+      /png|jpe?g|gif|bmp/.test(x) ? "img" : /msg|eml/.test(x) ? "msg" : "file";
+    return '<span class="fi fi-' + k + '">' + (x ? esc(x.slice(0, 4).toUpperCase()) : "FILE") + "</span>";
+  }
+  function upsFor(e) {
+    return ((uploads && uploads.entries) || []).filter(function (u) { return String(u.row) === String(e.row); })
+      .sort(function (a, b) { return String(b.at).localeCompare(String(a.at)); });
+  }
+  function docCount(e) {
+    var d = e.documents, n = upsFor(e).length;
+    if (d && d.cycles) n += d.cycles.reduce(function (t, c) { return t + (c.files || []).length; }, 0);
+    return n;
+  }
+  function fileRow(href, name, meta) {
+    return '<a class="dl" href="' + esc(href) + '" target="_blank" rel="noopener">' + fileIcon(name) +
+      '<span class="dl-n">' + esc(name) + "</span>" + (meta ? '<span class="dl-m">' + meta + "</span>" : "") + "</a>";
+  }
   function documents(e) {
-    var d = e.documents;
-    if (!d || !d.cycles || !d.cycles.length) {
-      return '<p class="as-note">No folder for ' + esc(e.org || "this company") + " in the " + esc(e.program || "") +
-        " certification documents yet.</p>";
-    }
-    var out = '<p class="as-note">From ' + esc(e.org || "the company") + "\u2019s " + esc(e.program || "") +
-      ' folder in the MISMO Certifications team. Each opens in SharePoint. <a href="' + esc(spUrl(d.base, d.folder)) +
-      '" target="_blank" rel="noopener">Open the whole folder</a></p>';
-    d.cycles.forEach(function (c) {
-      out += '<div class="as-doccyc"><b>' + esc(c.name || "In the folder itself") + "</b> <span>" + c.files.length +
-        (c.files.length === 1 ? " file" : " files") + "</span></div><ul class=\"as-docs\">" +
-        c.files.map(function (f) {
-          return '<li><a href="' + esc(spUrl(d.base, d.folder + (c.name ? "/" + c.name : ""), f[0])) + '" target="_blank" rel="noopener">' +
-            esc(f[0]) + "</a>" + (f[2] ? " <small>" + esc(day(f[2]) || f[2]) + "</small>" : "") + "</li>";
-        }).join("") + "</ul>";
+    var d = e.documents || {}, folder = folderOf(e), cyc = cycleName(e);
+    var cycles = (d.cycles || []).slice();
+    var mineCyc = cycles.filter(function (c) { return isThisCycle(e, c.name); });
+    var rest = cycles.filter(function (c) { return !isThisCycle(e, c.name); });
+    var ups = upsFor(e);
+    var here = [];
+    ups.forEach(function (u) { here.push(fileRow(u.url || spUrl(SITE_DOCS, u.folder + "/" + u.cycle, u.name), u.name,
+      "Added " + esc(day(u.at) || "") + (u.by ? " by " + esc(u.by) : ""))); });
+    mineCyc.forEach(function (c) {
+      c.files.forEach(function (f) { here.push(fileRow(spUrl(d.base, folder + "/" + c.name, f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : "")); });
     });
+    var out = '<div class="cyc now"><div class="cyc-h"><b>This ' + (e.kind === "renewal" ? "Renewal" : "Certification") + "</b><span>" + esc(cyc.replace(/\s*-\s*/, " ")) + "</span>" +
+      '<a class="cyc-open" href="' + esc(spUrl(SITE_DOCS, folder + "/" + cyc)) + '" target="_blank" rel="noopener">Open the folder</a></div>' +
+      (here.length ? '<div class="dls">' + here.join("") + "</div>" : '<p class="fine">Nothing here yet for this ' + (e.kind === "renewal" ? "renewal" : "certification") + ".</p>");
+    if (canEditFirm()) {
+      out += '<div class="drop" data-updrop="' + esc(e.row) + '">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>' +
+        "<b>Drop files here</b><span>scripts, screenshots, recordings, evidence. Up to 70 MB each.</span>" +
+        '<button class="as-go ghost" type="button" data-uppick="' + esc(e.row) + '">Choose Files</button>' +
+        '<input type="file" multiple hidden data-upfile="' + esc(e.row) + '"></div>' +
+        '<div class="upsay" id="up-' + esc(e.row) + '"></div>';
+    }
+    out += "</div>";
+    if (rest.length) {
+      out += '<div class="cyc-sub">Earlier Cycles</div>' + rest.map(function (c) {
+        return '<div class="cyc"><div class="cyc-h"><b>' + esc(String(c.name || "In the Folder Itself").replace(/\s*-\s*(\d)/, " $1")) + "</b><span>" + c.files.length +
+          (c.files.length === 1 ? " file" : " files") + '</span><a class="cyc-open" href="' + esc(spUrl(d.base, folder + (c.name ? "/" + c.name : ""))) +
+          '" target="_blank" rel="noopener">Open the folder</a></div><div class="dls">' +
+          c.files.map(function (f) { return fileRow(spUrl(d.base, folder + (c.name ? "/" + c.name : ""), f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : ""); }).join("") +
+          "</div></div>";
+      }).join("");
+    }
     return out;
+  }
+  function upSay(row, cls, text) { var s = el("up-" + row); if (s) { s.className = "upsay " + (cls || ""); s.textContent = text; } }
+  function uploadFiles(row, files) {
+    var e = byRow(row);
+    if (!e || !files || !files.length) return;
+    if (VIEWAS) { upSay(row, "bad", "Nothing saves while you are viewing as " + (book.firm || "a firm") + "."); return; }
+    if (!canEditFirm()) return;
+    if (!UPLOAD_URL) { upSay(row, "bad", "Uploading is being switched on by MISMO. Until then, email the files to certifications@mismo.org."); return; }
+    var list = Array.prototype.slice.call(files);
+    var big = list.filter(function (f) { return f.size > UPLOAD_MAX; });
+    if (big.length) { upSay(row, "bad", big[0].name + " is over 70 MB. Email certifications@mismo.org for a link to share larger recordings."); return; }
+    var s = R.session() || {}, folder = folderOf(e), cyc = cycleName(e), done = 0, added = [];
+    upBusy[row] = true;
+    function next(i) {
+      if (i >= list.length) return Promise.resolve();
+      var f = list[i];
+      upSay(row, "", "Uploading " + f.name + " (" + (i + 1) + " of " + list.length + ")…");
+      return new Promise(function (ok, no) {
+        var fr = new FileReader();
+        fr.onload = function () { ok(String(fr.result).split(",")[1] || ""); };
+        fr.onerror = function () { no(new Error("Could not read " + f.name)); };
+        fr.readAsDataURL(f);
+      }).then(function (b64) {
+        return fetch(UPLOAD_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" },
+          body: JSON.stringify({ token: s.token || "", project: current.key, firm: book.firm || "", row: String(e.row), org: e.org || "",
+            program: e.program || "", folder: folder, cycle: cyc, name: f.name, content: b64, by: s.name || s.email || "" }) });
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (j) {
+          if (!res.ok || !j.saved) throw new Error(j.error || ("The upload was refused (" + res.status + ")."));
+          added.push({ row: e.row, org: e.org, program: e.program, folder: folder, cycle: cyc, name: j.name || f.name, size: f.size,
+            url: j.url || null, at: new Date().toISOString(), by: s.name || s.email || "" });
+          done++;
+          return next(i + 1);
+        });
+      });
+    }
+    /* what reached the library is listed, even when a later file failed */
+    function keep() {
+      if (!added.length) return Promise.resolve();
+      var fresh = { kind: "assessor-uploads", version: 1, firm: book.firm, entries: [] };
+      return R.update(current.key, "documents/uploads.json", function (doc) {
+        var dd = doc && doc.entries ? doc : fresh;
+        dd.entries = (dd.entries || []).concat(added);
+        return dd;
+      }, "Documents for " + (e.org || "") + " " + cyc, fresh, 3).then(function () {
+        uploads = uploads && uploads.entries ? uploads : { entries: [] };
+        uploads.entries = uploads.entries.concat(added);
+        drawPanel();
+      });
+    }
+    next(0).then(function () {
+      return keep().then(function () {
+        upBusy[row] = false;
+        upSay(row, "ok", done + (done === 1 ? " file is" : " files are") + " in " + cyc + ".");
+      });
+    })["catch"](function (err) {
+      upBusy[row] = false;
+      var msg = (err && err.message) || "The upload did not finish.";
+      keep()["catch"](function () {}).then(function () { upSay(row, "bad", msg + (done ? " " + done + " file" + (done === 1 ? " was" : "s were") + " saved first." : "")); });
+    });
   }
 
   function findingsBody(e) {
@@ -1272,45 +1662,93 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     })["catch"](function (err) { if (btn) btn.disabled = false; bad((err && err.message) || "That did not save."); });
   }
 
+  /* One engagement at a time, in the panel on the right. Its parts are tabs rather than folded
+     sections, so each one is its own page: Overview (where it stands and your next step), Documents,
+     the Questionnaire, Earlier Certifications and Findings. */
+  var ptab = "overview";
   function drawPanel() {
     var p = el("as-panel");
     if (openRow == null) { p.className = "as-panel"; p.innerHTML = ""; el("as-scrim").className = "as-scrim"; return; }
     var e = byRow(openRow);
     if (!e) { openRow = null; drawPanel(); return; }
-
     var qn = (Array.isArray(e.answers) ? e.answers.length : 0);
+    var hn = Array.isArray(e.history) ? e.history.length : 0;
+    var tabs = [["overview", "Overview", isMine(e) ? "your move" : ""], ["docs", "Documents", docCount(e) || ""],
+      ["qa", "Questionnaire", qn || ""], ["hist", "Earlier Certifications", hn || ""], ["find", "Findings", countFindings(e.row) || ""]];
+    if (!tabs.some(function (t) { return t[0] === ptab; })) ptab = "overview";
     p.className = "as-panel on" + (wide ? " wide" : "");
     el("as-scrim").className = "as-scrim on";
+    var body = ptab === "docs" ? documents(e) : ptab === "qa" ? questionnaire(e) : ptab === "hist" ? history(e) : ptab === "find" ? findingsBody(e) :
+      stepper(e) +
+      (isMine(e) ? '<div class="nextbox"><span class="mv-k">Your next step</span><b>' + esc(nextStepText(e) || "Your move") + "</b>" +
+        (e.demoOn ? "<i>" + esc(day(e.demoOn)) + " · " + esc(whenWords(daysUntil(demoDay(e)))) + "</i>" : "") + "</div>" :
+        '<div class="nextbox calmbox"><span class="mv-k">Where it is</span><b>' + esc(waitingText(e)) + "</b><i>" + esc(e.stateLabel || "") +
+        (e.age != null ? " · " + esc(e.age) + " days at this step" : "") + "</i></div>") +
+      sec("steps", "Update This Engagement", null, stepsBody(e), true) +
+      sec("facts", "The Details", null, facts(e), true);
     p.innerHTML =
-      '<div class="as-ph"><div><h3>' + esc(e.org || "") + "</h3>" +
-        '<div class="sub">' + esc(e.program || "") +
-          (e.product ? " · " + esc(e.product) : "") +
-          (e.kind === "renewal" ? " · Renewal" + (e.renewalNumber ? " " + e.renewalNumber : "")
-                                : " · First certification") + "</div></div>" +
+      '<div class="as-ph">' + mono(e.org) + '<div><h3>' + esc(e.org || "") + "</h3>" +
+        '<div class="sub">' + esc(e.program || "") + (e.product ? " · " + esc(e.product) : "") + " · " + esc(kindLabel(e)) + "</div></div>" +
         '<div class="acts">' +
-          '<button class="as-ic" type="button" id="as-wide" aria-label="' +
-            (wide ? "Back to normal size" : "Make this wider") + '" title="' +
+          '<button class="as-ic" type="button" id="as-wide" aria-label="' + (wide ? "Back to normal size" : "Make this wider") + '" title="' +
             (wide ? "Back to normal size" : "Make this wider") + '">' +
-            (wide
-              ? '<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 20v-5h5"/></svg>'
-              : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 15v5h-5"/></svg>') +
+            (wide ? '<svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 20v-5h5"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 15v5h-5"/></svg>') +
           "</button>" +
-          '<button class="as-ic" type="button" id="as-shut" aria-label="Close" title="Close">' +
-            '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+          '<button class="as-ic" type="button" id="as-shut" aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
         "</div></div>" +
-      '<div class="as-pb">' +
-        sec("facts", "Where It Stands", null, facts(e), true) +
-        sec("steps", "Update This Engagement", (STEPS[e.state] || []).length ? "your move" : null, stepsBody(e), true) +
-        sec("qa", "What the Applicant Told Us", qn ? qn + " answers" : "none", questionnaire(e)) +
-        sec("hist", "Earlier Certifications",
-            (Array.isArray(e.history) ? e.history.length : 0) || null, history(e)) +
-        sec("docs", "Certification Documents", docCount(e) || null, documents(e)) +
-        sec("find", "Findings", countFindings(e.row) || null, findingsBody(e)) +
-      "</div>";
+      '<div class="ptabs" role="tablist">' + tabs.map(function (t) {
+        return '<button type="button" role="tab" class="' + (ptab === t[0] ? "on" : "") + '" data-ptab="' + t[0] + '">' + esc(t[1]) +
+          (t[2] !== "" ? " <b>" + esc(t[2]) + "</b>" : "") + "</button>";
+      }).join("") + "</div>" +
+      '<div class="as-pb">' + body + "</div>";
   }
 
-  function open(row) { openRow = row; drawPanel(); }
+  function open(row) { openRow = row; ptab = "overview"; drawPanel(); }
   function shut() { openRow = null; drawPanel(); }
+
+  /* ---- View As (Jonna, 31 Oct 2026: "why can't i see it how they see it" - the same as Service
+     Orders and Agreements). A MISMO administrator sees a firm's own screen, drawn from its real
+     records, exactly as its assessors do. It is read-only, and that is the point: one guard at the
+     relay boundary refuses every save, and uploads are refused the same way. ---- */
+  var VIEWAS = null;
+  try { var vaq = new URLSearchParams(location.search).get("viewas"); if (vaq) VIEWAS = { slug: vaq }; } catch (e0) {}
+  function viewAsBanner() {
+    if (!VIEWAS) return "";
+    return '<div class="vabar"><span class="va-l">Viewing As</span><span class="va-c">' + esc((book && (book.legalName || book.firm)) || VIEWAS.slug) +
+      '</span><span class="va-r">an assessor’s screen, exactly as they see it</span><span class="va-ro">Nothing Saves</span>' +
+      '<button class="va-out" type="button" id="va-out">Back to My View</button></div>';
+  }
+  function leaveViewAs() {
+    if (window.parent && window.parent !== window) { try { window.parent.postMessage({ type: "mismo-portal-close" }, location.origin); return; } catch (e) {} }
+    location.href = location.pathname;
+  }
+  function paneViewAs() {
+    return '<div class="pg-h"><div><h1>View As</h1><p>See a firm’s own screen, drawn from its real records, exactly as its assessors see it. ' +
+      "<b>Nothing you press while you are in it saves anything.</b></p></div></div>" +
+      '<div class="vas">' + FIRMS.map(function (f) {
+        return '<a class="va-card" href="?viewas=' + esc(f.slug) + '">' + mono(f.slug) + "<b>" + esc(f.slug.charAt(0).toUpperCase() + f.slug.slice(1)) +
+          "</b><span>Open Their Screen</span></a>";
+      }).join("") + "</div>";
+  }
+
+  /* ---- painting ----------------------------------------------------------- */
+  function paint() {
+    var body = pane === "home" ? paneHome() : pane === "open" ? paneOpen() : pane === "sched" ? paneSchedule() :
+      pane === "found" ? paneFound() : pane === "help" ? paneHelp() : pane === "viewas" ? paneViewAs() : paneHome();
+    el("as-main").innerHTML = viewAsBanner() + '<div class="as-wrap">' + body + "</div>";
+    var vo = el("va-out"); if (vo) vo.addEventListener("click", leaveViewAs);
+    if (pane === "open") engFind();
+    drawPanel();
+  }
+  function goPane(p) {
+    pane = p;
+    document.querySelectorAll(".hq nav button[data-hq]").forEach(function (o) {
+      if (o.getAttribute("data-hq") === p) o.setAttribute("aria-current", "page"); else o.removeAttribute("aria-current");
+    });
+    shut();
+    paint();
+    window.scrollTo(0, 0);
+  }
 
   /* ---- help --------------------------------------------------------------- */
   function paneHelp() {
@@ -1322,28 +1760,26 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       '<div class="as-help">' +
 
       "<h3>What This Portal Is</h3>" +
-      "<p>Your firm's own engagements and nothing else. The file this page loads is cut for " +
-      "your firm before it leaves MISMO's server, so another firm's work, what the company was " +
-      "charged, MISMO's revenue and the price list are not in it at all. You could not reach " +
-      "them by guessing a URL, and the relay would refuse the request as well.</p>" +
-      '<div class="as-box"><p><b>What you do see beyond your own engagements:</b> the same ' +
-      "company's earlier certifications in the same program, so a renewal can be judged against " +
-      "what was found last time.</p></div>" +
+      "<p>Your firm's own engagements, the material to assess them against, your schedule, and the place to record " +
+      "each step and what you find. Everything here is for your firm only.</p>" +
 
-      "<h3>The Board</h3>" +
-      "<p>Three sections, in the order they matter to you.</p>" +
+      "<h3>The Tabs</h3>" +
       "<ul>" +
-      "<li><b>To Do</b> - the next move is yours. These carry a green edge.</li>" +
-      "<li><b>Waiting on MISMO</b> - MISMO has not sent the certification script yet, so the " +
-      "assessment cannot start. Nothing you do will move these; chase MISMO.</li>" +
-      "<li><b>Coming to You</b> - assigned to your firm but waiting on the company or on MISMO " +
-      "first. Nothing to do yet. An engagement stays here after approval only while your " +
-      "invoice is outstanding, and then it leaves the board.</li>" +
+      "<li><b>Overview</b> - what needs you now, your next demonstrations, and the certification journey with your " +
+      "engagements counted at each stop.</li>" +
+      "<li><b>Engagements</b> - every engagement A to Z, grouped into With You, In Your Queue and Coming to You. The bar " +
+      "on each row is how far along the journey it is; amber means the next move is yours.</li>" +
+      "<li><b>Your Schedule</b> - booked demonstrations, and the weekly times companies can book with you.</li>" +
+      "<li><b>Findings</b> - everything your firm has recorded, newest first.</li>" +
       "</ul>" +
-      "<p>Select any row to open it. The columns are the company and its product, the program " +
-      "and whether it is an initial certification or a renewal, the stage with the " +
-      "demonstration date beneath it, how far through the certification script the scoring has " +
-      "got, and your fee.</p>" +
+      "<p>Open an engagement and it has its own tabs: <b>Overview</b> (where it stands and your next step), " +
+      "<b>Documents</b> (this renewal's documents with an upload box, then every earlier cycle), <b>Questionnaire</b>, " +
+      "<b>Earlier Certifications</b> and <b>Findings</b>.</p>" +
+
+      "<h3>Documents</h3>" +
+      "<p>Each engagement's documents are kept by cycle: the cycle you are assessing first, then the earlier ones, " +
+      "newest first. Drop files on <b>This Renewal</b> (or use Choose Files) and they go straight into that renewal's " +
+      "folder in MISMO's certification library, up to 70 MB each. There is no need to send anything through Teams.</p>" +
 
       "<h3>The Order a Certification Runs In</h3>" +
       "<table><thead><tr><th>Step</th><th>Who Moves</th><th>What Happens</th></tr></thead><tbody>" +
@@ -1380,11 +1816,11 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "<h3>Scheduling the Demonstration</h3>" +
       '<div class="as-box"><p><b>Companies book their own time.</b> When a company has paid, ' +
       "its welcome email links to a private booking page listing the open times from <b>Your " +
-      "Availability</b>. It picks one and names who is coming, and the engagement moves to " +
+      "Schedule</b>. It picks one and names who is coming, and the engagement moves to " +
       "<b>Demo Scheduled</b> with the date and time. You get the confirmation email with the " +
       "attendees, and you send the calendar invitation and video link.</p></div>" +
       "<ul>" +
-      "<li><b>Your Availability</b> is the weekly windows you take sessions in, in Eastern Time. " +
+      "<li><b>Your Schedule</b> holds the weekly windows you take sessions in, in Eastern Time. " +
       "Each window takes one session; a long window is cut into back-to-back sessions (90 minutes " +
       "for a first certification, 60 for a renewal). Add the days you are away under <b>Days You " +
       "Are Not Available</b>. MISMO holidays are left out for you.</li>" +
@@ -1397,7 +1833,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "</ul>" +
 
       "<h3>Recording Each Step</h3>" +
-      "<p>Open an engagement and use <b>Update This Engagement</b>. It shows only the steps that " +
+      "<p>Open an engagement: its <b>Overview</b> tab has <b>Update This Engagement</b>, showing only the steps that " +
       "are yours from where the engagement stands: the demonstration done, the artifacts arrived, " +
       "your preliminary result, an answer to MISMO's question, remediation evidence reviewed. " +
       "Record the step and MISMO's board moves within half an hour, and whoever is next is told " +
@@ -1405,7 +1841,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "board</b>. If the engagement had already moved on, it shows <b>Not applied</b> and says why.</p>" +
 
       "<h3>Recording What You Find</h3>" +
-      "<p>Open an engagement and use the <b>Findings</b> section at the foot of the panel. " +
+      "<p>Open an engagement and use its <b>Findings</b> tab. " +
       "Choose an outcome, write what you looked at and what it showed, and record it. Each " +
       "entry is kept with your name and the date, and nothing is ever overwritten - a later " +
       "entry is added above the earlier one.</p>" +
@@ -1452,19 +1888,6 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "wrongly, a fee that is blank or looks wrong, a questionnaire that is empty, a " +
       "certification script that has not arrived, or a finding that did not save.</p>" +
       "</div>";
-  }
-
-  /* ---- painting ----------------------------------------------------------- */
-  function paint() {
-    el("as-main").innerHTML = '<div class="as-wrap">' +
-      '<div class="as-pane' + (pane === "open" ? " on" : "") + '">' +
-        (pane === "open" ? paneOpen() : "") + "</div>" +
-      '<div class="as-pane' + (pane === "found" ? " on" : "") + '">' +
-        (pane === "found" ? paneFound() : "") + "</div>" +
-      '<div class="as-pane' + (pane === "help" ? " on" : "") + '">' +
-        (pane === "help" ? paneHelp() : "") + "</div>" +
-      "</div>";
-    drawPanel();
   }
 
   function record(row) {
@@ -1543,6 +1966,16 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (!t || !t.closest) return;
     var c;
     if ((c = t.closest("[data-open]"))) { open(c.getAttribute("data-open")); return; }
+    if ((c = t.closest("[data-go]"))) {
+      ev.preventDefault();
+      var g = c.getAttribute("data-go").split(":");
+      if (g[1]) engFilter = g[1];
+      goPane(g[0]);
+      return;
+    }
+    if ((c = t.closest("[data-ef]"))) { engFilter = c.getAttribute("data-ef"); paint(); return; }
+    if ((c = t.closest("[data-ptab]"))) { ptab = c.getAttribute("data-ptab"); drawPanel(); var pb = document.querySelector(".as-pb"); if (pb) pb.scrollTop = 0; return; }
+    if ((c = t.closest("[data-uppick]"))) { var fi = document.querySelector('[data-upfile="' + c.getAttribute("data-uppick") + '"]'); if (fi) fi.click(); return; }
     if ((c = t.closest("[data-scriptdl]"))) { downloadScript(c); return; }
     if ((c = t.closest("[data-sectog]"))) {
       var id = c.getAttribute("data-sectog");
@@ -1567,6 +2000,26 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if ((c = t.closest("[data-avsave]"))) { saveAvail(); return; }
   });
 
+  document.addEventListener("input", function (ev) {
+    if (ev.target && ev.target.id === "eng-q") { engQ = ev.target.value; engFind(); }
+  });
+  document.addEventListener("change", function (ev) {
+    var t = ev.target;
+    if (t && t.hasAttribute && t.hasAttribute("data-upfile")) { uploadFiles(t.getAttribute("data-upfile"), t.files); t.value = ""; }
+  });
+  ["dragenter", "dragover"].forEach(function (n) {
+    document.addEventListener(n, function (ev) { var d = ev.target && ev.target.closest && ev.target.closest("[data-updrop]"); if (!d) return; ev.preventDefault(); d.classList.add("over"); });
+  });
+  document.addEventListener("dragleave", function (ev) { var d = ev.target && ev.target.closest && ev.target.closest("[data-updrop]"); if (d && !d.contains(ev.relatedTarget)) d.classList.remove("over"); });
+  document.addEventListener("drop", function (ev) {
+    var d = ev.target && ev.target.closest && ev.target.closest("[data-updrop]"); if (!d) return;
+    ev.preventDefault(); d.classList.remove("over");
+    uploadFiles(d.getAttribute("data-updrop"), ev.dataTransfer && ev.dataTransfer.files);
+  });
+  /* a file dropped anywhere else is not opened by the browser in place of the portal */
+  window.addEventListener("dragover", function (ev) { if (!(ev.target && ev.target.closest && ev.target.closest("[data-updrop]"))) ev.preventDefault(); });
+  window.addEventListener("drop", function (ev) { if (!(ev.target && ev.target.closest && ev.target.closest("[data-updrop]"))) ev.preventDefault(); });
+
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && openRow != null) {
       var t = e.target;
@@ -1578,6 +2031,13 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   /* ---- starting up -------------------------------------------------------- */
   function start() {
     mine = whoCanISee();
+    var sess = R.session() || {};
+    if (VIEWAS) {
+      /* only an administrator can view as a firm; anyone else simply gets their own screen */
+      var f0 = sess.platformAdmin ? FIRMS.filter(function (f) { return f.slug === VIEWAS.slug || f.key === VIEWAS.slug; })[0] : null;
+      if (f0) mine = [f0]; else VIEWAS = null;
+    }
+    var nva = el("nav-viewas"); if (nva) nva.hidden = !(sess.platformAdmin && !VIEWAS);
     if (!mine.length) {
       el("rail").hidden = true;
       document.body.classList.add("as-noshell");
@@ -1619,15 +2079,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
 
     document.querySelectorAll(".hq nav button[data-hq]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        document.querySelectorAll(".hq nav button[data-hq]").forEach(function (o) {
-          o.removeAttribute("aria-current");
-        });
-        b.setAttribute("aria-current", "page");
-        pane = b.getAttribute("data-hq");
-        shut();
-        paint();
-      });
+      b.addEventListener("click", function () { goPane(b.getAttribute("data-hq")); });
     });
 
     el("as-out").addEventListener("click", function () {
@@ -1652,6 +2104,15 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     document.documentElement.setAttribute("data-season", "december");
   }
 
+  /* One sign-in for resources.mismo.org: someone already signed in on another MISMO tool (MISMO staff
+     in the CMS) is signed in here too, as themselves. */
+  try {
+    if (!sessionStorage.getItem("resources:service-orders:session")) {
+      var site = JSON.parse(localStorage.getItem("resources:session") || "null");
+      if (site && site.token && (!site.expiresAt || new Date(site.expiresAt).getTime() > Date.now()))
+        sessionStorage.setItem("resources:service-orders:session", JSON.stringify(site));
+    }
+  } catch (e1) {}
   Promise.resolve(R.boot()).then(function () {
     if (R.signedIn()) start(); else gate("");
   })["catch"](function () { gate(""); });
