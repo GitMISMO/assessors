@@ -474,6 +474,7 @@ body.as-noshell .railscrim{display:none}
 .vas{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .va-card{display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;text-decoration:none;color:var(--ink)}
 .va-card:hover{border-color:var(--sky)}
+.va-card .mono{color:#fff !important}
 .va-card b{font-size:16px}.va-card span{font-size:12.5px;font-weight:700;color:var(--navy-mid)}
 :root[data-theme="dark"] .tag.cal,:root[data-theme="dark"] .mv-go,:root[data-theme="dark"] .ag-when,:root[data-theme="dark"] .cyc-open,:root[data-theme="dark"] .va-card span{color:var(--sky)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.cal,:root:not([data-theme="light"]) .mv-go,:root:not([data-theme="light"]) .ag-when,:root:not([data-theme="light"]) .cyc-open,:root:not([data-theme="light"]) .va-card span{color:var(--sky)}}
@@ -1726,8 +1727,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return '<div class="pg-h"><div><h1>View As</h1><p>See a firm’s own screen, drawn from its real records, exactly as its assessors see it. ' +
       "<b>Nothing you press while you are in it saves anything.</b></p></div></div>" +
       '<div class="vas">' + FIRMS.map(function (f) {
-        return '<a class="va-card" href="?viewas=' + esc(f.slug) + '">' + mono(f.slug) + "<b>" + esc(f.slug.charAt(0).toUpperCase() + f.slug.slice(1)) +
-          "</b><span>Open Their Screen</span></a>";
+        var nm = { falcon: "Falcon Capital Advisors", actualize: "Actualize Consulting", vianteye: "Viant Eye" }[f.slug] || f.slug;
+        return '<a class="va-card" href="?viewas=' + esc(f.slug) + '">' + mono(nm) + "<b>" + esc(nm) +
+          "</b><span>Open Their Screen \u2192</span></a>";
       }).join("") + "</div>";
   }
 
@@ -2055,7 +2057,15 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     el("as-out").hidden = false;
 
     var pw = el("as-pickwrap");
-    if (mine.length > 1) {
+    /* MISMO's administrators see a firm through View As, not a firm list (Jonna, 31 Oct 2026). Their own
+       screen is the View As chooser; the firm list remains only for an assessor who works for two firms. */
+    var adminHome = !!(sess.platformAdmin && !VIEWAS);
+    if (adminHome) {
+      pw.hidden = true;
+      document.querySelectorAll(".hq nav button[data-hq]").forEach(function (b) {
+        var k = b.getAttribute("data-hq"); b.hidden = !(k === "viewas" || k === "help");
+      });
+    } else if (mine.length > 1) {
       pw.hidden = false;
       el("as-pick").innerHTML = mine.map(function (f) {
         return '<option value="' + esc(f.key) + '">' + esc(f.slug) + "</option>";
@@ -2092,6 +2102,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     try { want = new URLSearchParams(location.search).get("firm"); } catch (e) {}
     var first = mine.filter(function (f) { return want && (f.slug === want || f.key === want); })[0] || mine[0];
     if (el("as-pick") && mine.length > 1) el("as-pick").value = first.key;
+    if (adminHome) { goPane("viewas"); return; }
     loadFirm(first);
   }
 
