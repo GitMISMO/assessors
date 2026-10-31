@@ -31,6 +31,11 @@
 .as-tag.cool{background:var(--surface-3);color:var(--ink-2)}
 
 .as-wrap{padding:26px 30px 90px}
+.as-doccyc{margin:14px 0 4px;font-size:13px;color:var(--ink)}
+.as-doccyc span{color:var(--ink-3);font-size:12px;margin-left:6px}
+.as-docs{list-style:none;margin:0;padding:0;border-top:1px solid var(--border)}
+.as-docs li{padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;overflow-wrap:anywhere}
+.as-docs li small{color:var(--ink-3);margin-left:6px;white-space:nowrap}
 .as-pane{display:none}
 .as-pane.on{display:block}
 .as-h2{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:-.014em;
@@ -637,6 +642,11 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   /* Approved and with MISMO's licensing step. It stays on the board only while the
      firm still has to invoice for it. */
   function showToFirm(e) { return !e.done || e.assessorFee == null; }
+  /* A certification that has closed - certified, not certified, canceled, or an application that
+     expired - is finished: it is never Coming to You (Jonna, 31 Oct 2026). One the firm worked
+     and has not invoiced for yet stays in its queue, as before. */
+  var CLOSED = ["Certified", "NotCertified", "Canceled", "ApplicationExpired"];
+  function closed(e) { return CLOSED.indexOf(e.state) >= 0; }
   /* Already worked by this firm: the demonstration or review has happened, or it has scored or
      recorded findings against it. When one of these is waiting on somebody else it stays in the
      firm's To Do (it is the firm's engagement, in flight); Coming to You is only for engagements
@@ -650,9 +660,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 
   function em(n, late) { return "<em" + (late ? ' class="hl-late"' : "") + ">" + n + "</em>"; }
 
-  function headline(mine, withMe, others, blocked, inFlight) {
+  function headline(mine, withMe, others, blocked, inFlight, everything) {
     inFlight = inFlight || [];
-    var invoiced = mine.filter(function (e) { return e.assessorFee != null; });
+    var invoiced = (everything || mine).filter(function (e) { return e.assessorFee != null; });
     var feeTotal = invoiced.reduce(function (t, e) { return t + (e.assessorFee || 0); }, 0);
     var name = esc((book && book.firm) || (current && current.slug) || "your firm");
 
@@ -688,7 +698,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
           tile(others.length, "Coming to You", "not started yet") +
           (blocked.length ? tile(blocked.length, "Waiting on MISMO", "script not sent", true) : "") +
           tile(money(feeTotal) || "$0", "Invoiced",
-               "across " + invoiced.length + " of " + mine.length + " engagements") +
+               "across " + invoiced.length + " engagement" + (invoiced.length === 1 ? "" : "s")) +
         "</div>" +
       "</div></div>";
   }
@@ -876,11 +886,13 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var withMe = all.filter(isMine);
     var blocked = all.filter(function (e) { return !!e.scriptOutstanding; });
     var notMine = all.filter(function (e) { return !isMine(e) && !e.scriptOutstanding; }).filter(showToFirm);
-    var inFlight = notMine.filter(worked);
-    var others = notMine.filter(function (e) { return !worked(e); });
+    var inFlight = notMine.filter(function (e) { return worked(e) && (!closed(e) || (e.assessorFee == null && (e.done || countFindings(e.row) > 0 || (e.prelim && e.prelim.scored)))); });
+    var others = notMine.filter(function (e) { return !worked(e) && !closed(e); });
     var progs = (book.programs || []).join(", ");
 
-    var out = headline(all, withMe, others, blocked, inFlight);
+    /* "out of N on the board" counts the engagements shown on it, not ones that have left it
+       (Jonna, 31 Oct 2026: Actualize said 4 with 3 on screen). */
+    var out = headline(withMe.concat(blocked, inFlight, others), withMe, others, blocked, inFlight, all);
 
     out += '<div class="asb-panel"><div class="phead"><div><h2>To Do</h2>' +
       '<p class="psub">Engagements where the next move is yours.' +
@@ -1053,6 +1065,40 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
           (x.completedRenewals === 1 ? "" : "s") : "") +
         (x.status ? " · " + esc(x.status) : "") + "</span></div>";
     }).join("") + "</div>";
+  }
+
+  /* The company's own folder in the MISMO Certifications team's SharePoint (Jonna, 31 Oct 2026):
+     its earlier certification scripts, questionnaires and evidence, one group per cycle, newest
+     first. The names come in this firm's file; each opens in SharePoint, for anyone in the MISMO
+     Certifications team. */
+  function docCount(e) {
+    var d = e.documents;
+    if (!d || !d.cycles) return 0;
+    return d.cycles.reduce(function (t, c) { return t + (c.files || []).length; }, 0);
+  }
+  function spUrl(base, path, file) {
+    var full = String(base || "") + path + (file ? "/" + file : "");
+    var u = full.split("/").map(function (seg, i) { return i < 3 ? seg : encodeURIComponent(seg); }).join("/");
+    return file && /\.(docx?|xlsx?|pptx?)$/i.test(file) ? u + "?web=1" : u;
+  }
+  function documents(e) {
+    var d = e.documents;
+    if (!d || !d.cycles || !d.cycles.length) {
+      return '<p class="as-note">No folder for ' + esc(e.org || "this company") + " in the " + esc(e.program || "") +
+        " certification documents yet.</p>";
+    }
+    var out = '<p class="as-note">From ' + esc(e.org || "the company") + "\u2019s " + esc(e.program || "") +
+      ' folder in the MISMO Certifications team. Each opens in SharePoint. <a href="' + esc(spUrl(d.base, d.folder)) +
+      '" target="_blank" rel="noopener">Open the whole folder</a></p>';
+    d.cycles.forEach(function (c) {
+      out += '<div class="as-doccyc"><b>' + esc(c.name || "In the folder itself") + "</b> <span>" + c.files.length +
+        (c.files.length === 1 ? " file" : " files") + "</span></div><ul class=\"as-docs\">" +
+        c.files.map(function (f) {
+          return '<li><a href="' + esc(spUrl(d.base, d.folder + (c.name ? "/" + c.name : ""), f[0])) + '" target="_blank" rel="noopener">' +
+            esc(f[0]) + "</a>" + (f[2] ? " <small>" + esc(day(f[2]) || f[2]) + "</small>" : "") + "</li>";
+        }).join("") + "</ul>";
+    });
+    return out;
   }
 
   function findingsBody(e) {
@@ -1258,6 +1304,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         sec("qa", "What the Applicant Told Us", qn ? qn + " answers" : "none", questionnaire(e)) +
         sec("hist", "Earlier Certifications",
             (Array.isArray(e.history) ? e.history.length : 0) || null, history(e)) +
+        sec("docs", "Certification Documents", docCount(e) || null, documents(e)) +
         sec("find", "Findings", countFindings(e.row) || null, findingsBody(e)) +
       "</div>";
   }
@@ -1588,7 +1635,12 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       location.reload();
     });
 
-    loadFirm(mine[0]);
+    /* ?firm=falcon opens that firm's portal (the CMS's view of a firm, 31 Oct 2026) */
+    var want = null;
+    try { want = new URLSearchParams(location.search).get("firm"); } catch (e) {}
+    var first = mine.filter(function (f) { return want && (f.slug === want || f.key === want); })[0] || mine[0];
+    if (el("as-pick") && mine.length > 1) el("as-pick").value = first.key;
+    loadFirm(first);
   }
 
   /* what the rail's search reads, and how it opens what it finds */
