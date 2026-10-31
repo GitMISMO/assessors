@@ -1390,7 +1390,13 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   function docCount(e) {
     var d = e.documents, n = upsFor(e).length;
     if (d && d.cycles) n += d.cycles.reduce(function (t, c) { return t + (c.files || []).length; }, 0);
+    if (d && d.macts) n += d.macts.length;
     return n;
+  }
+  function mUrl(d, m) {
+    var full = String(d.mactsBase || "https://mortgagebankersassociation.sharepoint.com") + m.path;
+    var u = full.split("/").map(function (seg, i) { return i < 3 ? seg : encodeURIComponent(seg); }).join("/");
+    return /\.(docx?|xlsx?|pptx?)$/i.test(m.name || "") ? u + "?web=1" : u;
   }
   function fileRow(href, name, meta) {
     return '<a class="dl" href="' + esc(href) + '" target="_blank" rel="noopener">' + fileIcon(name) +
@@ -1408,6 +1414,11 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     mineCyc.forEach(function (c) {
       c.files.forEach(function (f) { here.push(fileRow(spUrl(d.base, folder + "/" + c.name, f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : "")); });
     });
+    /* the same company's documents from the MACTS record (applications, questionnaires, reports),
+       31 Oct 2026: Jonna asked that every assessor has its engagements' past documents, organized */
+    var macts = (d.macts || []).slice(), mineM = macts.filter(function (m) { return isThisCycle(e, m.cycle); });
+    mineM.forEach(function (m) { here.push(fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS"))); });
+    macts = macts.filter(function (m) { return mineM.indexOf(m) < 0; });
     var out = '<div class="cyc now"><div class="cyc-h"><b>This ' + (e.kind === "renewal" ? "Renewal" : "Certification") + "</b><span>" + esc(cyc.replace(/\s*-\s*/, " ")) + "</span>" +
       '<a class="cyc-open" href="' + esc(spUrl(SITE_DOCS, folder + "/" + cyc)) + '" target="_blank" rel="noopener">Open the folder</a></div>' +
       (here.length ? '<div class="dls">' + here.join("") + "</div>" : '<p class="fine">Nothing here yet for this ' + (e.kind === "renewal" ? "renewal" : "certification") + ".</p>");
@@ -1420,12 +1431,22 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         '<div class="upsay" id="up-' + esc(e.row) + '"></div>';
     }
     out += "</div>";
-    if (rest.length) {
-      out += '<div class="cyc-sub">Earlier Cycles</div>' + rest.map(function (c) {
-        return '<div class="cyc"><div class="cyc-h"><b>' + esc(String(c.name || "In the Folder Itself").replace(/\s*-\s*(\d)/, " $1")) + "</b><span>" + c.files.length +
-          (c.files.length === 1 ? " file" : " files") + '</span><a class="cyc-open" href="' + esc(spUrl(d.base, folder + (c.name ? "/" + c.name : ""))) +
-          '" target="_blank" rel="noopener">Open the folder</a></div><div class="dls">' +
-          c.files.map(function (f) { return fileRow(spUrl(d.base, folder + (c.name ? "/" + c.name : ""), f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : ""); }).join("") +
+    /* earlier cycles: the library's cycle folders and the MACTS documents, side by side per cycle */
+    var groups = {}, order = [];
+    function gk(n) { var t = String(n || ""), m = t.match(/renewal\s*-?\s*(\d+)/i); return m ? "r" + (+m[1]) : /initial/i.test(t) ? "i" : t ? "x" + t.toLowerCase() : "z"; }
+    function gn(n) { var t = String(n || ""), m = t.match(/renewal\s*-?\s*(\d+)/i); return m ? "Renewal " + (+m[1]) : /initial/i.test(t) ? "Initial" : t || "Other Documents"; }
+    function rank(k) { return k.charAt(0) === "r" ? 1000 + (+k.slice(1)) : k === "i" ? 500 : k === "z" ? 0 : 100; }
+    rest.forEach(function (c) { var k = gk(c.name); if (!groups[k]) { groups[k] = { title: gn(c.name), sp: [], m: [] }; order.push(k); } groups[k].sp.push(c); });
+    macts.forEach(function (m) { var k = gk(m.cycle); if (!groups[k]) { groups[k] = { title: gn(m.cycle), sp: [], m: [] }; order.push(k); } groups[k].m.push(m); });
+    order.sort(function (a, b) { return rank(b) - rank(a); });
+    if (order.length) {
+      out += '<div class="cyc-sub">Earlier Cycles</div>' + order.map(function (k) {
+        var g = groups[k], n = g.m.length + g.sp.reduce(function (t, c) { return t + c.files.length; }, 0), c0 = g.sp[0];
+        return '<div class="cyc"><div class="cyc-h"><b>' + esc(g.title) + "</b><span>" + n + (n === 1 ? " file" : " files") + "</span>" +
+          (c0 ? '<a class="cyc-open" href="' + esc(spUrl(d.base, folder + (c0.name ? "/" + c0.name : ""))) + '" target="_blank" rel="noopener">Open the folder</a>' : "") +
+          '</div><div class="dls">' +
+          g.sp.map(function (c) { return c.files.map(function (f) { return fileRow(spUrl(d.base, folder + (c.name ? "/" + c.name : ""), f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : ""); }).join(""); }).join("") +
+          g.m.map(function (m) { return fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS")); }).join("") +
           "</div></div>";
       }).join("");
     }
