@@ -505,6 +505,41 @@ body.as-noshell .railscrim{display:none}
 .sc-found{font-family:var(--display);font-size:12.5px;color:var(--ink-3);margin:0 0 10px}
 .sc-nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
 @media(max-width:600px){.sc-f,.sc-ans,.sc-sec{margin-left:0}}
+.hc-prod{font-family:var(--display);font-size:13px;font-weight:700;color:var(--ink-2);margin:0 0 10px}
+.hc-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.hc-figs div{border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.hc-figs span{font-family:var(--display);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.hc-figs b{font-family:var(--display);font-size:20px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.hc-figs i{font-style:normal;font-family:var(--display);font-size:12px;color:var(--ink-3)}
+.hc-line{position:relative;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px;margin:0 0 14px}
+.hc-line:before{content:"";position:absolute;left:12%;right:12%;top:19px;height:2px;background:var(--border)}
+.hc-st{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;text-align:center}
+.hc-st:hover{border-color:var(--sky)}
+.hc-dot{width:12px;height:12px;border-radius:50%;background:var(--good);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--good);margin:0 0 6px}
+.hc-st.now .hc-dot{background:var(--sky);box-shadow:0 0 0 1px var(--sky)}
+.hc-st b{font-family:var(--display);font-size:13px;white-space:nowrap}
+.hc-st small{font-family:var(--display);font-size:11px;color:var(--ink-3);white-space:nowrap}
+.hc-st.on{background:var(--navy,#0d314c);border-color:var(--navy,#0d314c);color:#fff}
+.hc-st.on small{color:rgba(255,255,255,.78)}
+.hc-st.on .hc-dot{border-color:var(--navy,#0d314c)}
+.hc-d{border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:14px}
+.hc-d.now{border:2px solid var(--sky)}
+.hc-dh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:0 0 12px}
+.hc-dh b{display:block;font-family:var(--display);font-size:16px}
+.hc-dh span{font-family:var(--display);font-size:12.5px;color:var(--ink-3)}
+.hc-tag{flex:0 0 auto;padding:3px 9px;border-radius:5px;background:rgba(15,123,92,.1);color:var(--good)!important;font-weight:700;font-size:12px!important;white-space:nowrap}
+.hc-tag.live{background:rgba(116,191,235,.18);color:var(--navy-mid)!important}
+:root[data-theme="dark"] .hc-tag.live{color:var(--sky)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hc-tag.live{color:var(--sky)!important}}
+.hc-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hc-acts .as-go{white-space:nowrap;min-width:max-content}
+.hc-gap{height:22px}
+:root[data-theme="dark"] .hc-st.on{background:rgba(116,191,235,.2);border-color:var(--sky);box-shadow:inset 0 0 0 1px var(--sky)}
+:root[data-theme="dark"] .hc-st.on .hc-dot{border-color:transparent}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hc-st.on{background:rgba(116,191,235,.2);border-color:var(--sky);box-shadow:inset 0 0 0 1px var(--sky)}
+:root:not([data-theme="light"]) .hc-st.on .hc-dot{border-color:transparent}}
+@media(max-width:600px){.hc-figs{grid-template-columns:1fr 1fr}.hc-figs div:last-child{grid-column:1/-1}.hc-figs b{font-size:17px;white-space:nowrap}
+.hc-line{grid-template-columns:repeat(2,minmax(0,1fr))}.hc-line:before{display:none}}
 </style>
 </head>
 <body>
@@ -1400,17 +1435,76 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }).join("");
   }
 
+  /* Earlier Certifications: every cycle of this certification, the initial first, as a row of
+     stops. Pick one to see when it finished, how it came out and its documents; one this firm
+     also has in its list opens as its own engagement. (Jonna, 1 Nov 2026) */
+  var histSel = {};
+  function cycTitle(c) { return c.kind === "initial" ? "Initial Certification" : "Renewal " + (c.n != null ? c.n : ""); }
+  function cycShort(c) { return c.kind === "initial" ? "Initial" : "Renewal " + (c.n != null ? c.n : ""); }
+  function cycKey(c) { return c.kind === "initial" ? "i" : "r" + c.n; }
+  function agoWords(iso) {
+    var d = daysUntil(iso); if (d == null || isNaN(d)) return "";
+    d = -d; if (d < 45) return d + " days ago";
+    var m = Math.round(d / 30.4); if (m < 18) return m + " months ago";
+    var y = Math.round(d / 36.5) / 10; return y + " years ago";
+  }
+  function historyCount(e) {
+    return (Array.isArray(e.history) ? e.history : []).reduce(function (t, x) {
+      return t + (Array.isArray(x.cycles) ? x.cycles.filter(function (c) { return !c.now; }).length : 1); }, 0);
+  }
   function history(e) {
     var h = Array.isArray(e.history) ? e.history : [];
     if (!h.length) return '<p class="as-note">No earlier certification for this company in this program.</p>';
-    return '<div class="as-hist">' + h.map(function (x) {
-      return "<div><b>" + esc(x.program || "") +
-        (x.product ? " — " + esc(x.product) : "") + "</b>" +
-        "<span>first certified " + esc(day(x.originalCertifiedOn) || "not recorded") +
-        (x.completedRenewals != null ? " · " + x.completedRenewals + " renewal" +
-          (x.completedRenewals === 1 ? "" : "s") : "") +
-        (x.status ? " · " + esc(x.status) : "") + "</span></div>";
-    }).join("") + "</div>";
+    var d = e.documents || {}, folder = folderOf(e), eg = earlierGroups(e);
+    function rows(g) {
+      return g.sp.map(function (c) { return c.files.map(function (f) { return fileRow(spUrl(d.base, folder + (c.name ? "/" + c.name : ""), f[0]), f[0], f[2] ? esc(day(f[2]) || f[2]) : "", { k: "lib", f: folder, c: c.name || "", n: f[0], o: e.org }); }).join(""); }).join("") +
+        g.m.map(function (m) { return fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS"), mDoc(m)); }).join("");
+    }
+    function nFiles(g) { return g ? g.m.length + g.sp.reduce(function (t, c) { return t + c.files.length; }, 0) : 0; }
+    return h.map(function (x, pi) {
+      var cy = Array.isArray(x.cycles) ? x.cycles : [];
+      var done = cy.filter(function (c) { return !c.now && c.on; });
+      var last = done[done.length - 1];
+      var figs = '<div class="hc-figs">' +
+        '<div><span>First Certified</span><b>' + esc(day(x.originalCertifiedOn) || "Not Recorded") + "</b><i>" + esc(agoWords(x.originalCertifiedOn)) + "</i></div>" +
+        '<div><span>Renewals Completed</span><b>' + (x.completedRenewals != null ? x.completedRenewals : done.filter(function (c) { return c.kind !== "initial"; }).length) + "</b><i>" +
+          (done.length ? done.length + " certification" + (done.length === 1 ? "" : "s") + " in all" : "") + "</i></div>" +
+        '<div><span>Last Certified</span><b>' + esc(last ? day(last.on) : "Not Recorded") + "</b><i>" + esc(last ? cycShort(last) + " · " + agoWords(last.on) : "") + "</i></div>" +
+        "</div>";
+      var head = h.length > 1 || x.product ? '<div class="hc-prod">' + esc(x.program || "") + (x.product ? " — " + esc(x.product) : "") + "</div>" : "";
+      if (!cy.length) return head + figs + '<p class="as-note">The individual cycles are not on file for this certification.</p>';
+      var sk = e.row + "|" + pi, selK = histSel[sk];
+      if (!cy.some(function (c) { return cycKey(c) === selK; })) selK = cycKey(last || cy[cy.length - 1]);
+      var si = 0;
+      var steps = '<div class="hc-line" role="tablist" style="--n:' + cy.length + '">' + cy.map(function (c, ci) {
+        var k = cycKey(c), on = k === selK, n = c.now ? null : nFiles(eg.groups[k]);
+        if (on) si = ci;
+        return '<button type="button" role="tab" class="hc-st' + (on ? " on" : "") + (c.now ? " now" : "") + '" data-hcyc="' + esc(sk + "~" + k) + '">' +
+          '<span class="hc-dot"></span><b>' + esc(cycShort(c)) + "</b>" +
+          "<small>" + esc(c.now ? "This One" : day(c.on) || "") + "</small>" +
+          (n != null ? "<small>" + (n ? n + (n === 1 ? " file" : " files") : "No files") + "</small>" : "<small>Being Assessed</small>") +
+          "</button>";
+      }).join("") + "</div>";
+      var c = cy[si], g = eg.groups[cycKey(c)], other = !c.now && c.row != null && String(c.row) !== String(e.row) && byRow(c.row);
+      var detail = '<div class="hc-d' + (c.now ? " now" : "") + '"><div class="hc-dh"><div><b>' + esc(cycTitle(c)) + "</b><span>" +
+        (c.now ? "The " + (e.kind === "renewal" ? "renewal" : "certification") + " you are assessing now" :
+          "Certified " + esc(day(c.on) || "") + (agoWords(c.on) ? " · " + esc(agoWords(c.on)) : "")) + "</span></div>" +
+        '<span class="hc-tag' + (c.now ? " live" : "") + '">' + (c.now ? esc(e.stateLabel || "In Progress") : "Certified") + "</span></div>";
+      if (c.now) {
+        detail += '<p class="fine">Its documents, questionnaire and script are on this engagement’s own tabs.</p>' +
+          '<div class="hc-acts"><button class="as-go" type="button" data-ptab="docs">Open Its Documents</button>' +
+          '<button class="as-go ghost" type="button" data-ptab="overview">Back to Overview</button></div>';
+      } else {
+        detail += (g && nFiles(g) ? '<div class="dls">' + rows(g) + "</div>" : '<p class="fine">No documents from this cycle are on file.</p>') +
+          (other ? '<div class="hc-acts"><button class="as-go ghost" type="button" data-hopen="' + esc(c.row) + '">Open That Engagement</button></div>' : "");
+      }
+      var prev = cy[si - 1], next = cy[si + 1];
+      detail += '<div class="sc-nav">' +
+        (prev ? '<button class="as-go ghost" type="button" data-hcyc="' + esc(sk + "~" + cycKey(prev)) + '">← ' + esc(cycShort(prev)) + "</button>" : "<span></span>") +
+        (next ? '<button class="as-go ghost" type="button" data-hcyc="' + esc(sk + "~" + cycKey(next)) + '">' + esc(next.now ? "This One" : cycShort(next)) + " →</button>" : "<span></span>") +
+        "</div></div>";
+      return head + figs + steps + detail;
+    }).join('<div class="hc-gap"></div>');
   }
 
   /* ---- Documents, one area per renewal (Jonna, 31 Oct 2026: "make each organized to each renewal,
@@ -1500,6 +1594,22 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return '<a class="dl" href="' + esc(href) + '" target="_blank" rel="noopener"' + (doc ? " data-doc='" + esc(JSON.stringify(doc)) + "'" : "") + ">" + fileIcon(name) +
       '<span class="dl-n">' + esc(name) + "</span>" + (meta ? '<span class="dl-m">' + meta + "</span>" : "") + "</a>";
   }
+  /* The earlier cycles' documents, one group per cycle ("i" for the initial, "r2" for Renewal 2):
+     the library's cycle folders and the MACTS documents together. Used by Documents and by
+     Earlier Certifications. */
+  function earlierGroups(e, rest, macts) {
+    var d = e.documents || {};
+    if (!rest) rest = (d.cycles || []).filter(function (c) { return !isThisCycle(e, c.name); });
+    if (!macts) macts = (d.macts || []).filter(function (m) { return !isThisCycle(e, m.cycle); });
+    var groups = {}, order = [];
+    function gk(n) { var t = String(n || ""), m = t.match(/renewal\s*-?\s*(\d+)/i); return m ? "r" + (+m[1]) : /initial/i.test(t) ? "i" : t ? "x" + t.toLowerCase() : "z"; }
+    function gn(n) { var t = String(n || ""), m = t.match(/renewal\s*-?\s*(\d+)/i); return m ? "Renewal " + (+m[1]) : /initial/i.test(t) ? "Initial" : t || "Other Documents"; }
+    function rank(k) { return k.charAt(0) === "r" ? 1000 + (+k.slice(1)) : k === "i" ? 500 : k === "z" ? 0 : 100; }
+    rest.forEach(function (c) { var k = gk(c.name); if (!groups[k]) { groups[k] = { title: gn(c.name), sp: [], m: [] }; order.push(k); } groups[k].sp.push(c); });
+    macts.forEach(function (m) { var k = gk(m.cycle); if (!groups[k]) { groups[k] = { title: gn(m.cycle), sp: [], m: [] }; order.push(k); } groups[k].m.push(m); });
+    order.sort(function (a, b) { return rank(b) - rank(a); });
+    return { groups: groups, order: order };
+  }
   function documents(e) {
     var d = e.documents || {}, folder = folderOf(e), cyc = cycleName(e);
     var cycles = (d.cycles || []).slice();
@@ -1530,13 +1640,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     out += "</div>";
     /* earlier cycles: the library's cycle folders and the MACTS documents, side by side per cycle */
-    var groups = {}, order = [];
-    function gk(n) { var t = String(n || ""), m = t.match(/renewal\s*-?\s*(\d+)/i); return m ? "r" + (+m[1]) : /initial/i.test(t) ? "i" : t ? "x" + t.toLowerCase() : "z"; }
-    function gn(n) { var t = String(n || ""), m = t.match(/renewal\s*-?\s*(\d+)/i); return m ? "Renewal " + (+m[1]) : /initial/i.test(t) ? "Initial" : t || "Other Documents"; }
-    function rank(k) { return k.charAt(0) === "r" ? 1000 + (+k.slice(1)) : k === "i" ? 500 : k === "z" ? 0 : 100; }
-    rest.forEach(function (c) { var k = gk(c.name); if (!groups[k]) { groups[k] = { title: gn(c.name), sp: [], m: [] }; order.push(k); } groups[k].sp.push(c); });
-    macts.forEach(function (m) { var k = gk(m.cycle); if (!groups[k]) { groups[k] = { title: gn(m.cycle), sp: [], m: [] }; order.push(k); } groups[k].m.push(m); });
-    order.sort(function (a, b) { return rank(b) - rank(a); });
+    var eg = earlierGroups(e, rest, macts), groups = eg.groups, order = eg.order;
     if (order.length) {
       out += '<div class="cyc-sub">Earlier Cycles</div>' + order.map(function (k) {
         var g = groups[k], n = g.m.length + g.sp.reduce(function (t, c) { return t + c.files.length; }, 0), c0 = g.sp[0];
@@ -1792,7 +1896,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var e = byRow(openRow);
     if (!e) { openRow = null; drawPanel(); return; }
     var qn = (Array.isArray(e.answers) ? e.answers.length : 0);
-    var hn = Array.isArray(e.history) ? e.history.length : 0;
+    var hn = historyCount(e);
     var tabs = [["overview", "Overview", isMine(e) ? "your move" : ""], ["docs", "Documents", docCount(e) || ""],
       ["qa", "Questionnaire", qn || ""], ["hist", "Earlier Certifications", hn || ""], ["find", "Findings", countFindings(e.row) || ""]];
     var csx = e.certificationScript;
@@ -1994,8 +2098,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "the way the company filled them in. Each section opens on its own so you can read one " +
       "part at a time. An unanswered question shows as <i>No answer given</i> rather than being " +
       "left out, because a question the company skipped is worth seeing.</p>" +
-      "<p><b>Earlier Certifications</b> lists what this company was certified for before and " +
-      "when. On a renewal this is how you judge the current cycle against the last one.</p>" +
+      "<p><b>Earlier Certifications</b> shows every cycle of the certification, the initial first. " +
+      "Pick one to see when it was certified and its documents, so you can judge this renewal against the last one.</p>" +
 
       "<h3>Signing In</h3>" +
       "<p>Your account is created by MISMO and carries only your firm. A session lasts four " +
@@ -2107,6 +2211,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     if ((c = t.closest("[data-ef]"))) { engFilter = c.getAttribute("data-ef"); paint(); return; }
     if ((c = t.closest("[data-scs]"))) { scrSel[openRow] = +c.getAttribute("data-scs"); scrQ = ""; drawPanel(); var pb0 = document.querySelector(".as-pb"); if (pb0) pb0.scrollTop = 0; return; }
+    if ((c = t.closest("[data-hcyc]"))) { var hv = c.getAttribute("data-hcyc").split("~"); histSel[hv[0]] = hv[1]; var pbs = document.querySelector(".as-pb"), st = pbs ? pbs.scrollTop : 0; drawPanel(); pbs = document.querySelector(".as-pb"); if (pbs) pbs.scrollTop = st; return; }
+    if ((c = t.closest("[data-hopen]"))) { open(+c.getAttribute("data-hopen") || c.getAttribute("data-hopen")); return; }
     if ((c = t.closest("[data-ptab]"))) { ptab = c.getAttribute("data-ptab"); drawPanel(); var pb = document.querySelector(".as-pb"); if (pb) pb.scrollTop = 0; return; }
     if ((c = t.closest("[data-uppick]"))) { var fi = document.querySelector('[data-upfile="' + c.getAttribute("data-uppick") + '"]'); if (fi) fi.click(); return; }
     if ((c = t.closest("[data-scriptdl]"))) { downloadScript(c); return; }
