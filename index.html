@@ -479,6 +479,32 @@ body.as-noshell .railscrim{display:none}
 :root[data-theme="dark"] .tag.cal,:root[data-theme="dark"] .mv-go,:root[data-theme="dark"] .ag-when,:root[data-theme="dark"] .cyc-open,:root[data-theme="dark"] .va-card span{color:var(--sky)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.cal,:root:not([data-theme="light"]) .mv-go,:root:not([data-theme="light"]) .ag-when,:root:not([data-theme="light"]) .cyc-open,:root:not([data-theme="light"]) .va-card span{color:var(--sky)}}
 .dl.opening{opacity:.6;cursor:progress}
+/* the certification script on screen (2 Nov 2026) */
+.sc-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sc-acts .as-go,.sc-top .as-go,.sc-nav .as-go{white-space:nowrap;min-width:max-content}
+.sc-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.sc-top b{display:block;font-family:var(--display);font-size:15px}
+.sc-top span{font-family:var(--display);font-size:12.5px;color:var(--ink-3)}
+.sc-q{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:8px 11px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink);margin:0 0 12px}
+.sc-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.sc-t{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 11px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;text-align:left}
+.sc-t b{font-family:var(--display);font-size:12.5px} .sc-t small{font-family:var(--display);font-size:10.5px;color:var(--ink-3)}
+.sc-t:hover{border-color:var(--sky)}
+.sc-t.on{background:var(--navy,#0d314c);border-color:var(--navy,#0d314c);color:#fff} .sc-t.on small{color:rgba(255,255,255,.75)}
+.sc-i{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin:0 0 10px;background:var(--surface)}
+.sc-ih{display:flex;gap:10px;align-items:flex-start}
+.sc-ih b{font-family:var(--display);font-size:13.5px;line-height:1.5}
+.sc-n{flex:0 0 auto;min-width:26px;height:22px;padding:0 5px;border-radius:5px;background:var(--surface-3);color:var(--ink-2);font-family:var(--display);font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.sc-sec{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:6px 0 0 36px}
+.sc-f,.sc-ans{margin:8px 0 0 36px}
+.sc-f span,.sc-ans span{display:block;font-family:var(--display);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+.sc-f p,.sc-ans p{margin:0;font-family:var(--display);font-size:13px;line-height:1.55;color:var(--ink-2);white-space:pre-line}
+.sc-ans{padding:9px 11px;border-radius:6px;background:rgba(15,123,92,.08);border-left:3px solid var(--good)}
+.sc-ans span{color:var(--good)} .sc-ans p{color:var(--ink)}
+.sc-ans.none{background:rgba(162,112,26,.1);border-left-color:var(--warn)} .sc-ans.none span{color:var(--warn)}
+.sc-found{font-family:var(--display);font-size:12.5px;color:var(--ink-3);margin:0 0 10px}
+.sc-nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+@media(max-width:600px){.sc-f,.sc-ans,.sc-sec{margin-left:0}}
 </style>
 </head>
 <body>
@@ -1282,10 +1308,10 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         ", prepared by MISMO on " + esc(day(cs.sentOn) || "") +
         (cs.of ? ", with " + esc(cs.filled || 0) + " of " + esc(cs.of) + " of the company\u2019s answers filled in" +
           (cs.filled < cs.of ? " (the rest are marked to ask at the demonstration)" : "") : "") +
-        ". Score it in the Pass/Fail column and send the completed workbook to " +
+        ". Read it on screen under Certification Script; when you score it, use the Excel copy and send it to " +
         '<a href="mailto:certifications@mismo.org">certifications@mismo.org</a>.</p>' +
-        '<button class="as-go ghost" type="button" data-scriptdl="' + esc(e.row) + '" style="margin-top:10px">' +
-        "Download Certification Script</button></div>";
+        '<div class="sc-acts">' + (cs.sheets && cs.sheets.length ? '<button class="as-go" type="button" data-ptab="script">Open the Certification Script</button>' : "") +
+        '<button class="as-go ghost" type="button" data-scriptdl="' + esc(e.row) + '">Download as Excel</button></div></div>';
     }
     if (!(e.prelim && e.prelim.total)) {
       out += '<p class="as-note">MISMO has not authored a certification script for this ' +
@@ -1293,6 +1319,50 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         "box at the foot of this panel is how you record what you found in the meantime.</p>";
     }
     return out;
+  }
+
+  /* The certification script on screen (Jonna, 2 Nov 2026: "why do i need to download the cert script why can
+     it just be viewable"). One section at a time, chosen from buttons; each item with its test scenario,
+     what passes, the evidence asked for, and the company's own answer where MISMO maps one. A search runs
+     across every section. The Excel copy is still there for scoring. */
+  var scrSel = {}, scrQ = "";
+  function scriptTab(e) {
+    var cs = e.certificationScript || {}, sh = cs.sheets || [];
+    if (!sh.length) return '<p class="as-note">The certification script is not ready yet.</p>';
+    var cur = Math.min(scrSel[e.row] || 0, sh.length - 1), q = scrQ.trim().toLowerCase();
+    var total = sh.reduce(function (t, s) { return t + s.items.length; }, 0);
+    var mapped = 0, answered = 0;
+    sh.forEach(function (s) { s.items.forEach(function (it) { if (it.ans !== undefined) { mapped++; if (it.ans) answered++; } }); });
+    function tx(v) { return esc(String(v || "").replace(/\n\s*\n/g, "\n")); }
+    function hay(it) { return [it.q, it.scenario, it.criterion, it.evidence, it.ans].join(" ").toLowerCase(); }
+    function item(it, secName) {
+      return '<div class="sc-i"><div class="sc-ih"><span class="sc-n">' + it.n + "</span><b>" + esc(it.q) + "</b></div>" +
+        (secName ? '<div class="sc-sec">' + esc(secName) + "</div>" : "") +
+        (it.scenario ? '<div class="sc-f"><span>Test Scenario</span><p>' + tx(it.scenario) + "</p></div>" : "") +
+        (it.criterion ? '<div class="sc-f"><span>What Passes</span><p>' + tx(it.criterion) + "</p></div>" : "") +
+        (it.evidence ? '<div class="sc-f"><span>Evidence</span><p>' + tx(it.evidence) + "</p></div>" : "") +
+        (it.ans !== undefined ? '<div class="sc-ans' + (it.ans ? "" : " none") + '"><span>' + (it.ans ? "The Company\u2019s Answer" : "No Answer on File") + "</span><p>" +
+          tx(it.ans || "The company did not answer this one. Ask at the demonstration.") + "</p></div>" : "") +
+        "</div>";
+    }
+    var head = '<div class="sc-top"><div><b>' + total + " items in " + sh.length + " sections</b><span>" + (mapped ? answered + " of " + mapped + " of the company\u2019s answers filled in" : "") +
+      (cs.sentOn ? " \u00b7 prepared " + esc(day(cs.sentOn)) : "") + "</span></div>" +
+      (cs.file ? '<button class="as-go ghost" type="button" data-scriptdl="' + esc(e.row) + '">Download as Excel</button>' : "") + "</div>" +
+      '<input class="sc-q" type="search" data-scq placeholder="Search the whole script" value="' + esc(scrQ) + '">';
+    if (q) {
+      var hits = [];
+      sh.forEach(function (s) { s.items.forEach(function (it) { if (hay(it).indexOf(q) >= 0) hits.push(item(it, s.name)); }); });
+      return head + '<div class="sc-found">' + hits.length + (hits.length === 1 ? " item matches" : " items match") + "</div>" + (hits.join("") || '<p class="as-note">Nothing in the script matches that.</p>');
+    }
+    var s0 = sh[cur];
+    return head + '<div class="sc-tabs">' + sh.map(function (s, i) {
+        var a = s.items.filter(function (it) { return it.ans !== undefined; }).length;
+        return '<button type="button" class="sc-t' + (i === cur ? " on" : "") + '" data-scs="' + i + '"><b>' + esc(s.name) + "</b><small>" + s.items.length + (a ? " \u00b7 " + a + " answered" : "") + "</small></button>";
+      }).join("") + "</div>" +
+      (cs.exclusions && /attest/i.test(s0.name) ? '<div class="sc-ans"><span>The Company\u2019s Exclusions</span><p>' + esc(cs.exclusions) + "</p></div>" : "") +
+      s0.items.map(function (it) { return item(it, ""); }).join("") +
+      '<div class="sc-nav">' + (cur > 0 ? '<button class="as-go ghost" type="button" data-scs="' + (cur - 1) + '">\u2190 ' + esc(sh[cur - 1].name) + "</button>" : "<span></span>") +
+      (cur < sh.length - 1 ? '<button class="as-go" type="button" data-scs="' + (cur + 1) + '">' + esc(sh[cur + 1].name) + " \u2192</button>" : "") + "</div>";
   }
 
   function questionnaire(e) {
@@ -1725,10 +1795,12 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var hn = Array.isArray(e.history) ? e.history.length : 0;
     var tabs = [["overview", "Overview", isMine(e) ? "your move" : ""], ["docs", "Documents", docCount(e) || ""],
       ["qa", "Questionnaire", qn || ""], ["hist", "Earlier Certifications", hn || ""], ["find", "Findings", countFindings(e.row) || ""]];
+    var csx = e.certificationScript;
+    if (csx && csx.sheets && csx.sheets.length) tabs.splice(1, 0, ["script", "Certification Script", csx.sheets.reduce(function (t, s) { return t + s.items.length; }, 0)]);
     if (!tabs.some(function (t) { return t[0] === ptab; })) ptab = "overview";
     p.className = "as-panel on" + (wide ? " wide" : "");
     el("as-scrim").className = "as-scrim on";
-    var body = ptab === "docs" ? documents(e) : ptab === "qa" ? questionnaire(e) : ptab === "hist" ? history(e) : ptab === "find" ? findingsBody(e) :
+    var body = ptab === "script" ? scriptTab(e) : ptab === "docs" ? documents(e) : ptab === "qa" ? questionnaire(e) : ptab === "hist" ? history(e) : ptab === "find" ? findingsBody(e) :
       stepper(e) +
       (isMine(e) ? '<div class="nextbox"><span class="mv-k">Your next step</span><b>' + esc(nextStepText(e) || "Your move") + "</b>" +
         (e.demoOn ? "<i>" + esc(day(e.demoOn)) + " · " + esc(whenWords(daysUntil(demoDay(e)))) + "</i>" : "") + "</div>" :
@@ -2012,6 +2084,15 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }).then(function () { btn.disabled = false; btn.textContent = label; });
   }
 
+  document.addEventListener("input", function (ev) {
+    var t = ev.target;
+    if (!t || !t.hasAttribute || !t.hasAttribute("data-scq")) return;
+    scrQ = t.value;
+    var pos = t.selectionStart;
+    drawPanel();
+    var i = document.querySelector("[data-scq]");
+    if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch (x) {} }
+  });
   document.addEventListener("click", function (ev) {
     var t = ev.target;
     if (!t || !t.closest) return;
@@ -2025,6 +2106,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       return;
     }
     if ((c = t.closest("[data-ef]"))) { engFilter = c.getAttribute("data-ef"); paint(); return; }
+    if ((c = t.closest("[data-scs]"))) { scrSel[openRow] = +c.getAttribute("data-scs"); scrQ = ""; drawPanel(); var pb0 = document.querySelector(".as-pb"); if (pb0) pb0.scrollTop = 0; return; }
     if ((c = t.closest("[data-ptab]"))) { ptab = c.getAttribute("data-ptab"); drawPanel(); var pb = document.querySelector(".as-pb"); if (pb) pb.scrollTop = 0; return; }
     if ((c = t.closest("[data-uppick]"))) { var fi = document.querySelector('[data-upfile="' + c.getAttribute("data-uppick") + '"]'); if (fi) fi.click(); return; }
     if ((c = t.closest("[data-scriptdl]"))) { downloadScript(c); return; }
