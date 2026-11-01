@@ -1261,7 +1261,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "Availability from " + (book.firm || ""), doc, 3)).then(function () {
       avail = doc; availDraft = null; paint();
       var s2 = el("av-say"); if (s2) { s2.className = "as-say ok"; s2.textContent = "Saved. Booking pages show these times within half an hour."; }
-    })["catch"](function (err) { say.className = "as-say bad"; say.textContent = (err && err.message) || "That did not save."; });
+    })["catch"](function (err) { say.className = "as-say bad"; say.textContent = saveSays(err, "Your availability"); });
   }
 
   function paneFound() {
@@ -1654,6 +1654,15 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     return out;
   }
+  /* What a refused save says (1 Nov 2026 stress test: an assessor saw the relay's bare code "REFUSED").
+     A code or a single word becomes a plain sentence; a sentence from the relay is kept as it is. */
+  function saveSays(err, what) {
+    var m = err && err.message ? String(err.message) : "";
+    if (err && err.readOnly) return m;
+    if (err && err.closed) return "Your sign-in has run out or does not allow this. Sign in again, then try once more.";
+    if (!m || /^[\w.-]+$/.test(m) || /^relay \d+$/.test(m)) return (what || "That") + " did not save. Try again in a minute; if it keeps happening, email certifications@mismo.org." + (m ? " (" + m + ")" : "");
+    return m;
+  }
   function upSay(row, cls, text) { var s = el("up-" + row); if (s) { s.className = "upsay " + (cls || ""); s.textContent = text; } }
   function uploadFiles(row, files) {
     var e = byRow(row);
@@ -1710,7 +1719,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       });
     })["catch"](function (err) {
       upBusy[row] = false;
-      var msg = (err && err.message) || "The upload did not finish.";
+      var msg = saveSays(err, "The upload");
       keep()["catch"](function () {}).then(function () { upSay(row, "bad", msg + (done ? " " + done + " file" + (done === 1 ? " was" : "s were") + " saved first." : "")); });
     });
   }
@@ -1792,7 +1801,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       steps.entries = steps.entries.concat([entry]);
       openSecs.steps = true;
       drawPanel();
-    })["catch"](function (err) { if (btn) btn.disabled = false; bad((err && err.message) || "That did not save."); });
+    })["catch"](function (err) { if (btn) btn.disabled = false; bad(saveSays(err)); });
   }
   function stepsBody(e) {
     return stepsCore(e) + noteForm(e);
@@ -1883,7 +1892,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       steps.entries = steps.entries.concat([entry]);
       openSecs.steps = true;
       drawPanel();
-    })["catch"](function (err) { if (btn) btn.disabled = false; bad((err && err.message) || "That did not save."); });
+    })["catch"](function (err) { if (btn) btn.disabled = false; bad(saveSays(err)); });
   }
 
   /* One engagement at a time, in the panel on the right. Its parts are tabs rather than folded
@@ -2160,7 +2169,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     })["catch"](function (err) {
       if (btn) btn.disabled = false;
       var s3 = el("fs-" + row);
-      if (s3) { s3.className = "as-say bad"; s3.textContent = (err && err.message) ? err.message : "That did not save."; }
+      if (s3) { s3.className = "as-say bad"; s3.textContent = saveSays(err, "The finding"); }
     });
   }
 
