@@ -740,6 +740,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   var answers = null;   /* engagements/<firm>-inbox.json: what MISMO's board did with each */
   var avail = null;     /* notify/assessment/availability.json: the firm's own open times */
   var availDraft = null;/* the availability being edited, before it is saved */
+  var availFrom = null; /* the times as they were when that editing began (November 5, 2026) */
   var openRow = null;   /* the engagement in the panel, if any */
   var openSecs = { find: true };  /* which panel sections are open */
   var openQ = {};       /* which questionnaire sections are open */
@@ -1220,7 +1221,10 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       out += ((saved.blocked || []).length ? '<p class="fine">Not available: ' + esc(saved.blocked.map(function (x) { return day(x); }).join(", ")) + "</p>" : "") + "</section>";
       return out;
     }
-    if (!availDraft) availDraft = { windows: a.windows.map(function (w) { return { day: w.day, from: to24(w.from), to: to24(w.to) }; }), blocked: (a.blocked || []).slice() };
+    if (!availDraft) {
+      availDraft = { windows: a.windows.map(function (w) { return { day: w.day, from: to24(w.from), to: to24(w.to) }; }), blocked: (a.blocked || []).slice() };
+      availFrom = { draft: availDraft, windows: JSON.parse(JSON.stringify(availDraft.windows)), blocked: availDraft.blocked.slice() };
+    }
     var d = availDraft;
     var rows = d.windows.map(function (w, i) {
       return '<div class="avr"><select data-avday="' + i + '" aria-label="Day">' + DAYS.map(function (x) {
@@ -1257,10 +1261,32 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       windows: availDraft.windows.map(function (w) { return { day: w.day, from: w.from, to: w.to }; }),
       blocked: availDraft.blocked, updatedAt: new Date().toISOString(), by: s.name || s.email || "" };
     say.className = "as-say"; say.textContent = "Saving…";
-    Promise.resolve(R.update(current.key, "notify/assessment/availability.json", function () { return doc; },
-      "Availability from " + (book.firm || ""), doc, 3)).then(function () {
-      avail = doc; availDraft = null; paint();
-      var s2 = el("av-say"); if (s2) { s2.className = "as-say ok"; s2.textContent = "Saved. Booking pages show these times within half an hour."; }
+    /* November 5, 2026: this page can sit open while someone else at the firm saves the times. Saving
+       used to put back the whole list exactly as it was when editing began, so their windows and days
+       off were lost. Now the windows and days added or taken out here are applied to the list saved
+       now, every time the save is tried; everything else on it stays. */
+    var base = availFrom && availFrom.draft === availDraft ? availFrom : null, saved = doc, theirs = false;
+    function wkey(w) { return String(w.day || "").toLowerCase() + "|" + to24(w.from) + "|" + to24(w.to); }
+    function mergeAvail(cur, mine, was, key) {
+      var had = {}, keep = {}, have = {};
+      was.forEach(function (x) { had[key(x)] = 1; });
+      mine.forEach(function (x) { keep[key(x)] = 1; });
+      var out = cur.filter(function (x) { return !(had[key(x)] && !keep[key(x)]); });
+      out.forEach(function (x) { have[key(x)] = 1; });
+      mine.forEach(function (x) { if (!had[key(x)] && !have[key(x)]) { out.push(x); have[key(x)] = 1; } });
+      return out;
+    }
+    function sameList(a, b, key) { return a.map(key).sort().join(",") === b.map(key).sort().join(","); }
+    Promise.resolve(R.update(current.key, "notify/assessment/availability.json", function (cur) {
+      saved = doc; theirs = false;
+      if (!base || !cur || cur === doc || !Array.isArray(cur.windows)) return doc;   /* nothing saved there yet: as before */
+      var same = function (x) { return String(x); }, curB = Array.isArray(cur.blocked) ? cur.blocked : [];
+      theirs = !sameList(cur.windows, base.windows, wkey) || !sameList(curB, base.blocked, same);
+      saved = Object.assign({}, cur, doc, { windows: mergeAvail(cur.windows, doc.windows, base.windows, wkey), blocked: mergeAvail(curB, doc.blocked, base.blocked, same) });
+      return saved;
+    }, "Availability from " + (book.firm || ""), doc, 3)).then(function () {
+      avail = saved; availDraft = null; availFrom = null; paint();
+      var s2 = el("av-say"); if (s2) { s2.className = "as-say ok"; s2.textContent = theirs ? "Saved. Someone else had changed these times while you were editing; their changes are kept with yours. Booking pages show them within half an hour." : "Saved. Booking pages show these times within half an hour."; }
     })["catch"](function (err) { say.className = "as-say bad"; say.textContent = saveSays(err, "Your availability"); });
   }
 
