@@ -751,7 +751,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
   function el(id) { return document.getElementById(id); }
   function money(n) {
@@ -1617,7 +1617,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return /\.(docx?|xlsx?|pptx?)$/i.test(m.name || "") ? u + "?web=1" : u;
   }
   function fileRow(href, name, meta, doc) {
-    return '<a class="dl" href="' + esc(href) + '" target="_blank" rel="noopener"' + (doc ? " data-doc='" + esc(JSON.stringify(doc)) + "'" : "") + ">" + fileIcon(name) +
+    return '<a class="dl" href="' + esc(href) + '" target="_blank" rel="noopener"' + (doc ? ' data-doc="' + esc(JSON.stringify(doc)) + '"' : "") + ">" + fileIcon(name) +
       '<span class="dl-n">' + esc(name) + "</span>" + (meta ? '<span class="dl-m">' + meta + "</span>" : "") + "</a>";
   }
   /* The earlier cycles' documents, one group per cycle ("i" for the initial, "r2" for Renewal 2):
