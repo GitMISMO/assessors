@@ -914,7 +914,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (e.kind === "renewal") return e.renewalNumber ? "Renewal " + e.renewalNumber : "Renewal";
     return "Not recorded";
   }
-  function isMine(e) { return !!(e.waiting && String(e.waiting).indexOf("Assessor") >= 0); }
+  function isMine(e) { return !e.hold && !!(e.waiting && String(e.waiting).indexOf("Assessor") >= 0); }
   /* Approved and with MISMO's licensing step. It stays on the board only while the
      firm still has to invoice for it. */
   function showToFirm(e) { return !e.done || e.assessorFee == null; }
@@ -988,6 +988,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return "";
   }
   function waitingText(e) {
+    if (e.hold) return "On hold" + (e.hold.until ? ", expected back " + day(e.hold.until) : "");
     if (isMine(e)) return "Your move";
     if (e.scriptOutstanding) return "Waiting on MISMO: certification script";
     var w = String(e.waiting || "");
@@ -1340,7 +1341,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     add("Where It Stands", e.stateLabel || e.state);
     add("Phase", e.phase);
-    add("Waiting On", e.waiting === "Assessor" ? "You" : e.waiting);
+    add("Waiting On", e.hold ? "Nobody while it is on hold" : e.waiting === "Assessor" ? "You" : e.waiting);
     add("Days in This State", e.age == null ? null : e.age);
     add("Program", e.program);
     add("Product", e.product);
@@ -1784,6 +1785,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   function outcomeOf(id) { return answers && answers.steps ? answers.steps[id] : null; }
   function stepLabel(to, x) {
     if (x && x.kind === "note") return "Progress Note";
+    if (x && x.kind === "hold") return "Put on Hold";
+    if (x && x.kind === "resume") return "Ready to Resume";
     for (var k in STEPS) for (var i = 0; i < STEPS[k].length; i++) if (STEPS[k][i].to === to) return STEPS[k][i].t;
     return to;
   }
@@ -1830,7 +1833,66 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     })["catch"](function (err) { if (btn) btn.disabled = false; bad(saveSays(err)); });
   }
   function stepsBody(e) {
-    return stepsCore(e) + noteForm(e);
+    return stepsCore(e) + holdForm(e) + noteForm(e);
+  }
+  /* Put on Hold (9 Nov 2026: a company was still working with Freddie Mac and Fannie Mae and had not
+     started; the assessor had no way to pause it). The step goes to MISMO like any other: once applied,
+     nothing chases the company or the firm until the firm presses Ready to Resume (or MISMO releases it),
+     and MISMO is told at certifications@mismo.org. */
+  function holdWaiting(e) {
+    return stepsOf(e.row).some(function (x) { return (x.kind === "hold" || x.kind === "resume") && !outcomeOf(x.id); });
+  }
+  function holdForm(e) {
+    if (!canEditFirm() || e.hold || e.done || holdWaiting(e)) return "";
+    var id = "ph-" + e.row;
+    return '<div class="as-find" style="border-top:1px solid var(--rule,var(--border));padding-top:12px;margin-top:12px">' +
+      '<div style="font-family:var(--display);font-weight:700;font-size:14px;margin:0 0 4px">Put on Hold</div>' +
+      '<p class="psub" style="margin:0 0 10px">When the company is not ready to go on. Nothing chases them or you while it is on hold, ' +
+      "and it picks up where it left off when you press Ready to Resume. MISMO is told.</p>" +
+      '<div class="as-f"><label for="' + id + '-t">Why</label><textarea id="' + id + '-t" style="min-height:60px" ' +
+      'placeholder="e.g. Still working with Freddie Mac and Fannie Mae; not ready to start."></textarea></div>' +
+      '<div class="as-f"><label for="' + id + '-d">Expected to Start Again (optional)</label><input type="date" id="' + id + '-d"></div>' +
+      '<button class="as-go" type="button" data-phold="' + esc(String(e.row)) + '">Put on Hold</button>' +
+      '<span class="as-say" id="' + id + '-s"></span></div>';
+  }
+  function holdBox(e) {
+    var h = e.hold; if (!h) return "";
+    var mine = h.byFirm && canEditFirm() && !holdWaiting(e), id = "pr-" + e.row;
+    return '<div class="as-find" style="border-top:1px solid var(--rule,var(--border));padding-top:12px;margin-top:12px">' +
+      '<div style="font-family:var(--display);font-weight:700;font-size:14px;margin:0 0 4px">On Hold</div>' +
+      '<p class="psub" style="margin:0 0 10px">' + (h.byFirm ? "Put on hold" + (h.by ? " by " + esc(h.by.replace(/,\s*Assessor Portal$/, "")) : "") : "MISMO put this on hold") +
+      (h.since ? " on " + esc(day(h.since)) : "") + (h.until ? ", expected to start again " + esc(day(h.until)) : "") + ". " +
+      (h.reason ? esc(h.reason) + " " : "") + "Nothing chases the company or you while it is on hold." +
+      (h.byFirm ? "" : " Email certifications@mismo.org if anything changes.") + "</p>" +
+      (mine ? '<div class="as-f"><label for="' + id + '-t">Note (optional)</label><textarea id="' + id + '-t" style="min-height:50px"></textarea></div>' +
+        '<button class="as-go" type="button" data-presume="' + esc(String(e.row)) + '">Ready to Resume</button>' +
+        '<span class="as-say" id="' + id + '-s"></span>' : "") + "</div>";
+  }
+  function recordHold(row, kind) {
+    var e = byRow(row); if (!e) return;
+    var id = (kind === "hold" ? "ph-" : "pr-") + e.row, say = el(id + "-s");
+    var btn = document.querySelector("[data-" + (kind === "hold" ? "phold" : "presume") + '="' + String(e.row) + '"]');
+    function bad(m) { say.className = "as-say bad"; say.textContent = m; }
+    var note = el(id + "-t") ? el(id + "-t").value.trim() : "";
+    var until = kind === "hold" && el(id + "-d") ? el(id + "-d").value : "";
+    if (kind === "hold" && !note) return bad("Say why it is on hold.");
+    var s = R.session() || {};
+    var entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), kind: kind, row: e.row, org: e.org,
+      program: e.program, from: e.state, to: null, note: note, until: until || null, at: new Date().toISOString(),
+      by: s.name || s.email || "", email: s.email || "" };
+    if (btn) btn.disabled = true;
+    say.className = "as-say"; say.textContent = "Saving…";
+    var fresh = { kind: "assessor-steps", version: 1, firm: book.firm, entries: [] };
+    Promise.resolve(R.update(current.key, "notify/assessment/moves.json", function (doc) {
+      var d = doc && doc.entries ? doc : fresh;
+      d.entries = (d.entries || []).concat([entry]);
+      return d;
+    }, (kind === "hold" ? "Put on hold - " : "Ready to resume - ") + (e.org || ""), fresh, 3)).then(function () {
+      steps = steps && steps.entries ? steps : { entries: [] };
+      steps.entries = steps.entries.concat([entry]);
+      openSecs.steps = true;
+      drawPanel();
+    })["catch"](function (err) { if (btn) btn.disabled = false; bad(saveSays(err)); });
   }
   function stepsCore(e) {
     var past = stepsOf(e.row).slice(0, 6);
@@ -1849,6 +1911,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       return out + '<p class="psub" style="margin:8px 0 0">Your last step is on its way to MISMO\'s board, which takes up to half an hour. ' +
         "You can record the next one once it has arrived.</p>";
     }
+    if (e.hold) return out + holdBox(e);
     var can = STEPS[e.state] || [];
     if (can.length && !canEditFirm()) {
       return out + '<p class="psub" style="margin:8px 0 0">Next from the assessor: ' +
@@ -2102,6 +2165,13 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "automatically. Each step shows <b>Sent to MISMO</b> until it arrives, then <b>On the " +
       "board</b>. If the engagement had already moved on, it shows <b>Not applied</b> and says why.</p>" +
 
+      "<h3>Putting an Engagement on Hold</h3>" +
+      "<p>If the company is not ready to go on, open the engagement and use <b>Put on Hold</b> under " +
+      "<b>Update This Engagement</b>: say why, and when they expect to start again if you know. Once it reaches " +
+      "MISMO's board, nothing chases the company or you, and MISMO is told. Press <b>Ready to Resume</b> when " +
+      "they are ready and it picks up where it left off. If MISMO put it on hold, email certifications@mismo.org " +
+      "when anything changes.</p>" +
+
       "<h3>Recording What You Find</h3>" +
       "<p>Open an engagement and use its <b>Findings</b> tab. " +
       "Choose an outcome, write what you looked at and what it showed, and record it. Each " +
@@ -2265,10 +2335,12 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     }
     if (t.closest("#as-wide")) { wide = !wide; drawPanel(); return; }
     if (t.closest("#as-shut") || t.closest("#as-scrim")) { shut(); return; }
-    if ((t.closest("[data-rec]") || t.closest("[data-step]") || t.closest("[data-pnote]") || t.closest("[data-avadd]") || t.closest("[data-avdel]") || t.closest("[data-avsave]")) && !canEditFirm()) return;
+    if ((t.closest("[data-rec]") || t.closest("[data-step]") || t.closest("[data-pnote]") || t.closest("[data-phold]") || t.closest("[data-presume]") || t.closest("[data-avadd]") || t.closest("[data-avdel]") || t.closest("[data-avsave]")) && !canEditFirm()) return;
     if ((c = t.closest("[data-rec]"))) { record(c.getAttribute("data-rec")); return; }
     if ((c = t.closest("[data-step]"))) { recordStep(c.getAttribute("data-step")); return; }
     if ((c = t.closest("[data-pnote]"))) { recordNote(c.getAttribute("data-pnote")); return; }
+    if ((c = t.closest("[data-phold]"))) { recordHold(c.getAttribute("data-phold"), "hold"); return; }
+    if ((c = t.closest("[data-presume]"))) { recordHold(c.getAttribute("data-presume"), "resume"); return; }
     if ((c = t.closest("[data-avadd]"))) { readAvailForm(); availDraft.windows.push({ day: "Monday", from: "10:00", to: "11:30" }); paint(); return; }
     if ((c = t.closest("[data-avdel]"))) { readAvailForm(); availDraft.windows.splice(+c.getAttribute("data-avdel"), 1); paint(); return; }
     if ((c = t.closest("[data-avsave]"))) { saveAvail(); return; }
