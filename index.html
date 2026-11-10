@@ -1660,7 +1660,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (canEditFirm()) {
       out += '<div class="drop" data-updrop="' + esc(e.row) + '">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>' +
-        "<b>Drop files here</b><span>scripts, screenshots, recordings, evidence. Up to 70 MB each.</span>" +
+        "<b>Drop files here</b><span>scripts, screenshots, recordings, evidence. Large recordings are fine.</span>" +
         '<button class="as-go ghost" type="button" data-uppick="' + esc(e.row) + '">Choose Files</button>' +
         '<input type="file" multiple hidden data-upfile="' + esc(e.row) + '"></div>' +
         '<div class="upsay" id="up-' + esc(e.row) + '"></div>';
@@ -1691,6 +1691,44 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     return m;
   }
   function upSay(row, cls, text) { var s = el("up-" + row); if (s) { s.className = "upsay " + (cls || ""); s.textContent = text; } }
+  /* Big files (10 Nov 2026: a demo recording was far over 70 MB). The upload flow checks the caller
+     and the folder exactly as for a normal upload, then hands back a one-file upload address in
+     MISMO's library; the file goes there straight from this page in 10 MB parts (each a multiple of
+     320 KB, as the library asks), with the progress shown. A part that fails is tried again. */
+  var BIG_MAX = 15 * 1024 * 1024 * 1024, BIG_PART = 32 * 320 * 1024;
+  function pause(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+  function bigUpload(row, e, f, folder, cyc, s, i, n) {
+    return fetch(UPLOAD_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      body: JSON.stringify({ mode: "big", token: s.token || "", project: current.key, firm: book.firm || "", row: String(e.row), org: e.org || "",
+        program: e.program || "", folder: folder, cycle: cyc, name: f.name, size: f.size, by: s.name || s.email || "" }) })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (j) {
+          if (!res.ok || !j.uploadUrl) throw new Error(j.error || ("The upload was refused (" + res.status + ")."));
+          return sendParts(row, j.uploadUrl, f, i, n).then(function (item) { return { name: (item && item.name) || j.name || f.name }; });
+        });
+      });
+  }
+  function sendParts(row, url, f, i, n) {
+    function part(start, tries) {
+      var end = Math.min(start + BIG_PART, f.size);
+      upSay(row, "", "Uploading " + f.name + (n > 1 ? " (" + (i + 1) + " of " + n + ")" : "") + ": " +
+        Math.floor(start / f.size * 100) + "%. Keep this page open.");
+      return fetch(url, { method: "PUT", headers: { "Content-Range": "bytes " + start + "-" + (end - 1) + "/" + f.size }, body: f.slice(start, end) })
+        .then(function (r) {
+          if (r.status === 202) return r.json().catch(function () { return {}; }).then(function (j) {
+            var nx = j.nextExpectedRanges && j.nextExpectedRanges[0] ? parseInt(j.nextExpectedRanges[0], 10) : end;
+            return part(isNaN(nx) ? end : nx, 0);
+          });
+          if (r.status === 200 || r.status === 201) return r.json().catch(function () { return {}; });
+          if ((r.status >= 500 || r.status === 429) && tries < 4) return pause(2000 * (tries + 1)).then(function () { return part(start, tries + 1); });
+          throw new Error("The upload of " + f.name + " stopped part way (" + r.status + "). Try it again.");
+        }, function (err) {
+          if (tries < 4) return pause(2000 * (tries + 1)).then(function () { return part(start, tries + 1); });
+          throw err;
+        });
+    }
+    return part(0, 0);
+  }
   function uploadFiles(row, files) {
     var e = byRow(row);
     if (!e || !files || !files.length) return;
@@ -1698,14 +1736,22 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (!canEditFirm()) return;
     if (!UPLOAD_URL) { upSay(row, "bad", "Uploading is being switched on by MISMO. Until then, email the files to certifications@mismo.org."); return; }
     var list = Array.prototype.slice.call(files);
-    var big = list.filter(function (f) { return f.size > UPLOAD_MAX; });
-    if (big.length) { upSay(row, "bad", big[0].name + " is over 70 MB. Email certifications@mismo.org for a link to share larger recordings."); return; }
+    var big = list.filter(function (f) { return f.size > BIG_MAX; });
+    if (big.length) { upSay(row, "bad", big[0].name + " is over 15 GB. Email certifications@mismo.org for another way to share it."); return; }
     var s = R.session() || {}, folder = folderOf(e), cyc = cycleName(e), done = 0, added = [];
     upBusy[row] = true;
     function next(i) {
       if (i >= list.length) return Promise.resolve();
       var f = list[i];
       upSay(row, "", "Uploading " + f.name + " (" + (i + 1) + " of " + list.length + ")…");
+      if (f.size > UPLOAD_MAX) {
+        return bigUpload(row, e, f, folder, cyc, s, i, list.length).then(function (j) {
+          added.push({ row: e.row, org: e.org, program: e.program, folder: folder, cycle: cyc, name: j.name || f.name, size: f.size,
+            url: j.url || null, at: new Date().toISOString(), by: s.name || s.email || "" });
+          done++;
+          return next(i + 1);
+        });
+      }
       return new Promise(function (ok, no) {
         var fr = new FileReader();
         fr.onload = function () { ok(String(fr.result).split(",")[1] || ""); };
@@ -2104,7 +2150,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "<h3>Documents</h3>" +
       "<p>Each engagement's documents are kept by cycle: the cycle you are assessing first, then the earlier ones, " +
       "newest first. Drop files on <b>This Renewal</b> (or use Choose Files) and they go straight into that renewal's " +
-      "folder in MISMO's certification library, up to 70 MB each. There is no need to send anything through Teams.</p>" +
+      "folder in MISMO's certification library. Large demo recordings are fine: anything over 70 MB goes up in parts, with the progress shown, so keep the page open until it says the file is in. There is no need to send anything through Teams.</p>" +
 
       "<h3>The Order a Certification Runs In</h3>" +
       "<table><thead><tr><th>Step</th><th>Who Moves</th><th>What Happens</th></tr></thead><tbody>" +
