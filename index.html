@@ -883,8 +883,11 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var k = current.key;
     function grab(p) { return R.readOr(k, p, null).then(function (r) { return r && r.data !== undefined ? r.data : r; })["catch"](function () { return null; }); }
     return Promise.all([grab("notify/assessment/moves.json"), grab("engagements/" + current.slug + "-inbox.json"),
-      grab("notify/assessment/availability.json"), grab("documents/uploads.json")]).then(function (x) {
-      steps = x[0]; answers = x[1]; avail = x[2]; uploads = x[3];
+      grab("notify/assessment/availability.json"), grab("notify/assessment/uploads.json"), grab("documents/uploads.json")]).then(function (x) {
+      steps = x[0]; answers = x[1]; avail = x[2];
+      /* the record of uploads; an older documents/ copy is read too, in case one exists */
+      var a = x[3] && x[3].entries ? x[3].entries : [], b = x[4] && x[4].entries ? x[4].entries : [];
+      uploads = a.length || b.length ? { entries: b.concat(a) } : null;
       paint();
     });
   }
@@ -1547,7 +1550,12 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   var SITE_DOCS = "https://mortgagebankersassociation.sharepoint.com/sites/MISMOeMortgageCertification/Shared Documents/";
   var ROOTS = { RON: "RON Certification/RON Certifications/", eClosing: "eClosing Certification/",
     eVault: "eVault Certification/Provider Certifications/" };
-  var uploads = null;                  /* documents/uploads.json in the firm's own repository */
+  var uploads = null;                  /* the firm's record of what it uploaded (UPLOADS_PATH) */
+  /* 16 Nov 2026: the record was written to documents/uploads.json, which the relay does not let an
+     assessor write (only MISMO administrators), so a file reached the library but the save of the
+     record was refused and the portal said the sign-in had run out. notify/ is the firm's own place
+     to write, as for its steps and weekly times. */
+  var UPLOADS_PATH = "notify/assessment/uploads.json";
   var upBusy = {};
   function cycleName(e) {
     if (e.kind === "renewal") return "Renewal - " + (e.renewalNumber || "");
@@ -1775,7 +1783,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     function keep() {
       if (!added.length) return Promise.resolve();
       var fresh = { kind: "assessor-uploads", version: 1, firm: book.firm, entries: [] };
-      return R.update(current.key, "documents/uploads.json", function (doc) {
+      return R.update(current.key, UPLOADS_PATH, function (doc) {
         var dd = doc && doc.entries ? doc : fresh;
         dd.entries = (dd.entries || []).concat(added);
         return dd;
