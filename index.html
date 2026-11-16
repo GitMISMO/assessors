@@ -724,8 +724,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     ArtifactReview: [{ to: "PrelimResultsSubmitted", t: "Submit the Preliminary Result",
       n: "Goes to MISMO's VP for review. Findings are never shown to the company before MISMO approves.", needs: "result" }],
     PrelimQueryOpen: [{ to: "PrelimResultsSubmitted", t: "Answer MISMO's Question and Resubmit", n: "Goes back to MISMO's VP.", needs: "result" }],
-    RemediationOpen: [{ to: "RemediationSubmitted", t: "Remediation Evidence Reviewed",
-      n: "Say how each finding was closed on its evidence. Goes to MISMO's VP.", needs: "note" }],
+    RemediationOpen: [{ to: "RemediationSubmitted", t: "All Findings Remediated",
+      n: "Use this once the company has fixed every finding and you have checked their evidence. Say how each finding was closed. It goes to MISMO's VP for approval.", needs: "note" }],
     RemediationEscalated: [{ to: "RemediationOpen", t: "Send It Back to the Company", n: "", needs: "note" }],
     RemediationQueryOpen: [{ to: "RemediationSubmitted", t: "Answer MISMO's Question", n: "Goes back to MISMO's VP.", needs: "note" }],
     ScopeReviewAssessor: [{ to: "ScopeReviewVp", t: "Pass the Scope to MISMO's VP", n: "", needs: "note" }]
@@ -1645,6 +1645,17 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     order.sort(function (a, b) { return rank(b) - rank(a); });
     return { groups: groups, order: order };
   }
+  /* 16 Nov 2026: an assessor uploaded the remediation evidence on Documents and could not see where to
+     say all findings were remediated - the step is on Overview, and the stage reads "With the company".
+     Both tabs now say what can be recorded next, with a button to it. */
+  function stepHint(e, onDocs) {
+    var can = STEPS[e.state] || [];
+    if (!can.length || !canEditFirm() || e.hold || e.done || isMine(e) && !onDocs) return "";
+    var names = can.map(function (st) { return "\u201c" + st.t + "\u201d"; }).join(" or ");
+    return '<div class="nextbox" style="margin:0 0 14px"><span class="mv-k">When you are ready</span><b>Record ' + esc(names) + "</b>" +
+      "<i>" + (onDocs ? "It is on the Overview tab, under Update This Engagement." : "It is below, under Update This Engagement.") + "</i>" +
+      (onDocs ? '<div style="margin-top:8px"><button class="as-go" type="button" data-ptab="overview">Go to the Step</button></div>' : "") + "</div>";
+  }
   function documents(e) {
     var d = e.documents || {}, folder = folderOf(e), cyc = cycleName(e);
     var cycles = (d.cycles || []).slice();
@@ -1662,7 +1673,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var macts = (d.macts || []).slice(), mineM = macts.filter(function (m) { return isThisCycle(e, m.cycle); });
     mineM.forEach(function (m) { here.push(fileRow(mUrl(d, m), m.name, esc(m.type || "From MACTS"), mDoc(m))); });
     macts = macts.filter(function (m) { return mineM.indexOf(m) < 0; });
-    var out = '<div class="cyc now"><div class="cyc-h"><b>This ' + (e.kind === "renewal" ? "Renewal" : "Certification") + "</b><span>" + esc(cyc.replace(/\s*-\s*/, " ")) + "</span>" +
+    var out = stepHint(e, true) + '<div class="cyc now"><div class="cyc-h"><b>This ' + (e.kind === "renewal" ? "Renewal" : "Certification") + "</b><span>" + esc(cyc.replace(/\s*-\s*/, " ")) + "</span>" +
       '<a class="cyc-open" href="' + esc(spUrl(SITE_DOCS, folder + "/" + cyc)) + '" target="_blank" rel="noopener">Open the folder</a></div>' +
       (here.length ? '<div class="dls">' + here.join("") + "</div>" : '<p class="fine">Nothing here yet for this ' + (e.kind === "renewal" ? "renewal" : "certification") + ".</p>");
     if (canEditFirm()) {
@@ -2061,7 +2072,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       (isMine(e) ? '<div class="nextbox"><span class="mv-k">Your next step</span><b>' + esc(nextStepText(e) || "Your move") + "</b>" +
         (e.demoOn ? "<i>" + esc(day(e.demoOn)) + " · " + esc(whenWords(daysUntil(demoDay(e)))) + "</i>" : "") + "</div>" :
         '<div class="nextbox calmbox"><span class="mv-k">Where it is</span><b>' + esc(waitingText(e)) + "</b><i>" + esc(e.stateLabel || "") +
-        (e.age != null ? " · " + esc(e.age) + " days at this step" : "") + "</i></div>") +
+        (e.age != null ? " · " + esc(e.age) + " days at this step" : "") + "</i></div>" + stepHint(e, false)) +
       sec("steps", "Update This Engagement", null, stepsBody(e), true) +
       sec("facts", "The Details", null, facts(e), true);
     p.innerHTML =
@@ -2214,7 +2225,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "<h3>Recording Each Step</h3>" +
       "<p>Open an engagement: its <b>Overview</b> tab has <b>Update This Engagement</b>, showing only the steps that " +
       "are yours from where the engagement stands: the demonstration done, the artifacts arrived, " +
-      "your preliminary result, an answer to MISMO's question, remediation evidence reviewed. " +
+      "your preliminary result, an answer to MISMO's question, all findings remediated. " +
       "Record the step and MISMO's board moves within half an hour, and whoever is next is told " +
       "automatically. Each step shows <b>Sent to MISMO</b> until it arrives, then <b>On the " +
       "board</b>. If the engagement had already moved on, it shows <b>Not applied</b> and says why.</p>" +
