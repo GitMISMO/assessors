@@ -1612,7 +1612,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     fetch(UPLOAD_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: JSON.stringify(body) })
       .then(function (r) { if (!r.ok) throw new Error("status " + r.status); return r.blob(); })
       .then(function (b) {
-        var url = URL.createObjectURL(b);
+        /* the type comes from the name's own extension, so nothing opened here can run as a page on this site */
+        var ext = (name.split(".").pop() || "").toLowerCase(), t = { pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", txt: "text/plain" }[ext];
+        var url = URL.createObjectURL(new Blob([b], { type: t || "application/octet-stream" }));
         if (w) w.location.href = url;
         else { var x = document.createElement("a"); x.href = url; x.download = name; document.body.appendChild(x); x.click(); x.remove(); }
         setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
