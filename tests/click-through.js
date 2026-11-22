@@ -3,7 +3,8 @@
    for. The firm's engagements are the MADE-UP fixture in tests/fixtures/engagements.json; every other read
    answers "not found" and every save is refused, so nothing here touches the real records or saves anything.
 
-   Two people are tried: an assessor (one firm key) and a MISMO administrator (every firm key, View As).
+   Three people are tried: an assessor (one firm key), a MISMO administrator viewing as a firm (View As), and a
+   MISMO administrator on their own screen (View As chooser, Help, System Health).
    At 1400px light and 390px dark: every menu item, every engagement and every tab in its panel.
 
    Run: node tests/click-through.js   (needs playwright and its Chromium) */
@@ -16,7 +17,9 @@ const FIXTURE = fs.readFileSync(path.join(__dirname, "fixtures", "engagements.js
 const TYPES = { ".html": "text/html", ".js": "application/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml" };
 const PEOPLE = {
   assessor: { access: { "as-falcon": "write" }, name: "Test Assessor", email: "test@example.com" },
-  admin: { access: { "as-falcon": "admin", "as-actualize": "admin", "as-vianteye": "admin" }, name: "Test Administrator", email: "test@mismo.org" }
+  admin: { access: { "as-falcon": "admin", "as-actualize": "admin", "as-vianteye": "admin" }, name: "Test Administrator", email: "test@mismo.org" },
+  /* a MISMO administrator on their own screen (View As chooser, Help, System Health), 22 Nov 2026 */
+  home: { platformAdmin: true, access: { "as-falcon": "admin", "as-actualize": "admin", "as-vianteye": "admin" }, name: "Test Administrator", email: "test@mismo.org" }
 };
 
 (async () => {
