@@ -45,11 +45,12 @@ since the page opened. It reads only.
 
 ## How this is updated
 
-Edit the files here (on GitHub, or upload a changed file) and commit to `main`. Pages publishes the change within a
-minute or two. Before uploading, compare the live copy with the one you started from so newer work is never
+Edit the files here (on GitHub, or upload a changed file) and commit to `main`. **Checks and Publish** runs the checks
+below and publishes the change only when every one passes (Pages' source is GitHub Actions since 22 Nov 2026; do not
+switch it back to "Deploy from a branch"). Allow several minutes before the change is live. Before uploading, compare the live copy with the one you started from so newer work is never
 overwritten, and check afterward that the live file matches what you uploaded.
 
-Every change runs **Checks** (`.github/workflows/checks.yml`):
+Every change runs **Checks and Publish** (`.github/workflows/checks.yml`):
 
 1. `tests/check-scripts.js`: every script parses, and no function is defined twice in the same scope.
 2. `tests/check-public.py`: nothing private in the page (addresses, invoice numbers, dollar figures, GitHub keys),
@@ -59,7 +60,7 @@ Every change runs **Checks** (`.github/workflows/checks.yml`):
    error, "NaN" on screen or a page wider than the screen fails the run. Saves are refused, so nothing is written.
 
 To run them yourself: `npm install acorn acorn-walk playwright`, `npx playwright install chromium`, then the three
-commands above. A red run means the change needs a look; the page is served whatever the checks say, so fix it promptly.
+commands above. A red run means the change was not published: fix it and commit again.
 
 ## Connections
 
