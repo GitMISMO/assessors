@@ -1,0 +1,35 @@
+# Checks every change to the Assessor Portal before anyone relies on it (21 Nov 2026). See README,
+# "How This Is Updated". A red run means the change needs a look; Pages serves the page whatever
+# this says, so fix it promptly.
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install the checking tools
+        run: |
+          npm install --no-save --no-audit --no-fund acorn@8.12.1 acorn-walk@8.3.4 playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Every script parses, and no function is defined twice
+        run: node tests/check-scripts.js
+      - name: Nothing private in the public page
+        if: ${{ always() }}
+        run: python3 tests/check-public.py
+      - name: Click through the whole portal with a made-up firm
+        if: ${{ always() }}
+        run: node tests/click-through.js
