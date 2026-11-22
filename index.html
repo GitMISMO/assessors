@@ -934,10 +934,14 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (e.kind === "renewal") return e.renewalNumber ? "Renewal " + e.renewalNumber : "Renewal";
     return "Not recorded";
   }
-  function isMine(e) { return !e.hold && !!(e.waiting && String(e.waiting).indexOf("Assessor") >= 0); }
-  /* Approved and with MISMO's licensing step. It stays on the board only while the
-     firm still has to invoice for it. */
-  function showToFirm(e) { return !e.done || e.assessorFee == null; }
+  /* Waiting on the company's evidence is still the firm's to chase (22 Nov 2026, Jonna: the firm needs to keep
+     on top of the follow-up), so it counts as theirs. */
+  var FIRM_CHASES = ["AwaitingArtifacts"];
+  function isMine(e) { return !e.hold && (FIRM_CHASES.indexOf(e.state) >= 0 || !!(e.waiting && String(e.waiting).indexOf("Assessor") >= 0)); }
+  /* Approved and with MISMO's licensing step (Mark License Agreement): nothing left for the firm, so it is off
+     the board (22 Nov 2026, Jonna: once all that is left is signing the Mark License Agreement, it is not in the
+     firm's queue). Invoicing for it is done in Service Orders. */
+  function showToFirm(e) { return !e.done; }
   /* A certification that has closed - certified, not certified, canceled, or an application that
      expired - is finished: it is never Coming to You (Jonna, 31 Oct 2026). One the firm worked
      and has not invoiced for yet stays in its queue, as before. */
@@ -1003,6 +1007,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   }
   function nextStepText(e) {
     var can = STEPS[e.state] || [];
+    if (isMine(e) && FIRM_CHASES.indexOf(e.state) >= 0) return "Follow up with the company for the evidence; record The Artifacts Have Arrived once it is in";
     if (isMine(e) && can.length) return can.map(function (s) { return s.t; }).join(" or ");
     if (isMine(e)) return "Your move";
     return "";
@@ -1040,7 +1045,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     var withMe = all.filter(isMine);
     var blocked = all.filter(function (e) { return !!e.scriptOutstanding && !isMine(e); });
     var notMine = all.filter(function (e) { return !isMine(e) && !e.scriptOutstanding; }).filter(showToFirm);
-    var inFlight = notMine.filter(function (e) { return worked(e) && (!closed(e) || (e.assessorFee == null && (e.done || countFindings(e.row) > 0 || (e.prelim && e.prelim.scored)))); });
+    var inFlight = notMine.filter(function (e) { return worked(e) && (!closed(e) || (e.assessorFee == null && (countFindings(e.row) > 0 || (e.prelim && e.prelim.scored)))); });
     var others = notMine.filter(function (e) { return !worked(e) && !closed(e); });
     [withMe, blocked, inFlight, others].forEach(function (l) { l.sort(sortAZ); });
     return { all: all, withMe: withMe, blocked: blocked, inFlight: inFlight, others: others,
