@@ -2229,7 +2229,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
         ms ? "Latest step " + whenText(ms) + "." : "No steps recorded yet.",
         waiting ? "Recorded after the last engagements update, so the CMS may not have picked it up yet." : ""]);
       var up = r.uploads.ok ? lastAt(r.uploads.d) : "";
-      var times = r.avail.ok && r.avail.d ? (r.avail.d.savedAt || r.avail.d.at || lastAt(r.avail.d)) : "";
+      var times = r.avail.ok && r.avail.d ? (r.avail.d.updatedAt || r.avail.d.savedAt || r.avail.d.at || lastAt(r.avail.d)) : "";
       rows.push([nm + ": uploads and weekly times", "ok",
         (up ? "Latest upload " + whenText(up) + "." : "No uploads listed yet.") + " " + (times ? "Weekly times saved " + whenText(times) + "." : "No weekly times saved yet."), ""]);
     });
