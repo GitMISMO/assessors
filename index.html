@@ -540,6 +540,20 @@ body.as-noshell .railscrim{display:none}
 :root:not([data-theme="light"]) .hc-st.on .hc-dot{border-color:transparent}}
 @media(max-width:600px){.as-help table{display:block;overflow-x:auto;max-width:100%}.vabar{padding:10px 16px}.hc-figs{grid-template-columns:1fr 1fr}.hc-figs div:last-child{grid-column:1/-1}.hc-figs b{font-size:17px;white-space:nowrap}
 .hc-line{grid-template-columns:repeat(2,minmax(0,1fr))}.hc-line:before{display:none}}
+/* System Health and the version stamp (22 Nov 2026) */
+.hl-tbl{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 22px}
+.hl-tbl th{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
+  text-align:left;font-weight:600;padding:6px 10px;border-bottom:1px solid var(--rule,#d5e2ec)}
+.hl-tbl td{padding:9px 10px;border-bottom:1px solid var(--rule,#d5e2ec);vertical-align:top;color:var(--ink)}
+.hl-tbl td small{display:block;color:var(--ink-3);font-size:11.5px;margin-top:2px}
+.hl-ok,.hl-warn,.hl-bad{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.hl-ok{background:var(--good)} .hl-warn{background:var(--warn)} .hl-bad{background:var(--bad)}
+.hl-wrap{overflow-x:auto}
+.ver-line{margin:22px 0 4px;font-size:12px;color:var(--ink-3)}
+#ver-bar{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:9999;background:var(--surface,#fff);color:var(--ink);
+  border:1px solid var(--rule,#adc4d6);border-left:4px solid var(--sky,#74bfeb);border-radius:6px;box-shadow:0 8px 24px rgba(6,32,47,.18);
+  padding:9px 12px;display:flex;gap:12px;align-items:center;font-size:13px;max-width:calc(100vw - 32px)}
+#ver-bar button{border:1px solid var(--rule,#adc4d6);background:var(--ink);color:var(--surface,#fff);border-radius:4px;padding:5px 10px;font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
@@ -635,6 +649,9 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     <button type="button" data-hq="viewas" id="nav-viewas" title="View As" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
       <span>View As</span></button>
+    <button type="button" data-hq="health" id="nav-health" title="System Health" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>
+      <span>System Health</span></button>
   </nav>
 
   <div class="railsum" id="as-pickwrap" hidden>
@@ -2123,10 +2140,115 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       }).join("") + "</div>";
   }
 
+  /* ---- version stamp (22 Nov 2026) ---------------------------------------------
+     Which copy of the portal is open: a fingerprint of the page and when it was published. Every 15
+     minutes the page checks for a newer copy and asks to reload. Shown at the foot of Help and on
+     System Health. */
+  var VER = { fp: "", at: "", newer: false };
+  function verRead() {
+    return fetch(location.pathname + "?ver=" + Date.now(), { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      var at = r.headers.get("last-modified") || "";
+      return r.text().then(function (t) { return crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); }).then(function (b) {
+        return { fp: Array.prototype.slice.call(new Uint8Array(b), 0, 4).map(function (x) { return ("0" + x.toString(16)).slice(-2); }).join(""), at: at };
+      });
+    });
+  }
+  function verText() {
+    if (!VER.fp) return "";
+    var d = Date.parse(VER.at);
+    return "Version " + VER.fp + (isNaN(d) ? "" : ", published " + new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) +
+      " at " + new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }));
+  }
+  function verLineHTML() { return VER.fp ? '<p class="ver-line" id="ver-line">' + esc(verText()) + "</p>" : '<p class="ver-line" id="ver-line"></p>'; }
+  function verPaint() {
+    var x = el("ver-line"); if (x && x.textContent !== verText()) x.textContent = verText();
+    if (VER.newer && !el("ver-bar")) {
+      var b = document.createElement("div"); b.id = "ver-bar"; b.setAttribute("role", "status");
+      var s = document.createElement("span"); s.textContent = "The Assessor Portal has been updated. Reload to get the latest version.";
+      var k = document.createElement("button"); k.type = "button"; k.textContent = "Reload"; k.addEventListener("click", function () { location.reload(); });
+      b.appendChild(s); b.appendChild(k); document.body.appendChild(b);
+    }
+  }
+  verRead().then(function (v) { VER.fp = v.fp; VER.at = v.at; verPaint(); if (pane === "health") paint(); })["catch"](function () {});
+  setInterval(function () {
+    if (document.visibilityState === "hidden" || !VER.fp || VER.newer) return;
+    verRead().then(function (v) { if (v.fp !== VER.fp) { VER.newer = true; verPaint(); } })["catch"](function () {});
+  }, 15 * 60000);
+
+  /* ---- System Health (22 Nov 2026; MISMO administrators only) ----------------------
+     One look at whether the portal is working for each firm: the relay answers, each firm's engagements
+     arrived from the CMS recently, the steps a firm recorded have been picked up, and their latest
+     uploads and weekly times. Read only; nothing here saves. */
+  var health = null, healthAt = 0;
+  var PAGE_ERRORS = [];
+  window.addEventListener("error", function (ev) { PAGE_ERRORS.push((ev && ev.message) || "script error"); });
+  window.addEventListener("unhandledrejection", function (ev) { PAGE_ERRORS.push("a request did not finish: " + ((ev && ev.reason && ev.reason.message) || "unknown")); });
+  function hoursSince(iso) { var t = Date.parse(iso); return isNaN(t) ? null : (Date.now() - t) / 36e5; }
+  function whenText(iso) {
+    var t = Date.parse(iso); if (isNaN(t)) return "never";
+    var h = (Date.now() - t) / 36e5;
+    var when = new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " at " + new Date(t).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    return when + (h < 1 ? " (within the hour)" : h < 48 ? " (" + Math.round(h) + " hours ago)" : " (" + Math.round(h / 24) + " days ago)");
+  }
+  function lastAt(doc) {
+    var es = doc && Array.isArray(doc.entries) ? doc.entries : [];
+    return es.map(function (x) { return x && (x.at || x.savedAt || x.uploadedAt) || ""; }).filter(Boolean).sort().pop() || "";
+  }
+  function loadHealth() {
+    healthAt = Date.now();
+    var started = Date.now();
+    function grab(k, p) { return R.readOr(k, p, null).then(function (r) { return { ok: true, d: r && r.data !== undefined ? r.data : r }; })["catch"](function (e) { return { ok: false, err: (e && e.message) || String(e) }; }); }
+    return Promise.all(FIRMS.map(function (f) {
+      return Promise.all([grab(f.key, "engagements/" + f.slug + ".json"), grab(f.key, "notify/assessment/moves.json"),
+        grab(f.key, "notify/assessment/uploads.json"), grab(f.key, "notify/assessment/availability.json")]).then(function (x) {
+        return { firm: f, eng: x[0], moves: x[1], uploads: x[2], avail: x[3] };
+      });
+    })).then(function (rows) { health = { rows: rows, ms: Date.now() - started, at: new Date().toISOString() }; if (pane === "health") paint(); });
+  }
+  function paneHealth() {
+    if (!health || Date.now() - healthAt > 5 * 60000) { if (Date.now() - healthAt > 3000) loadHealth(); }
+    var h = '<h2 class="as-h2">System Health</h2><p class="as-lede">Whether the portal is working for each firm, checked from your sign-in just now. ' +
+      "Nothing on this page saves anything.</p>";
+    if (!health) return h + '<p class="as-lede">Checking\u2026</p>';
+    var dot = function (c) { return '<span class="hl-' + c + '"></span>'; };
+    var relayOk = health.rows.some(function (r) { return r.eng.ok; });
+    var rows = [];
+    rows.push(["Saving and reading (MISMO's relay)", relayOk ? "ok" : "bad",
+      relayOk ? "Answering. Every firm's records were read in " + (health.ms / 1000).toFixed(1) + " seconds." : "Not answering. Assessors cannot see or save anything until it is back.", ""]);
+    health.rows.forEach(function (r) {
+      var nm = (r.eng.ok && r.eng.d && r.eng.d.firm) || r.firm.slug;
+      if (!r.eng.ok || !r.eng.d) { rows.push([nm + ": engagements from the CMS", "bad", "Could not be read.", r.eng.err || "The file is missing."]); return; }
+      var w = r.eng.d.writtenAt || "", age = hoursSince(w), n = (r.eng.d.engagements || []).length;
+      rows.push([nm + ": engagements from the CMS", age == null ? "warn" : age > 36 ? "warn" : "ok",
+        n + " engagement" + (n === 1 ? "" : "s") + ", last sent " + whenText(w) + ".",
+        age != null && age > 36 ? "The CMS rebuilds this after every change and every morning; over a day and a half old means that job needs a look." : ""]);
+      var ms = r.moves.ok ? lastAt(r.moves.d) : "";
+      var waiting = ms && w && Date.parse(ms) > Date.parse(w) + 2 * 36e5;
+      rows.push([nm + ": steps recorded here", !ms ? "ok" : waiting ? "warn" : "ok",
+        ms ? "Latest step " + whenText(ms) + "." : "No steps recorded yet.",
+        waiting ? "Recorded after the last engagements update, so the CMS may not have picked it up yet." : ""]);
+      var up = r.uploads.ok ? lastAt(r.uploads.d) : "";
+      var times = r.avail.ok && r.avail.d ? (r.avail.d.savedAt || r.avail.d.at || lastAt(r.avail.d)) : "";
+      rows.push([nm + ": uploads and weekly times", "ok",
+        (up ? "Latest upload " + whenText(up) + "." : "No uploads listed yet.") + " " + (times ? "Weekly times saved " + whenText(times) + "." : "No weekly times saved yet."), ""]);
+    });
+    rows.push(["This page", PAGE_ERRORS.length ? "warn" : "ok",
+      (verText() || "Version being read") + ".",
+      PAGE_ERRORS.length ? PAGE_ERRORS.length + " script problem" + (PAGE_ERRORS.length === 1 ? "" : "s") + " since this page opened: " + PAGE_ERRORS.slice(-2).join("; ") : "No script problems since this page opened."]);
+    return h + '<div class="hl-wrap"><table class="hl-tbl"><thead><tr><th>Part</th><th>Now</th></tr></thead><tbody>' +
+      rows.map(function (r) { return "<tr><td>" + dot(r[1]) + esc(r[0]) + "</td><td>" + esc(r[2]) + (r[3] ? "<small>" + esc(r[3]) + "</small>" : "") + "</td></tr>"; }).join("") +
+      "</tbody></table></div>" +
+      '<p class="as-lede" style="font-size:12.5px">Checked ' + esc(whenText(health.at)) + '. <a href="#" id="hl-again">Check Again</a></p>';
+  }
+  document.addEventListener("click", function (ev) {
+    var t = ev.target; if (t && t.id === "hl-again") { ev.preventDefault(); health = null; healthAt = 0; paint(); }
+  });
+
   /* ---- painting ----------------------------------------------------------- */
   function paint() {
     var body = pane === "home" ? paneHome() : pane === "open" ? paneOpen() : pane === "sched" ? paneSchedule() :
-      pane === "found" ? paneFound() : pane === "help" ? paneHelp() : pane === "viewas" ? paneViewAs() : paneHome();
+      pane === "found" ? paneFound() : pane === "help" ? paneHelp() + verLineHTML() : pane === "viewas" ? paneViewAs() : pane === "health" ? paneHealth() : paneHome();
     el("as-main").innerHTML = viewAsBanner() + '<div class="as-wrap">' + body + "</div>";
     var vo = el("va-out"); if (vo) vo.addEventListener("click", leaveViewAs);
     if (pane === "open") engFind();
@@ -2451,6 +2573,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       if (f0) mine = [f0]; else VIEWAS = null;
     }
     var nva = el("nav-viewas"); if (nva) nva.hidden = !(sess.platformAdmin && !VIEWAS);
+    var nhe = el("nav-health"); if (nhe) nhe.hidden = !(sess.platformAdmin && !VIEWAS);
     if (!mine.length) {
       el("rail").hidden = true;
       document.body.classList.add("as-noshell");
@@ -2474,7 +2597,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
     if (adminHome) {
       pw.hidden = true;
       document.querySelectorAll(".hq nav button[data-hq]").forEach(function (b) {
-        var k = b.getAttribute("data-hq"); b.hidden = !(k === "viewas" || k === "help");
+        var k = b.getAttribute("data-hq"); b.hidden = !(k === "viewas" || k === "help" || k === "health");
       });
     } else if (mine.length > 1) {
       pw.hidden = false;

@@ -4,6 +4,7 @@ One line for each change people would notice, newest first. Add a line here with
 
 ## November 2026
 
+- **Nov 22:** Version stamp at the foot of Help (fingerprint and publish time); the page offers a reload when a newer copy is published. System Health page for MISMO administrators: the relay, each firm's engagements from the CMS, steps not yet picked up, latest uploads and weekly times, and script problems.
 - **Nov 21:** Automatic checks on every change (scripts parse, nothing private in the page, a click-through with a made-up firm). Guide and change log added.
 - **Nov 21:** Documents open in a tab only as a PDF or a plain picture, typed from their own file extension; anything else downloads.
 - **Nov 16:** The remediation step is called "All Findings Remediated", with a pointer to it on Overview and Documents.

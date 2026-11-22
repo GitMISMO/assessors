@@ -26,6 +26,14 @@ GitHub Pages needs a public repository, so this one holds the page's code only. 
 Never put a company name, an email address (other than mismo.org / mba.org), a fee or an invoice number in this
 repository, including in code comments. The automatic checks look for them.
 
+## Version and health
+
+The foot of **Help** shows which copy of the page is open (a fingerprint and when it was published); every 15 minutes the
+page checks for a newer copy and offers a reload. MISMO administrators also see **System Health** in the menu: whether the
+relay answers, when each firm's engagements last arrived from the CMS (amber after a day and a half), whether a firm's
+latest step is newer than its engagements (not picked up yet), its latest upload and weekly times, and any script problem
+since the page opened. It reads only.
+
 ## Files
 
 - `index.html`: the whole portal (layout, styles in `portal.css`, and the application script).
