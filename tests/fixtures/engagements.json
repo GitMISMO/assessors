@@ -1,0 +1,2143 @@
+{
+ "kind": "assessor-engagements",
+ "version": 2,
+ "firm": "Example Assessors",
+ "legalName": "Example Assessors LLC",
+ "tagline": "Made-up firm for the automatic checks",
+ "accent": "Example text",
+ "inHouse": false,
+ "programs": [
+  "Example text",
+  "Example text",
+  "RON"
+ ],
+ "scheduling": {
+  "mode": "fixed-windows",
+  "timezone": "ET",
+  "windows": [
+   {
+    "day": "Example text",
+    "from": "Example text",
+    "to": "Example text"
+   },
+   {
+    "day": "Example text",
+    "from": "Example text",
+    "to": "Example text"
+   },
+   {
+    "day": "Example text",
+    "from": "Example text",
+    "to": "Example text"
+   }
+  ],
+  "note": "Example text",
+  "source": "Example text"
+ },
+ "writtenAt": "2026-11-01T14:53:05.524Z",
+ "asOf": "2026-10-24",
+ "note": "Made-up data for tests/click-through.js. Not a real firm, company or engagement.",
+ "engagements": [
+  {
+   "row": 333,
+   "org": "Example Company A",
+   "program": "eVault",
+   "product": "Example Product",
+   "kind": "initial",
+   "renewalNumber": null,
+   "state": "RemediationOpen",
+   "stateLabel": "Remediation Open",
+   "phase": "Remediation",
+   "status": "Pending",
+   "waiting": "Company",
+   "age": 310,
+   "size": null,
+   "demoOn": null,
+   "assessorFee": 5000,
+   "certificationScript": {
+    "sent": false,
+    "sentOn": null
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "none",
+    "label": "Example text",
+    "scored": 0,
+    "total": 0,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": false,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2017-01-01"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "N/A"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [
+      {
+       "row": 333,
+       "kind": "initial",
+       "n": null,
+       "state": "RemediationOpen",
+       "on": null,
+       "now": true
+      }
+     ],
+     "org": "Example Company A",
+     "program": "eVault",
+     "product": "Example Product",
+     "originalCertifiedOn": null,
+     "anniversary": null,
+     "status": "Active",
+     "completedRenewals": 0
+    }
+   ],
+   "documents": {
+    "base": "Example text",
+    "folder": "Example text",
+    "readAt": "2026-10-31",
+    "cycles": [
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2025-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2024-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        1000,
+        "2023-06-01"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": 367,
+   "org": "Example Company B",
+   "program": "eVault",
+   "product": "Example Product",
+   "kind": "initial",
+   "renewalNumber": null,
+   "state": "AwaitingDemoSelection",
+   "stateLabel": "Awaiting Demo Selection",
+   "phase": "Welcome Email",
+   "status": "In Progress",
+   "waiting": "Company",
+   "age": 165,
+   "size": null,
+   "demoOn": null,
+   "assessorFee": null,
+   "certificationScript": {
+    "sent": false,
+    "sentOn": null
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "none",
+    "label": "Example text",
+    "scored": 0,
+    "total": 0,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": false,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2020-09-01"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "No"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [],
+     "org": "Example Company B",
+     "program": "eVault",
+     "product": null,
+     "originalCertifiedOn": null,
+     "anniversary": null,
+     "status": "Superseded",
+     "completedRenewals": 0
+    },
+    {
+     "cycles": [
+      {
+       "row": 367,
+       "kind": "initial",
+       "n": null,
+       "state": "AwaitingDemoSelection",
+       "on": null,
+       "now": true
+      }
+     ],
+     "org": "Example Company B",
+     "program": "eVault",
+     "product": "Example Product",
+     "originalCertifiedOn": null,
+     "anniversary": null,
+     "status": "Active",
+     "completedRenewals": 0
+    }
+   ]
+  },
+  {
+   "row": 375,
+   "org": "Example Company C",
+   "program": "RON",
+   "product": "Example Product",
+   "kind": "renewal",
+   "renewalNumber": null,
+   "state": "AwaitingPayment",
+   "stateLabel": "Awaiting Payment",
+   "phase": "Payment",
+   "status": "Pending",
+   "waiting": "MISMO + Company",
+   "age": 118,
+   "size": null,
+   "demoOn": null,
+   "assessorFee": null,
+   "certificationScript": {
+    "sent": false,
+    "sentOn": null
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "open",
+    "label": "Example text",
+    "scored": 0,
+    "total": 50,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": false,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2022-04-01"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "4"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "No"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "mp4"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "N/A"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [],
+     "org": "Example Company C",
+     "program": "RON",
+     "product": null,
+     "originalCertifiedOn": null,
+     "anniversary": null,
+     "status": "Superseded",
+     "completedRenewals": 0
+    },
+    {
+     "cycles": [
+      {
+       "row": 90,
+       "kind": "initial",
+       "n": null,
+       "state": "Certified",
+       "on": "2022-03-11",
+       "now": false
+      },
+      {
+       "row": 307,
+       "kind": "initial",
+       "n": null,
+       "state": "Certified",
+       "on": "2025-08-29",
+       "now": false
+      },
+      {
+       "row": 375,
+       "kind": "renewal",
+       "n": null,
+       "state": "AwaitingPayment",
+       "on": null,
+       "now": true
+      }
+     ],
+     "org": "Example Company C",
+     "program": "RON",
+     "product": "Example Product",
+     "originalCertifiedOn": "2025-08-29",
+     "anniversary": "2026-08-29",
+     "status": "Active",
+     "completedRenewals": 0
+    }
+   ],
+   "documents": {
+    "base": "Example text",
+    "folder": "Example text",
+    "readAt": "2026-10-31",
+    "cycles": [
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2025-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2024-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        1000,
+        "2023-06-01"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": 376,
+   "org": "Example Company D",
+   "program": "RON",
+   "product": "Example Product",
+   "kind": "renewal",
+   "renewalNumber": 2,
+   "state": "LicenseSent",
+   "stateLabel": "License Sent",
+   "phase": "Mark License",
+   "status": "Pending",
+   "waiting": "Company + President",
+   "age": 111,
+   "size": null,
+   "demoOn": null,
+   "assessorFee": 5000,
+   "certificationScript": {
+    "sent": false,
+    "sentOn": null
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "open",
+    "label": "Example text",
+    "scored": 0,
+    "total": 50,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": true,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2022-04-15"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "5"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "MP4"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "N/A"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [
+      {
+       "row": 192,
+       "kind": "initial",
+       "n": null,
+       "state": "Certified",
+       "on": "2024-06-24",
+       "now": false
+      },
+      {
+       "row": 318,
+       "kind": "renewal",
+       "n": 1,
+       "state": "Certified",
+       "on": "2025-11-26",
+       "now": false
+      },
+      {
+       "row": 376,
+       "kind": "renewal",
+       "n": 2,
+       "state": "ApprovedPendingLicense",
+       "on": "2026-09-09",
+       "now": true
+      }
+     ],
+     "org": "Example Company D",
+     "program": "RON",
+     "product": "Example Product",
+     "originalCertifiedOn": "2024-06-24",
+     "anniversary": "2027-06-24",
+     "status": "Active",
+     "completedRenewals": 2
+    }
+   ],
+   "documents": {
+    "base": "Example text",
+    "folder": "Example text",
+    "readAt": "2026-10-31",
+    "cycles": [
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2025-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2024-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        1000,
+        "2023-06-01"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": 383,
+   "org": "Example Company E",
+   "program": "RON",
+   "product": "Example Product",
+   "kind": "renewal",
+   "renewalNumber": 5,
+   "state": "LicenseSent",
+   "stateLabel": "License Sent",
+   "phase": "Mark License",
+   "status": "Pending",
+   "waiting": "Company + President",
+   "age": 94,
+   "size": null,
+   "demoOn": null,
+   "assessorFee": 5000,
+   "certificationScript": {
+    "sent": false,
+    "sentOn": null
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "open",
+    "label": "Example text",
+    "scored": 0,
+    "total": 50,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": true,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2020-04-02"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "MP4"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "N/A"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [
+      {
+       "row": 110,
+       "kind": "initial",
+       "n": null,
+       "state": "Certified",
+       "on": "2021-09-30",
+       "now": false
+      },
+      {
+       "row": 111,
+       "kind": "renewal",
+       "n": 1,
+       "state": "Certified",
+       "on": "2022-08-16",
+       "now": false
+      },
+      {
+       "row": 158,
+       "kind": "renewal",
+       "n": 2,
+       "state": "Certified",
+       "on": "2023-08-03",
+       "now": false
+      },
+      {
+       "row": 260,
+       "kind": "renewal",
+       "n": 3,
+       "state": "Certified",
+       "on": "2024-11-07",
+       "now": false
+      },
+      {
+       "row": 315,
+       "kind": "renewal",
+       "n": 4,
+       "state": "Certified",
+       "on": "2025-10-02",
+       "now": false
+      },
+      {
+       "row": 383,
+       "kind": "renewal",
+       "n": 5,
+       "state": "ApprovedPendingLicense",
+       "on": "2026-08-17",
+       "now": true
+      }
+     ],
+     "org": "Example Company E",
+     "program": "RON",
+     "product": "Example Product",
+     "originalCertifiedOn": "2021-09-30",
+     "anniversary": "2027-09-30",
+     "status": "Active",
+     "completedRenewals": 5
+    }
+   ],
+   "documents": {
+    "base": "Example text",
+    "folder": "Example text",
+    "readAt": "2026-10-31",
+    "cycles": [
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2025-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2024-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        1000,
+        "2023-06-01"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": 391,
+   "org": "Example Company F",
+   "program": "RON",
+   "product": "Example Product",
+   "kind": "renewal",
+   "renewalNumber": 6,
+   "state": "ApprovedPendingLicense",
+   "stateLabel": "Approved, Pending License",
+   "phase": "Mark License",
+   "status": "Pending",
+   "waiting": "MISMO",
+   "age": 67,
+   "size": null,
+   "demoOn": null,
+   "assessorFee": 5000,
+   "certificationScript": {
+    "sent": false,
+    "sentOn": null
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "open",
+    "label": "Example text",
+    "scored": 0,
+    "total": 50,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": true,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2020-01-15"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "No"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "MP4"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "N/A"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [
+      {
+       "row": 115,
+       "kind": "renewal",
+       "n": 1,
+       "state": "Certified",
+       "on": "2021-11-30",
+       "now": false
+      },
+      {
+       "row": 116,
+       "kind": "renewal",
+       "n": 2,
+       "state": "Certified",
+       "on": "2023-02-23",
+       "now": false
+      },
+      {
+       "row": 195,
+       "kind": "renewal",
+       "n": 3,
+       "state": "Certified",
+       "on": "2023-12-14",
+       "now": false
+      },
+      {
+       "row": 257,
+       "kind": "renewal",
+       "n": 4,
+       "state": "Certified",
+       "on": "2024-11-12",
+       "now": false
+      },
+      {
+       "row": 312,
+       "kind": "renewal",
+       "n": 5,
+       "state": "Certified",
+       "on": "2025-10-02",
+       "now": false
+      },
+      {
+       "row": 391,
+       "kind": "renewal",
+       "n": 6,
+       "state": "ApprovedPendingLicense",
+       "on": "2026-10-26",
+       "now": true
+      }
+     ],
+     "org": "Example Company F",
+     "program": "RON",
+     "product": "Example Product",
+     "originalCertifiedOn": "2020-08-17",
+     "anniversary": "2027-08-17",
+     "status": "Active",
+     "completedRenewals": 6
+    },
+    {
+     "cycles": [
+      {
+       "row": 114,
+       "kind": "initial",
+       "n": null,
+       "state": "Certified",
+       "on": "2020-08-17",
+       "now": false
+      }
+     ],
+     "org": "Example Company F",
+     "program": "RON",
+     "product": null,
+     "originalCertifiedOn": "2020-08-17",
+     "anniversary": "2021-08-17",
+     "status": "Superseded",
+     "completedRenewals": 0
+    }
+   ],
+   "documents": {
+    "base": "Example text",
+    "folder": "Example text",
+    "readAt": "2026-10-31",
+    "cycles": [
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2025-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2024-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        1000,
+        "2023-06-01"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": 394,
+   "org": "Example Company G",
+   "program": "RON",
+   "product": "Example Product",
+   "kind": "renewal",
+   "renewalNumber": 3,
+   "state": "DemoScheduled",
+   "stateLabel": "Demo Scheduled",
+   "phase": "Demo",
+   "status": "Pending",
+   "waiting": "Assessor",
+   "age": 48,
+   "size": null,
+   "demoOn": "2026-11-06",
+   "assessorFee": null,
+   "certificationScript": {
+    "sent": true,
+    "sentOn": "2026-10-26",
+    "by": "Example text",
+    "file": "Example text",
+    "filled": 13,
+    "of": 13,
+    "sheets": [
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 1,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 2,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 3,
+        "q": "Example text",
+        "criterion": "Example text",
+        "ans": "5"
+       },
+       {
+        "n": 4,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 5,
+        "q": "Example text",
+        "ans": "Yes"
+       },
+       {
+        "n": 6,
+        "q": "Example text",
+        "ans": "Yes"
+       },
+       {
+        "n": 7,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 8,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 9,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 10,
+        "q": "Example text",
+        "ans": "mp4"
+       },
+       {
+        "n": 11,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 12,
+        "q": "Example text",
+        "ans": "Example text"
+       },
+       {
+        "n": 13,
+        "q": "Example text",
+        "ans": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 14,
+        "q": "Example text"
+       },
+       {
+        "n": 15,
+        "q": "Example text"
+       },
+       {
+        "n": 16,
+        "q": "Example text"
+       },
+       {
+        "n": 17,
+        "q": "Example text"
+       },
+       {
+        "n": 18,
+        "q": "Example text"
+       },
+       {
+        "n": 19,
+        "q": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "KBA",
+      "items": [
+       {
+        "n": 20,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 21,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 22,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 23,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 24,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 25,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 26,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 27,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 28,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 29,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 30,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 31,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 32,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 33,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 34,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 35,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 36,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 37,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 38,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 39,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 40,
+        "q": "Example text",
+        "scenario": "Example text",
+        "criterion": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 41,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 42,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 43,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 44,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 45,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 46,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 47,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 48,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       },
+       {
+        "n": 49,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       }
+      ]
+     },
+     {
+      "name": "Example text",
+      "items": [
+       {
+        "n": 50,
+        "q": "Example text",
+        "scenario": "Example text",
+        "evidence": "Example text"
+       }
+      ]
+     }
+    ],
+    "exclusions": "N/A"
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "open",
+    "label": "Example text",
+    "scored": 0,
+    "total": 50,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": false,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2020-07-07"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "5"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "mp4"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "N/A"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [
+      {
+       "row": 161,
+       "kind": "initial",
+       "n": null,
+       "state": "Certified",
+       "on": "2023-08-23",
+       "now": false
+      },
+      {
+       "row": 244,
+       "kind": "renewal",
+       "n": 1,
+       "state": "Certified",
+       "on": "2024-11-15",
+       "now": false
+      },
+      {
+       "row": 310,
+       "kind": "renewal",
+       "n": 2,
+       "state": "Certified",
+       "on": "2025-11-26",
+       "now": false
+      },
+      {
+       "row": 394,
+       "kind": "renewal",
+       "n": 3,
+       "state": "DemoScheduled",
+       "on": null,
+       "now": true
+      }
+     ],
+     "org": "Example Company G",
+     "program": "RON",
+     "product": "Example Product",
+     "originalCertifiedOn": "2023-08-23",
+     "anniversary": "2026-08-23",
+     "status": "Active",
+     "completedRenewals": 2
+    }
+   ],
+   "documents": {
+    "base": "Example text",
+    "folder": "Example text",
+    "readAt": "2026-10-31",
+    "cycles": [
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2025-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2024-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        1000,
+        "2023-06-01"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "row": 395,
+   "org": "Example Company H",
+   "program": "RON",
+   "product": "Example Product",
+   "kind": "renewal",
+   "renewalNumber": 6,
+   "state": "ApprovedPendingLicense",
+   "stateLabel": "Approved, Pending License",
+   "phase": "Mark License",
+   "status": "Pending",
+   "waiting": "MISMO",
+   "age": 40,
+   "size": null,
+   "demoOn": null,
+   "assessorFee": null,
+   "certificationScript": {
+    "sent": false,
+    "sentOn": null
+   },
+   "scriptOutstanding": false,
+   "prelim": {
+    "state": "open",
+    "label": "Example text",
+    "scored": 0,
+    "total": 50,
+    "fails": 0,
+    "waitingOnArtifact": 0
+   },
+   "done": true,
+   "answers": [
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "2015-03-17"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": null
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "Example text",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Yes"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "Example text"
+    },
+    {
+     "Section": "RON",
+     "Question": "Example text",
+     "Answer": "N/A"
+    }
+   ],
+   "history": [
+    {
+     "cycles": [
+      {
+       "row": 3,
+       "kind": "initial",
+       "n": null,
+       "state": "Certified",
+       "on": "2020-11-09",
+       "now": false
+      },
+      {
+       "row": 4,
+       "kind": "renewal",
+       "n": 1,
+       "state": "Certified",
+       "on": "2022-01-13",
+       "now": false
+      },
+      {
+       "row": 5,
+       "kind": "renewal",
+       "n": 2,
+       "state": "Certified",
+       "on": "2023-02-07",
+       "now": false
+      },
+      {
+       "row": 194,
+       "kind": "renewal",
+       "n": 3,
+       "state": "Certified",
+       "on": "2023-11-06",
+       "now": false
+      },
+      {
+       "row": 274,
+       "kind": "renewal",
+       "n": 4,
+       "state": "Certified",
+       "on": "2024-11-05",
+       "now": false
+      },
+      {
+       "row": 321,
+       "kind": "renewal",
+       "n": 5,
+       "state": "Certified",
+       "on": "2025-11-03",
+       "now": false
+      },
+      {
+       "row": 395,
+       "kind": "renewal",
+       "n": 6,
+       "state": "ApprovedPendingLicense",
+       "on": "2026-10-26",
+       "now": true
+      }
+     ],
+     "org": "Example Company H",
+     "program": "RON",
+     "product": "Example Product",
+     "originalCertifiedOn": "2020-11-09",
+     "anniversary": "2027-11-09",
+     "status": "Active",
+     "completedRenewals": 6
+    }
+   ],
+   "documents": {
+    "base": "Example text",
+    "folder": "Example text",
+    "readAt": "2026-10-31",
+    "cycles": [
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2025-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        10,
+        "2024-06-01"
+       ]
+      ]
+     },
+     {
+      "name": "Example text",
+      "files": [
+       [
+        "Example text",
+        1000,
+        "2023-06-01"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}
