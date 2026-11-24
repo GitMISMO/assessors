@@ -35,13 +35,30 @@ jobs:
         run: node tests/click-through.js
 
   # Publish to resources.mismo.org/assessors/ only after every check above passed, and only from main.
-  publish:
+  # Packaging and publishing are two separate jobs, as in GitHub's own Pages workflow (24 Nov 2026): publishing in the
+  # same job straight after packaging sometimes found no package ("No artifacts named github-pages"), and re-running it
+  # then found two. A re-run of a failed publish now re-runs only the publish, with the one package already made.
+  package:
     needs: check
     if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Package the page exactly as it is in the repository
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+  publish:
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
       pages: write
       id-token: write
     environment:
@@ -51,12 +68,6 @@ jobs:
       group: pages
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - name: Package the page exactly as it is in the repository
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
       - name: Publish
         id: deployment
         uses: actions/deploy-pages@v4
