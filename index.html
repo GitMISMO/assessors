@@ -556,6 +556,7 @@ body.as-noshell .railscrim{display:none}
   padding:9px 12px;display:flex;gap:12px;align-items:center;font-size:13px;max-width:calc(100vw - 32px)}
 #ver-bar button{border:1px solid var(--rule,#adc4d6);background:var(--ink);color:var(--surface,#fff);border-radius:4px;padding:5px 10px;font:inherit;cursor:pointer}
 </style>
+<script src="/assets/back.js"></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mismo-logo" viewBox="0 0 708 108"><g transform="translate(0.000000,108.000000) scale(0.100000,-0.100000)" fill="var(--logo-body, #0f314c)"><path d="M5917 1065 c-169 -46 -279 -153 -335 -323 -21 -65 -25 -96 -25 -197
@@ -2119,6 +2120,10 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 
   function open(row) { openRow = row; ptab = "overview"; drawPanel(); }
   function shut() { openRow = null; drawPanel(); }
+  /* The browser's Back button (CN-033, Jonna, 25 Nov 2026): /assets/back.js (shared, owned by Forms and shared pages)
+     makes each page of the left menu a step in the browser's history; Back closes an open engagement first, exactly as
+     its X does. Back never undoes a change. */
+  window.MismoBack && MismoBack.layer({ isOpen: function () { return openRow != null; }, close: shut });
 
   /* ---- View As (Jonna, 31 Oct 2026: "why can't i see it how they see it" - the same as Service
      Orders and Agreements). A MISMO administrator sees a firm's own screen, drawn from its real
@@ -2282,6 +2287,8 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
       "<h3>What This Portal Is</h3>" +
       "<p>Your firm's own engagements, the material to assess them against, your schedule, and the place to record " +
       "each step and what you find. Everything here is for your firm only.</p>" +
+      "<p>The browser's <b>Back</b> button goes to the last page you were on and closes an open panel first; it never " +
+      "undoes a change.</p>" +
 
       "<h3>The Tabs</h3>" +
       "<ul>" +

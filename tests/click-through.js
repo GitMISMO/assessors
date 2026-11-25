@@ -22,6 +22,18 @@ const PEOPLE = {
   home: { platformAdmin: true, access: { "as-falcon": "admin", "as-actualize": "admin", "as-vianteye": "admin" }, name: "Test Administrator", email: "test@mismo.org" }
 };
 
+/* The shared Back-button helper (resources.mismo.org/assets/back.js, owned by Forms and shared pages) is tested as it
+   is live, never copied here: MISMO_BACK can point at a local copy instead (for trying a change before it is published). */
+let BACK = null;
+async function backJs() {
+  if (BACK !== null) return BACK;
+  try {
+    if (process.env.MISMO_BACK) BACK = fs.readFileSync(process.env.MISMO_BACK, "utf8");
+    else { const r = await fetch("https://resources.mismo.org/assets/back.js"); BACK = r.ok ? await r.text() : ""; }
+  } catch (e) { BACK = ""; }
+  return BACK;
+}
+
 (async () => {
   const browser = await chromium.launch();
   let failures = 0, steps = 0, writes = 0;
@@ -37,6 +49,7 @@ const PEOPLE = {
       const u = new URL(route.request().url());
       if (u.hostname === "resources.mismo.org") {
         if (u.pathname === "/assets/session.js") return route.fulfill({ contentType: "application/javascript", body: "window.ResourcesSession={token:()=>'t',requireAccess:()=>Promise.resolve(),mount:()=>{}};" });
+        if (u.pathname === "/assets/back.js") return route.fulfill({ contentType: "application/javascript", body: await backJs() });
         if (u.pathname.startsWith("/assessors/")) {
           const f = path.join(ROOT, u.pathname.slice(11) || "index.html");
           if (fs.existsSync(f) && fs.statSync(f).isFile()) return route.fulfill({ contentType: TYPES[path.extname(f)] || "application/octet-stream", body: fs.readFileSync(f) });
@@ -80,6 +93,38 @@ const PEOPLE = {
       await page.keyboard.press("Escape");
       await page.evaluate(() => { const b = document.querySelector('.hq nav button[data-hq="open"]'); if (b) b.click(); });
       await page.waitForTimeout(150);
+    }
+    /* The browser's Back button (CN-033, Jonna, 25 Nov 2026), as an assessor at desktop width: two menu pages and Back
+       returns to the first, Forward goes again; an engagement's panel and Back closes it and stays on the page; a panel
+       closed with its X leaves no step behind. Real clicks: only what a person does makes a step. */
+    if (who === "assessor" && width === 1400) {
+      const problem = msg => { failures++; console.log("PROBLEM  " + tag + " @ Back button: " + msg); };
+      const state = () => page.evaluate(() => ({
+        tab: (document.querySelector(".hq nav button[data-hq][aria-current]") || {}).dataset?.hq || "",
+        panel: !!document.querySelector("#as-scrim.on"), helper: !!window.MismoBack }));
+      const go = async n => { await page.click('.hq nav button[data-hq="' + n + '"]'); await page.waitForTimeout(500); };
+      const back = async () => { await page.evaluate(() => history.back()); await page.waitForTimeout(700); };
+      const openEng = async () => { await go("open"); await page.click("[data-open]"); await page.waitForTimeout(500); };
+      await go("home"); await page.waitForTimeout(600);
+      let st = await state();
+      const start = st.tab;
+      if (!st.helper) problem("the shared Back helper (/assets/back.js) did not load");
+      else {
+        await go("open"); await go("sched");
+        await back(); st = await state(); if (st.tab !== "open") problem("Back from Your Schedule should land on Engagements: " + JSON.stringify(st));
+        await page.evaluate(() => history.forward()); await page.waitForTimeout(700);
+        st = await state(); if (st.tab !== "sched") problem("Forward should go to Your Schedule again: " + JSON.stringify(st));
+        await back(); await back(); st = await state(); if (st.tab !== start) problem("Back to " + start + ": " + JSON.stringify(st));
+        await openEng(); st = await state();
+        if (!st.panel) problem("an engagement did not open in its panel");
+        await back(); st = await state(); if (st.panel || st.tab !== "open") problem("Back should close the panel and stay on Engagements: " + JSON.stringify(st));
+        await back(); st = await state(); if (st.tab !== start) problem("Back after the panel should go to the page before Engagements: " + JSON.stringify(st));
+        await openEng();
+        await page.click("#as-shut"); await page.waitForTimeout(500);
+        if ((await state()).panel) problem("the X did not close the panel");
+        await back(); st = await state(); if (st.tab !== start) problem("after closing the panel with its X, Back should go straight to the page before: " + JSON.stringify(st));
+      }
+      mark("Back button");
     }
     if (await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)) { failures++; console.log("PROBLEM  " + tag + ": the page is wider than the screen"); }
     await ctx.close();

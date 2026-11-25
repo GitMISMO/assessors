@@ -40,6 +40,9 @@ since the page opened. It reads only.
 - `relay.js`: signing in and reading/saving through the relay (`window.RELAY` in `index.html` lists the only keys it
   may use: `as-falcon`, `as-actualize`, `as-vianteye`).
 - `portal.css`: the portal's look.
+- `/assets/back.js` (shared, owned by Forms and shared pages; loaded in `<head>`, never copied here): the browser's Back
+  button goes to the last menu page and closes an open engagement first (CN-033). The engagement panel registers itself
+  with `MismoBack.layer`. The click-through checks it against the live copy (`MISMO_BACK` points it at a local file).
 - `tests/`: the automatic checks (below). `tests/fixtures/engagements.json` is a made-up firm with made-up companies.
 - `CHANGELOG.md`: one line for each change people would notice. Add one with every change.
 

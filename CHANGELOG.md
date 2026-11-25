@@ -4,6 +4,7 @@ One line for each change people would notice, newest first. Add a line here with
 
 ## November 2026
 
+- **Nov 25:** The browser's Back button works: it goes to the last page you were on in the menu and closes an open engagement first; it never undoes a change (CN-033).
 - **Nov 25:** Browser tab icon now matches mismo.org (the shared MISMO icon, on every page).
 - **Nov 22:** Changes go live only after every check passes ("Checks and Publish"); a change that fails a check is not published.
 - **Nov 22:** Waiting on the company's evidence counts as With You (the firm follows up for it). Once only the Mark License Agreement is left, the engagement leaves the board.
