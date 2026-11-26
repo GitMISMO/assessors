@@ -8,7 +8,7 @@
  --accent-soft:#e4f2fb;
  --display:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
  --ui:var(--display); --mono:var(--display);   /* one typeface everywhere */
- --hq-h:64px; --rail-w:240px; --rail-mini:62px;
+ --hq-h:68px; --rail-w:240px; --rail-mini:62px;
  color-scheme:light;
 }
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
@@ -798,23 +798,20 @@ body.railmini .panel.wide{width:min(1320px, calc(100vw - var(--rail-mini,62px) -
 .hqcard .cfoot{display:flex;flex-direction:column;gap:10px;align-self:start;min-width:0}
 .hqcard .cfoot .next{margin-top:0}
 .hqtop{position:sticky;top:env(safe-area-inset-top,0px);z-index:97;height:var(--hq-h);
-  background:var(--navy);color:#fff;display:flex;align-items:center;gap:0;
+  background:#0d314c;color:#fff;display:flex;align-items:center;gap:14px;
   padding:0 22px;box-shadow:0 1px 0 rgba(80,164,219,.28);
   margin-left:calc(0px - var(--rail-w));width:calc(100% + var(--rail-w));
   transition:margin-left .2s cubic-bezier(.4,0,.2,1), width .2s cubic-bezier(.4,0,.2,1)}
 body.railmini .hqtop{margin-left:calc(0px - var(--rail-mini));width:calc(100% + var(--rail-mini))}
 @media (prefers-reduced-motion:reduce){ .hqtop{transition:none} }
-.hqtop .mastrule{display:block;width:2px;height:34px;flex:0 0 auto;margin-inline:20px;border-radius:1px;background:var(--sky)}
-.hqtop .hqname{font-family:var(--display);font-size:15.5px;font-weight:700;letter-spacing:-.005em;color:var(--sky);white-space:nowrap}
+.hqtop .mastrule{display:block;width:1px;height:42px;flex:0 0 auto;background:rgba(80,164,219,.4)}
+.hqtop .hqname{font-family:var(--display);font-size:16px;font-weight:500;letter-spacing:0;color:#94c8e9;white-space:nowrap}
 .hqtop-r{margin-left:auto;display:flex;align-items:center;gap:13px}
 .hqtop .eyebrow-m{font-family:var(--display);font-size:10.5px;letter-spacing:.11em;
   text-transform:uppercase;color:rgba(255,255,255,.62);font-weight:600;white-space:nowrap}
 @media(max-width:700px){.hqtop .eyebrow-m{display:none}}
-.logoplate{background:#fff;border-radius:7px;padding:8px 14px;display:flex;align-items:center;line-height:0;flex:0 0 auto;position:relative}
+.logoplate{background:#fff;border-radius:5px;padding:9px 13px;display:flex;align-items:center;line-height:0;flex:0 0 auto;position:relative;box-shadow:0 1px 0 rgba(80,164,219,.35)}
 .logoplate .wordmark{height:24px;width:auto;display:block}
-.santa{position:absolute;display:none;pointer-events:none;left:-9px;top:-12px;width:31px;height:31px}
-html[data-season="december"] .logoplate .santa{display:block}
-html[data-season="december"] .hqtop{padding-top:12px}
 
 .hq.rail{position:fixed;left:0;top:calc(var(--hq-h) + env(safe-area-inset-top,0px));bottom:0;width:var(--rail-w);z-index:95;
   background:var(--navy);color:#fff;display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden auto;
@@ -909,10 +906,14 @@ body.railmini .hq .mast-right .theme-btn span{display:none}
 
 /* the page name is longer than Summit HQ's — let it shrink rather than push the bar wide */
 .hqtop .hqname{min-width:0;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:700px){
-  .hqtop{padding:0 14px}
-  .hqtop .mastrule{margin-inline:12px}
-  .hqtop .hqname{font-size:14px}
+/* phone width: the same shrink as the CMS masthead (CN-053) */
+@media(max-width:560px){
+  :root{--hq-h:55px}
+  .hqtop{padding:0 16px;gap:11px}
+  .hqtop .mastrule{height:33px}
+  .logoplate{padding:7px 10px}
+  .logoplate .wordmark{height:19px}
+  .hqtop .hqname{font-size:13px}
 }
 
 /* The count beside a rail item — the same number the section header carries. */

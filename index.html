@@ -586,15 +586,6 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 -220 5 -410 14 -422 19 -29 12 -30 43 -3 70 19 19 33 20 288 20 277 0 331 -6
 355 -41 13 -18 24 -19 218 -17 l204 3 3 44 c4 60 -31 168 -70 215 -17 21 -52
 52 -77 67 l-45 29 -550 0 c-440 -1 -557 -3 -581 -14z"/></g></symbol>
-<symbol id="mismo-hat" viewBox="0 0 100 100">
-  <path d="M17,73 C9,44 20,17 42,9 C59,3 72,10 80,22 C85,30 86,38 81,41
-           C76,44 70,40 65,32 C60,46 57,60 57,73 Z" fill="#c0392f"/>
-  <path d="M17,73 C9,44 20,17 42,9 C48,7 53,6 58,7 C41,19 30,45 30,73 Z"
-        fill="#0f314c" opacity=".17"/>
-  <rect x="10" y="65" width="56" height="20" rx="10" fill="#ffffff"/>
-  <rect x="10" y="75" width="56" height="10" rx="5" fill="#0f314c" opacity=".07"/>
-  <circle cx="86" cy="45" r="11.5" fill="#ffffff"/>
-</symbol>
 <symbol id="ico-search" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7.2" cy="7.2" r="4.6"/><path d="m11 11 3 3"/></g></symbol>
 <symbol id="ico-moon" viewBox="0 0 16 16"><path d="M13.6 9.5A6 6 0 0 1 6.5 2.4a6 6 0 1 0 7.1 7.1Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
 <symbol id="ico-sun" viewBox="0 0 16 16"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.4v1.6M8 13v1.6M1.4 8h1.6M13 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M12.6 3.4l-1.1 1.1M4.5 11.5l-1.1 1.1"/></g></symbol>
@@ -606,7 +597,7 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
 </defs></svg>
 
 <header class="hqtop">
-  <span class="logoplate"><svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg><svg class="santa" viewBox="0 0 100 100" aria-hidden="true"><use href="#mismo-hat"/></svg></span>
+  <span class="logoplate"><svg class="wordmark" role="img" aria-label="MISMO" viewBox="0 0 708 108"><use href="#mismo-logo"/></svg></span>
   <span class="mastrule"></span>
   <span class="hqname">Assessor Portal</span>
   <span class="hqtop-r"><span class="eyebrow-m">Programs &amp; Operations</span>
@@ -2656,11 +2647,6 @@ c57 -33 76 -84 76 -200 0 -116 -19 -167 -76 -200 -32 -19 -52 -20 -294 -20
   /* what the rail's search reads, and how it opens what it finds */
   window.__assessorBook = function () { return book; };
   window.__assessorOpen = function (row) { open(row); };
-
-  /* December, every year, with no upkeep */
-  if (new Date().getMonth() === 11) {
-    document.documentElement.setAttribute("data-season", "december");
-  }
 
   /* One sign-in for resources.mismo.org: someone already signed in on another MISMO tool (MISMO staff
      in the CMS) is signed in here too, as themselves. */
